@@ -6,7 +6,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class SiteOverviewController {
 
@@ -25,6 +30,7 @@ public class SiteOverviewController {
 
     @FXML private TextField filterField;
 
+    // ObservableList maakt wijzigingen in deze lijst "observeerbaar"
     private final ObservableList<Site> sites = FXCollections.observableArrayList();
 
     @FXML
@@ -41,13 +47,31 @@ public class SiteOverviewController {
         sites.add(new Site("Antwerpen", "België", 80, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN));
         sites.add(new Site("Brugge", "België", 60, Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE));
 
-        siteTable.setItems(sites);
+        siteTable.setItems(sites); // ObservableList linken
 
         editBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
-    @FXML private void onAdd() { System.out.println("Add"); }
+    @FXML private void onAdd() { try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
+        Parent root = loader.load();
+
+        SiteFormController controller = loader.getController();
+
+        Stage dialog = new Stage();
+        dialog.setTitle("Nieuwe Site");
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setScene(new Scene(root));
+        dialog.showAndWait();
+
+        Site newSite = controller.getResult();
+        if (newSite != null) {
+            sites.add(newSite); // TODO -> later via siteController.add(...)
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } }
     @FXML private void onEdit() { System.out.println("Edit"); }
     @FXML private void onDelete() { System.out.println("Delete"); }
 }
