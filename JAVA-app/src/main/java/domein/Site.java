@@ -1,14 +1,16 @@
 package domein;
 
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
 
-//TODO link met database
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class Site {
 
 	public enum ProductieStatus{
@@ -22,11 +24,18 @@ public class Site {
 		NON_ACTIEF // site ligt stil (bewust, seizoenstop, geen productie gepland,..)
 	}
 
-	//private Collection<Machine> machines;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long siteId;
+
+	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	private String naam;
-	private String locatie; // TODO aparte klasse?
+	private String locatie; // TODO aparte klasse? momenteel miss wat overkill..
+	// Miss wel handig als ge op termijn wilt sites per land filteren? maar nu nog niet echt nodig
 	private int capaciteit;
+	@Enumerated(EnumType.STRING)
 	private ProductieStatus productieStatus;
+	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
 
 	public Site (String naam, String locatie, int capaciteit, OperationeleStatus operationeleStatus,ProductieStatus productieStatus){

@@ -1,0 +1,53 @@
+package gui;
+
+import domein.Site;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+
+public class SiteOverviewController {
+
+    @FXML private TableView<Site> siteTable;
+
+    @FXML private TableColumn<Site, Long> idCol;
+    @FXML private TableColumn<Site, String> naamCol;
+    @FXML private TableColumn<Site, String> locatieCol;
+    @FXML private TableColumn<Site, Integer> capaciteitCol;
+    @FXML private TableColumn<Site, Site.OperationeleStatus> operationeleCol;
+    @FXML private TableColumn<Site, Site.ProductieStatus> productieCol;
+
+    @FXML private Button addBtn;
+    @FXML private Button editBtn;
+    @FXML private Button deleteBtn;
+
+    @FXML private TextField filterField;
+
+    private final ObservableList<Site> sites = FXCollections.observableArrayList();
+
+    @FXML
+    private void initialize() {
+        idCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getSiteId()));
+        naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNaam()));
+        locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getLocatie()));
+        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getCapaciteit()));
+        operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getOperationeleStatus()));
+        productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getProductieStatus()));
+
+        // dummy data (tijdelijk)
+        sites.add(new Site("Gent", "België", 100, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND));
+        sites.add(new Site("Antwerpen", "België", 80, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN));
+        sites.add(new Site("Brugge", "België", 60, Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE));
+
+        siteTable.setItems(sites);
+
+        editBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
+        deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
+    }
+
+    @FXML private void onAdd() { System.out.println("Add"); }
+    @FXML private void onEdit() { System.out.println("Edit"); }
+    @FXML private void onDelete() { System.out.println("Delete"); }
+}
