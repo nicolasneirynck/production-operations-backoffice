@@ -1,6 +1,7 @@
 package gui;
 
 import domein.Site;
+import domein.SiteController;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,7 +21,11 @@ public class SiteFormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private Site site;
+    private SiteController sc;
+
+    public SiteFormController(SiteController sc){
+        this.sc = sc;
+    }
 
     @FXML
     private void initialize() {
@@ -58,7 +63,7 @@ public class SiteFormController {
             Site.OperationeleStatus op = operationeleBx.getValue();
             Site.ProductieStatus prod = productieBx.getValue();
 
-        //TODO    site = new Site(naam, locatie, capaciteit, op, prod);
+            sc.addSite(naam,locatie,capaciteit,op,prod);
 
             close();
         } catch (IllegalArgumentException ex) {
@@ -68,16 +73,25 @@ public class SiteFormController {
 
     @FXML
     private void onCancel() {
-        site = null;
-        close();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Annuleren");
+        alert.setHeaderText("Wijzigingen annuleren?");
+        alert.setContentText("Niet-opgeslagen wijzigingen gaan verloren.");
+
+        ButtonType yesBtn = new ButtonType("Ja");
+        ButtonType noBtn = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == yesBtn) {
+                close();
+            }
+        });
     }
 
     private void close() {
         Stage stage = (Stage) naamTxt.getScene().getWindow();
         stage.close();
-    }
-
-    public Site getResult() {
-        return site;
     }
 }

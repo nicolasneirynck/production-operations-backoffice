@@ -1,6 +1,7 @@
 package gui;
 
 import domein.Site;
+import domein.SiteController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -28,10 +29,15 @@ public class SiteOverviewController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
 
-    @FXML private TextField filterField;
 
     // ObservableList maakt wijzigingen in deze lijst "observeerbaar"
     private final ObservableList<Site> sites = FXCollections.observableArrayList();
+
+    private final SiteController sc;
+
+    public SiteOverviewController(SiteController sc){
+        this.sc = sc;
+    }
 
     @FXML
     private void initialize() {
@@ -42,10 +48,8 @@ public class SiteOverviewController {
         operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getOperationeleStatus()));
         productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getProductieStatus()));
 
-        // dummy data (tijdelijk)
-     //   sites.add(new Site("Gent", "België", 100, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND));
-      //  sites.add(new Site("Antwerpen", "België", 80, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN));
-     //   sites.add(new Site("Brugge", "België", 60, Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE));
+        // sites ophalen uit DB
+        sites.addAll(sc.getAllSites());
 
         siteTable.setItems(sites); // ObservableList linken
 
@@ -53,25 +57,35 @@ public class SiteOverviewController {
         deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
-    @FXML private void onAdd() { try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
-        Parent root = loader.load();
+    @FXML
+    private void onAdd() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
+            loader.setControllerFactory(type -> {
+                if (type == SiteFormController.class) return new SiteFormController(sc);
+                try {
+                    return type.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-        SiteFormController controller = loader.getController();
+            Parent root = loader.load();
 
-        Stage dialog = new Stage();
-        dialog.setTitle("Nieuwe Site");
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setScene(new Scene(root));
-        dialog.showAndWait();
+            Stage dialog = new Stage();
+            dialog.setTitle("Nieuwe Site");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setScene(new Scene(root));
+            dialog.showAndWait();
 
-        Site newSite = controller.getResult();
-        if (newSite != null) {
-            sites.add(newSite); // TODO -> later via siteController.add(...)
+            sites.setAll(sc.getAllSites());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } }
+    }
+
     @FXML private void onEdit() { System.out.println("Edit"); }
     @FXML private void onDelete() { System.out.println("Delete"); }
 }

@@ -10,19 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SiteTest {
 
-    private Site testSite;
-
-    @BeforeEach
-    void setUp() {
-        testSite = Site.builder()
-                .naam("Gent")
-                .locatie("België")
-                .capaciteit(100)
-                .operationeleStatus(Site.OperationeleStatus.ACTIEF)
-                .productieStatus(Site.ProductieStatus.GEZOND)
-                .build();
-    }
-
     static Stream<Arguments> geldigeCombinaties() {
         return Stream.of(
                 Arguments.of(Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND),

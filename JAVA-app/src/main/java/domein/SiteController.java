@@ -19,6 +19,10 @@ public class SiteController {
         this.siteRepo = siteRepo;
     }
 
+    public List<Site> getAllSites(){
+        return siteRepo.findAll();
+    }
+
     public void addSite(String naam, String locatie, int capaciteit, Site.OperationeleStatus op, Site.ProductieStatus prod)
     {
         Site nieuweSite = Site.builder()
@@ -35,12 +39,6 @@ public class SiteController {
             throw ex;
         }
     }
-
-    public List<Site> getAllSites(){
-        return siteRepo.findAll();
-    }
-
-    //addSite
 
     //updateSite
 
