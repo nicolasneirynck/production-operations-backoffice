@@ -43,9 +43,9 @@ public class SiteOverviewController {
         productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getProductieStatus()));
 
         // dummy data (tijdelijk)
-        sites.add(new Site("Gent", "België", 100, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND));
-        sites.add(new Site("Antwerpen", "België", 80, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN));
-        sites.add(new Site("Brugge", "België", 60, Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE));
+     //   sites.add(new Site("Gent", "België", 100, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND));
+      //  sites.add(new Site("Antwerpen", "België", 80, Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN));
+     //   sites.add(new Site("Brugge", "België", 60, Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE));
 
         siteTable.setItems(sites); // ObservableList linken
 

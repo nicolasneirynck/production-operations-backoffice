@@ -58,7 +58,7 @@ public class SiteFormController {
             Site.OperationeleStatus op = operationeleBx.getValue();
             Site.ProductieStatus prod = productieBx.getValue();
 
-            site = new Site(naam, locatie, capaciteit, op, prod);
+        //TODO    site = new Site(naam, locatie, capaciteit, op, prod);
 
             close();
         } catch (IllegalArgumentException ex) {
