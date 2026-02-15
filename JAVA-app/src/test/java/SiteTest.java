@@ -3,6 +3,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import util.OperationeleStatus;
+import util.ProductieStatus;
 
 import java.util.stream.Stream;
 
@@ -12,16 +14,16 @@ public class SiteTest {
 
     static Stream<Arguments> geldigeCombinaties() {
         return Stream.of(
-                Arguments.of(Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.GEZOND),
-                Arguments.of(Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.PROBLEMEN),
-                Arguments.of(Site.OperationeleStatus.ACTIEF, Site.ProductieStatus.OFFLINE),
-                Arguments.of(Site.OperationeleStatus.NON_ACTIEF, Site.ProductieStatus.OFFLINE)
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.PROBLEMEN),
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.OFFLINE),
+                Arguments.of(OperationeleStatus.NON_ACTIEF, ProductieStatus.OFFLINE)
         );
     }
 
     @ParameterizedTest
     @MethodSource("geldigeCombinaties")
-    void builder_GeldigeCombinaties_GeenException(Site.OperationeleStatus op, Site.ProductieStatus prod) {
+    void builder_GeldigeCombinaties_GeenException(OperationeleStatus op, ProductieStatus prod) {
 
         Site site = Site.builder()
                 .naam("Site-A")
@@ -40,17 +42,17 @@ public class SiteTest {
 
     @ParameterizedTest
     @EnumSource(
-            value = Site.ProductieStatus.class,
+            value = ProductieStatus.class,
             names = {"OFFLINE"},
             mode = EnumSource.Mode.EXCLUDE
     )
-    void builder_NonActiefMetNietOffline_GooitException(Site.ProductieStatus prod) {
+    void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod) {
         assertThrows(IllegalArgumentException.class, () ->
                 Site.builder()
                         .naam("Brugge")
                         .locatie("België")
                         .capaciteit(100)
-                        .operationeleStatus(Site.OperationeleStatus.NON_ACTIEF)
+                        .operationeleStatus(OperationeleStatus.NON_ACTIEF)
                         .productieStatus(prod)
                         .build()
         );
@@ -64,8 +66,8 @@ public class SiteTest {
                         .naam("X")
                         .locatie("Y")
                         .capaciteit(cap)
-                        .operationeleStatus(Site.OperationeleStatus.ACTIEF)
-                        .productieStatus(Site.ProductieStatus.GEZOND)
+                        .operationeleStatus(OperationeleStatus.ACTIEF)
+                        .productieStatus(ProductieStatus.GEZOND)
                         .build()
         );
     }
@@ -79,8 +81,8 @@ public class SiteTest {
                         .naam(naam)
                         .locatie("Y")
                         .capaciteit(10)
-                        .operationeleStatus(Site.OperationeleStatus.ACTIEF)
-                        .productieStatus(Site.ProductieStatus.GEZOND)
+                        .operationeleStatus(OperationeleStatus.ACTIEF)
+                        .productieStatus(ProductieStatus.GEZOND)
                         .build()
         );
     }
@@ -94,8 +96,8 @@ public class SiteTest {
                         .naam("X")
                         .locatie(locatie)
                         .capaciteit(10)
-                        .operationeleStatus(Site.OperationeleStatus.ACTIEF)
-                        .productieStatus(Site.ProductieStatus.GEZOND)
+                        .operationeleStatus(OperationeleStatus.ACTIEF)
+                        .productieStatus(ProductieStatus.GEZOND)
                         .build()
         );
     }

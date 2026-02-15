@@ -1,11 +1,13 @@
 package gui;
 
-import domein.Site;
 import domein.SiteController;
+import dto.SiteDTO;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import util.OperationeleStatus;
+import util.ProductieStatus;
 
 public class SiteFormController {
 
@@ -13,15 +15,17 @@ public class SiteFormController {
     @FXML private TextField locatieTxt;
     @FXML private TextField capaciteitTxt;
 
-    @FXML private ComboBox<Site.OperationeleStatus> operationeleBx;
-    @FXML private ComboBox<Site.ProductieStatus> productieBx;
+    @FXML private ComboBox<OperationeleStatus> operationeleBx;
+    @FXML private ComboBox<ProductieStatus> productieBx;
 
     @FXML private Label errorLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private SiteController sc;
+    private final SiteController sc;
+    private Long editingId = null; // null = nieuw, anders edit
+
 
     public SiteFormController(SiteController sc){
         this.sc = sc;
@@ -29,15 +33,15 @@ public class SiteFormController {
 
     @FXML
     private void initialize() {
-        operationeleBx.setItems(FXCollections.observableArrayList(Site.OperationeleStatus.values()));
-        productieBx.setItems(FXCollections.observableArrayList(Site.ProductieStatus.values()));
+        operationeleBx.setItems(FXCollections.observableArrayList(OperationeleStatus.values()));
+        productieBx.setItems(FXCollections.observableArrayList(ProductieStatus.values()));
 
-        operationeleBx.setValue(Site.OperationeleStatus.ACTIEF);
-        productieBx.setValue(Site.ProductieStatus.GEZOND);
+        operationeleBx.setValue(OperationeleStatus.ACTIEF);
+        productieBx.setValue(ProductieStatus.GEZOND);
 
         operationeleBx.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == Site.OperationeleStatus.NON_ACTIEF) {
-                productieBx.setValue(Site.ProductieStatus.OFFLINE);
+            if (newVal == OperationeleStatus.NON_ACTIEF) {
+                productieBx.setValue(ProductieStatus.OFFLINE);
                 productieBx.setDisable(true);
             } else {
                 productieBx.setDisable(false);
@@ -45,6 +49,18 @@ public class SiteFormController {
         });
 
         errorLbl.setText("");
+    }
+
+    public void loadForEdit(SiteDTO dto) {
+        this.editingId = dto.siteId();
+
+        naamTxt.setText(dto.naam());
+        locatieTxt.setText(dto.locatie());
+        capaciteitTxt.setText(String.valueOf(dto.capaciteit()));
+        operationeleBx.setValue(dto.operationeleStatus());
+        productieBx.setValue(dto.productieStatus());
+
+        saveBtn.setText("Wijzigen");
     }
 
     @FXML
@@ -60,11 +76,14 @@ public class SiteFormController {
                 throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
             }
 
-            Site.OperationeleStatus op = operationeleBx.getValue();
-            Site.ProductieStatus prod = productieBx.getValue();
+            OperationeleStatus op = operationeleBx.getValue();
+            ProductieStatus prod = productieBx.getValue();
 
-            sc.addSite(naam,locatie,capaciteit,op,prod);
-
+            if (editingId == null) {
+                sc.addSite(naam, locatie, capaciteit, op, prod);
+            } else {
+                sc.updateSite(editingId, naam, locatie, capaciteit, op, prod);
+            }
             close();
         } catch (IllegalArgumentException ex) {
             errorLbl.setText(ex.getMessage());

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import util.OperationeleStatus;
+import util.ProductieStatus;
 
 import java.util.*;
 
@@ -11,17 +13,6 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Site {
-
-	public enum ProductieStatus{
-		GEZOND, // productie loopt normaal
-		PROBLEMEN, // productie draait maar er zijn storingen
-		OFFLINE // productie ligt volledig stil (technisch defect, stroomuitval,..)
-	}
-
-	public enum OperationeleStatus {
-		ACTIEF, // site is open
-		NON_ACTIEF // site ligt stil (bewust, seizoenstop, geen productie gepland,..)
-	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
