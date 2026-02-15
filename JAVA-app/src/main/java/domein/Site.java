@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -38,14 +37,6 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
 
-//	protected Site (String naam, String locatie, int capaciteit, OperationeleStatus operationeleStatus,ProductieStatus productieStatus){
-//		setNaam(naam);
-//		setLocatie(locatie);
-//		setCapaciteit(capaciteit);
-//		setOperationeleStatus(operationeleStatus);
-//		setProductieStatus(productieStatus);
-//	}
-
 	private Site(Builder builder){
 		this.naam = builder.naam;
 		this.locatie = builder.locatie;
@@ -71,6 +62,7 @@ public class Site {
 		}
 	}
 
+	// voor edit
 	public void update(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod){
 		validate(naam,locatie,capaciteit,op,prod);
 
@@ -82,46 +74,6 @@ public class Site {
 	}
 
 
-//	public void setNaam(String naam) {
-//		if (naam == null || naam.isBlank())
-//			throw new IllegalArgumentException("Naam is verplicht.");
-//		this.naam = naam;
-//	}
-
-//	public void setLocatie(String locatie) {
-//		if (locatie == null || locatie.isBlank())
-//			throw new IllegalArgumentException("Locatie is verplicht.");
-//		this.locatie = locatie;
-//	}
-
-//	public void setCapaciteit(int capaciteit) {
-//		if (capaciteit <= 0) {
-//			throw new IllegalArgumentException("Capaciteit moet groter zijn dan 0.");
-//		}
-//		this.capaciteit = capaciteit;
-//	}
-
-//	public void setOperationeleStatus(OperationeleStatus status) {
-//		if (status == null)
-//			throw new IllegalArgumentException("Operationele status is verplicht.");
-//
-//		this.operationeleStatus = status;
-//
-//		if (status == OperationeleStatus.NON_ACTIEF) {
-//			this.productieStatus = ProductieStatus.OFFLINE;
-//		}
-//	}
-
-//	public void setProductieStatus(ProductieStatus status) {
-//		if (status == null)
-//			throw new IllegalArgumentException("Productiestatus is verplicht.");
-//
-//		if (operationeleStatus == OperationeleStatus.NON_ACTIEF && status != ProductieStatus.OFFLINE) {
-//			throw new IllegalArgumentException("NON-ACTIEF vereist productiestatus OFFLINE.");
-//		}
-//		this.productieStatus = status;
-//	}
-
 	public static class Builder {
 		private String naam;
 		private String locatie;
@@ -130,60 +82,35 @@ public class Site {
 		private ProductieStatus productieStatus;
 
 		public Builder naam(String naam){
-//			if (naam == null || naam.isBlank())
-//				throw new IllegalArgumentException("Naam is verplicht.");
 			this.naam = naam;
 			return this;
 		}
 
 		public Builder locatie(String locatie){
-//			if (locatie == null || locatie.isBlank())
-//				throw new IllegalArgumentException("Locatie is verplicht.");
 			this.locatie = locatie;
 			return this;
 		}
 
 		public Builder capaciteit(int capaciteit){
-//			if (capaciteit <= 0) {
-//				throw new IllegalArgumentException("Capaciteit moet groter zijn dan 0.");
-//			}
+
 			this.capaciteit = capaciteit;
 			return this;
 		}
 
 		public Builder operationeleStatus(OperationeleStatus status){
-//			if (status == null)
-//				throw new IllegalArgumentException("Operationele status is verplicht.");
 
 			this.operationeleStatus = status;
 
-//			if (status == OperationeleStatus.NON_ACTIEF) {
-//				this.productieStatus = ProductieStatus.OFFLINE;
-//			}
+
 			return this;
 		}
 
 		public Builder productieStatus(ProductieStatus status){
-//			if (status == null)
-//				throw new IllegalArgumentException("Productiestatus is verplicht.");
-//
-//			if (operationeleStatus == OperationeleStatus.NON_ACTIEF && status != ProductieStatus.OFFLINE) {
-//				throw new IllegalArgumentException("NON-ACTIEF vereist productiestatus OFFLINE.");
-//			}
 			this.productieStatus = status;
 			return this;
 		}
 
 		public Site build(){
-//			if (naam == null || naam.isBlank()) throw new IllegalArgumentException("Naam is verplicht.");
-//			if (locatie == null || locatie.isBlank()) throw new IllegalArgumentException("Locatie is verplicht.");
-//			if (capaciteit <= 0) throw new IllegalArgumentException("Capaciteit moet groter zijn dan 0.");
-//			if (operationeleStatus == null) throw new IllegalArgumentException("Operationele status is verplicht.");
-//			if (productieStatus == null) throw new IllegalArgumentException("Productiestatus is verplicht.");
-//
-//			if (operationeleStatus == OperationeleStatus.NON_ACTIEF && productieStatus != ProductieStatus.OFFLINE) {
-//				throw new IllegalArgumentException("Wanneer een site non-actief is, moet productie OFFLINE zijn.");
-//			}
 			validate(naam,locatie,capaciteit,operationeleStatus,productieStatus);
 			return new Site(this);
 		}
