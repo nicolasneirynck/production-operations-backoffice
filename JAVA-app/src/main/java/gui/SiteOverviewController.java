@@ -60,11 +60,15 @@ public class SiteOverviewController {
 
     @FXML
     private void onAdd() {
-        try {
+        try
+        {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == SiteFormController.class) return new SiteFormController(sc);
-                try {
+            loader.setControllerFactory(type ->
+            {
+                if (type == SiteFormController.class)
+                    return new SiteFormController(sc);
+                try
+                {
                     return type.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -143,5 +147,9 @@ public class SiteOverviewController {
                 }
             }
         });
+    }
+
+    private void loadFxml(String resource){
+
     }
 }

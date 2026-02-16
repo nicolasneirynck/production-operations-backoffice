@@ -20,8 +20,7 @@ public class Site {
 
 	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	private String naam;
-	private String locatie; // TODO aparte klasse? momenteel miss wat overkill..
-	// Miss wel handig als ge op termijn wilt sites per land filteren? maar nu nog niet echt nodig
+	private String locatie;
 	private int capaciteit;
 	@Enumerated(EnumType.STRING)
 	private ProductieStatus productieStatus;
@@ -53,7 +52,6 @@ public class Site {
 		}
 	}
 
-	// voor edit
 	public void update(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod){
 		validate(naam,locatie,capaciteit,op,prod);
 

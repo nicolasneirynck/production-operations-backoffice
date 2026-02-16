@@ -16,7 +16,7 @@ public class SiteController {
         this(new GenericDaoJpa<>(Site.class));
     }
 
-    //mockito testing
+    //TODO tijdelijk voor devFase -> Mockito
     public SiteController(GenericDao<Site> siteRepo) {
         this.siteRepo = siteRepo;
     }
