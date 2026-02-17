@@ -149,7 +149,4 @@ public class SiteOverviewController {
         });
     }
 
-    private void loadFxml(String resource){
-
-    }
 }

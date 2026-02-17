@@ -10,6 +10,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>domein.Gebruiker</class>
         <class>domein.Site</class>
+        <class>domein.Taak</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://vichogent.be:41219/SDP2_2526_DB_T01?serverTimezone=UTC"/>
             <property name="jakarta.persistence.jdbc.user" value="SDP2-2526-T01"/>
