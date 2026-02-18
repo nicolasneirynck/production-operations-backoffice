@@ -22,17 +22,12 @@ public class TaakController {
 
     public List<TaakDTO> getAllTaken() {
         return taakRepo.findAll().stream()
-                .map(t -> new TaakDTO(
-                        t.getTaakId(),
-                        t.getTaakType(),
-                        t.getOmschrijving(),
-                        t.getDuurtijd()
-                ))
+                .map(this::createDto)
                 .toList();
     }
 
-    public TaakDTO addTaak(TaakType type, String omschrijving, int duurtijdInMinuten) {
-        Taak nieuweTaak = new Taak(type, omschrijving, duurtijdInMinuten);
+    public TaakDTO addTaak(TaakType type, String omschrijving, int duurtijd) {
+        Taak nieuweTaak = new Taak(type, omschrijving, duurtijd);
 
         taakRepo.startTransaction();
         try {
@@ -43,12 +38,7 @@ public class TaakController {
             throw ex;
         }
 
-        //TODO prive methode
-        return new TaakDTO(nieuweTaak.getTaakId(),
-                nieuweTaak.getTaakType(),
-                nieuweTaak.getOmschrijving(),
-                nieuweTaak.getDuurtijd()
-        );
+        return createDto(nieuweTaak);
     }
 
     public TaakDTO updateTaak(long id, TaakType type, String omschrijving, int duurtijd) {
@@ -62,11 +52,7 @@ public class TaakController {
             taak.update(type, omschrijving, duurtijd);
             taakRepo.commitTransaction();
 
-            return new TaakDTO(taak.getTaakId(),
-                    taak.getTaakType(),
-                    taak.getOmschrijving(),
-                    taak.getDuurtijd()
-            );
+            return createDto(taak);
         } catch (RuntimeException ex) {
             taakRepo.rollbackTransaction();
             throw ex;
@@ -87,5 +73,13 @@ public class TaakController {
             taakRepo.rollbackTransaction();
             throw ex;
         }
+    }
+
+    private TaakDTO createDto(Taak taak){
+        return new TaakDTO(taak.getTaakId(),
+                taak.getTaakType(),
+                taak.getOmschrijving(),
+                taak.getDuurtijd()
+        );
     }
 }

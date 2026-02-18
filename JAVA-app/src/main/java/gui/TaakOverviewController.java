@@ -26,6 +26,7 @@ public class TaakOverviewController {
     @FXML private Button addBtn;
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
+    @FXML private Button refreshBtn;
 
     private final ObservableTaken observableTaken;
     //private final ObservableList<TaakDTO> taken = FXCollections.observableArrayList();
@@ -51,24 +52,6 @@ public class TaakOverviewController {
         //default sortering
         idCol.setSortType(TableColumn.SortType.ASCENDING);
         taakTable.getSortOrder().add(idCol);
-
-//        addressBookTable.getSelectionModel().selectedItemProperty().
-//                addListener((observableValue, oldPerson, newPerson) -> {
-//                    //Controleer of er een persoon is geselecteerd
-//                    if (newPerson != null) {
-//                        int index = addressBookTable.
-//                                getSelectionModel().getSelectedIndex();
-//                        System.out.printf("%d %s %s%n", index,
-//                                newPerson.getFirstName(),
-//                                newPerson.getLastName());
-//                    }
-//                });
-//        taakTable.getSelectionModel().selectedItemProperty()
-//                        .addListener((observableValue,oldTaak,newTaak) -> {
-//            if (newTaak != null){
-//                int index = taakTable
-//                        .getSelectionModel().getSelectedIndex();
-//            }});
 
         editBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
@@ -97,8 +80,6 @@ public class TaakOverviewController {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
-
-           // taken.setAll(observableTaakController.getFilteredTaakList());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -129,8 +110,6 @@ public class TaakOverviewController {
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
 
-           // taken.setAll(observableTaakController.getFilteredTaakList());
-
         } catch (Exception ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
@@ -157,7 +136,6 @@ public class TaakOverviewController {
             if (response == deleteBtn) {
                 try {
                     observableTaken.deleteTaak(selected.taakId());
-                 //   taken.setAll(observableTaakController.getFilteredTaakList()); // refresh table
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -165,6 +143,11 @@ public class TaakOverviewController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void onRefresh() {
+        observableTaken.reload();
     }
 
 }

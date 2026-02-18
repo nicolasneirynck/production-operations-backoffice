@@ -30,6 +30,7 @@ public class SiteOverviewController {
     @FXML private Button addBtn;
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
+    @FXML private Button refreshBtn;
 
 
     // ObservableList maakt wijzigingen in deze lijst Observable
@@ -147,6 +148,12 @@ public class SiteOverviewController {
                 }
             }
         });
+    }
+
+    // TODO
+    @FXML
+    private void onRefresh(){
+
     }
 
 }
