@@ -4,8 +4,7 @@ import domein.TaakController;
 import dto.TaakDTO;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,11 +27,11 @@ public class TaakOverviewController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
 
-    private final TaakController tc;
-    private final ObservableList<TaakDTO> taken = FXCollections.observableArrayList();
+    private final ObservableTaken observableTaken;
+    //private final ObservableList<TaakDTO> taken = FXCollections.observableArrayList();
 
     public TaakOverviewController(TaakController tc){
-        this.tc = tc;
+        this.observableTaken = new ObservableTaken(tc);
     }
 
     @FXML
@@ -42,8 +41,34 @@ public class TaakOverviewController {
         omschrijvingCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().omschrijving()));
         duurtijdCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().duurtijd()));
 
-        taken.addAll(tc.getAllTaken());
-        taakTable.setItems(taken); // ObservableList linken
+        // SortedList in GUI
+        SortedList<TaakDTO> sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
+        //binding voor kolomsortering
+        sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
+
+        taakTable.setItems(sortedList);
+
+        //default sortering
+        idCol.setSortType(TableColumn.SortType.ASCENDING);
+        taakTable.getSortOrder().add(idCol);
+
+//        addressBookTable.getSelectionModel().selectedItemProperty().
+//                addListener((observableValue, oldPerson, newPerson) -> {
+//                    //Controleer of er een persoon is geselecteerd
+//                    if (newPerson != null) {
+//                        int index = addressBookTable.
+//                                getSelectionModel().getSelectedIndex();
+//                        System.out.printf("%d %s %s%n", index,
+//                                newPerson.getFirstName(),
+//                                newPerson.getLastName());
+//                    }
+//                });
+//        taakTable.getSelectionModel().selectedItemProperty()
+//                        .addListener((observableValue,oldTaak,newTaak) -> {
+//            if (newTaak != null){
+//                int index = taakTable
+//                        .getSelectionModel().getSelectedIndex();
+//            }});
 
         editBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
@@ -57,7 +82,7 @@ public class TaakOverviewController {
             loader.setControllerFactory(type ->
             {
                 if (type == TaakFormController.class)
-                    return new TaakFormController(tc);
+                    return new TaakFormController(observableTaken);
                 try
                 {
                     return type.getDeclaredConstructor().newInstance();
@@ -73,7 +98,7 @@ public class TaakOverviewController {
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
 
-            taken.setAll(tc.getAllTaken());
+           // taken.setAll(observableTaakController.getFilteredTaakList());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -89,7 +114,7 @@ public class TaakOverviewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakFormView.fxml"));
             loader.setControllerFactory(type -> {
-                if (type == TaakFormController.class) return new TaakFormController(tc);
+                if (type == TaakFormController.class) return new TaakFormController(observableTaken);
                 try { return type.getDeclaredConstructor().newInstance(); }
                 catch (Exception e) { throw new RuntimeException(e); }
             });
@@ -104,7 +129,7 @@ public class TaakOverviewController {
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
 
-            taken.setAll(tc.getAllTaken());
+           // taken.setAll(observableTaakController.getFilteredTaakList());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -131,8 +156,8 @@ public class TaakOverviewController {
         alert.showAndWait().ifPresent(response -> {
             if (response == deleteBtn) {
                 try {
-                    tc.deleteTaak(selected.taakId());
-                    taken.setAll(tc.getAllTaken()); // refresh table
+                    observableTaken.deleteTaak(selected.taakId());
+                 //   taken.setAll(observableTaakController.getFilteredTaakList()); // refresh table
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {

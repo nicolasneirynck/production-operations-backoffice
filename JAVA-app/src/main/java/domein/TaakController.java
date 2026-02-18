@@ -31,7 +31,7 @@ public class TaakController {
                 .toList();
     }
 
-    public void addTaak(TaakType type, String omschrijving, int duurtijdInMinuten) {
+    public TaakDTO addTaak(TaakType type, String omschrijving, int duurtijdInMinuten) {
         Taak nieuweTaak = new Taak(type, omschrijving, duurtijdInMinuten);
 
         taakRepo.startTransaction();
@@ -42,9 +42,16 @@ public class TaakController {
             taakRepo.rollbackTransaction();
             throw ex;
         }
+
+        //TODO prive methode
+        return new TaakDTO(nieuweTaak.getTaakId(),
+                nieuweTaak.getTaakType(),
+                nieuweTaak.getOmschrijving(),
+                nieuweTaak.getDuurtijd()
+        );
     }
 
-    public void updateTaak(long id, TaakType type, String omschrijving, int duurtijd) {
+    public TaakDTO updateTaak(long id, TaakType type, String omschrijving, int duurtijd) {
         taakRepo.startTransaction();
         try {
             Taak taak = taakRepo.get(id);
@@ -54,6 +61,12 @@ public class TaakController {
 
             taak.update(type, omschrijving, duurtijd);
             taakRepo.commitTransaction();
+
+            return new TaakDTO(taak.getTaakId(),
+                    taak.getTaakType(),
+                    taak.getOmschrijving(),
+                    taak.getDuurtijd()
+            );
         } catch (RuntimeException ex) {
             taakRepo.rollbackTransaction();
             throw ex;

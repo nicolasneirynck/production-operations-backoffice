@@ -1,15 +1,11 @@
 package gui;
 
-import domein.TaakController;
-import dto.SiteDTO;
 import dto.TaakDTO;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.stage.Stage;
-import util.OperationeleStatus;
-import util.ProductieStatus;
 import util.TaakType;
 
 import java.util.stream.IntStream;
@@ -25,11 +21,11 @@ public class TaakFormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final TaakController tc;
+    private final ObservableTaken observableTaken;
     private Long editingId = null; // null = nieuw, anders edit
 
-    public TaakFormController(TaakController tc){
-        this.tc = tc;
+    public TaakFormController(ObservableTaken observableTaken){
+        this.observableTaken = observableTaken;
     }
 
     @FXML
@@ -61,9 +57,9 @@ public class TaakFormController {
             int duurtijd = duurtijdBx.getValue();
 
             if (editingId == null) {
-                tc.addTaak(type, omschrijving, duurtijd);
+                observableTaken.addTaak(type, omschrijving, duurtijd);
             } else {
-                tc.updateTaak(editingId, type, omschrijving, duurtijd);
+                observableTaken.editTaak(editingId, type, omschrijving, duurtijd);
             }
             close();
         } catch (IllegalArgumentException ex) {

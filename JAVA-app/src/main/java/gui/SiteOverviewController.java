@@ -32,7 +32,7 @@ public class SiteOverviewController {
     @FXML private Button deleteBtn;
 
 
-    // ObservableList maakt wijzigingen in deze lijst "observeerbaar"
+    // ObservableList maakt wijzigingen in deze lijst Observable
     private final ObservableList<SiteDTO> sites = FXCollections.observableArrayList();
 
     private final SiteController sc;
