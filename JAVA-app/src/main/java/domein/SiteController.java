@@ -3,21 +3,24 @@ package domein;
 import dto.SiteDTO;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
+import repository.SiteDao;
+import repository.SiteDaoJpa;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SiteController {
 
-    private final GenericDao<Site> siteRepo;
+    private final SiteDao siteRepo;
 
     public SiteController() {
-        this(new GenericDaoJpa<>(Site.class));
+        siteRepo = new SiteDaoJpa();
     }
 
     //TODO tijdelijk voor devFase -> Mockito
-    public SiteController(GenericDao<Site> siteRepo) {
+    public SiteController(SiteDao siteRepo) {
         this.siteRepo = siteRepo;
     }
 
@@ -31,7 +34,7 @@ public class SiteController {
                         s.getOperationeleStatus(),
                         s.getProductieStatus()
                 ))
-                .toList();
+                .toList(); // is unmodifiable
     }
 
     public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
@@ -39,6 +42,10 @@ public class SiteController {
         Site nieuweSite = Site.builder()
                     .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
                     .build();
+
+        if (siteRepo.existsByName(naam,null)) {
+            throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
+        }
 
         siteRepo.startTransaction();
         try {
@@ -58,6 +65,11 @@ public class SiteController {
         try {
             Site site = siteRepo.get(id);
             site.update(naam, locatie, capaciteit, op, prod);
+
+            if (siteRepo.existsByName(naam,id)) {
+                throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
+            }
+
             siteRepo.commitTransaction();
         } catch (RuntimeException ex) {
             siteRepo.rollbackTransaction();
