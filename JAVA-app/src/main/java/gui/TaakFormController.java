@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 public class TaakFormController {
     @FXML
     private ComboBox<TaakType> typeBx;
-    @FXML private TextField omschrijvingTxt;
+    @FXML private TextArea omschrijvingTxt;
     @FXML private ComboBox<Integer> duurtijdBx;
 
     @FXML private Label errorLbl;

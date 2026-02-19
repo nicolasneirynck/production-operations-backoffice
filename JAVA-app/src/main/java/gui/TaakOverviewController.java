@@ -52,6 +52,7 @@ public class TaakOverviewController {
         //default sortering
         idCol.setSortType(TableColumn.SortType.ASCENDING);
         taakTable.getSortOrder().add(idCol);
+        taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
 
         editBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
