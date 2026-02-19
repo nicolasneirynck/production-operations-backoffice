@@ -26,18 +26,11 @@ public class SiteController {
 
     public List<SiteDTO> getAllSites(){
         return siteRepo.findAll().stream()
-                .map(s -> new SiteDTO(
-                        s.getSiteId(),
-                        s.getNaam(),
-                        s.getLocatie(),
-                        s.getCapaciteit(),
-                        s.getOperationeleStatus(),
-                        s.getProductieStatus()
-                ))
-                .toList(); // is unmodifiable
+                .map(this::createDto)
+                .toList();
     }
 
-    public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
+    public SiteDTO addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
     {
         Site nieuweSite = Site.builder()
                     .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
@@ -56,14 +49,19 @@ public class SiteController {
             siteRepo.rollbackTransaction();
             throw ex;
         }
+
+        return createDto(nieuweSite);
     }
 
-    public void updateSite(long id, String naam, String locatie, int capaciteit,
+    public SiteDTO updateSite(long id, String naam, String locatie, int capaciteit,
                            OperationeleStatus op, ProductieStatus prod) {
 
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
+            if (site == null)
+                throw new IllegalArgumentException("Site niet gevonden.");
+
             site.update(naam, locatie, capaciteit, op, prod);
 
             if (siteRepo.existsByName(naam,id)) {
@@ -71,6 +69,8 @@ public class SiteController {
             }
 
             siteRepo.commitTransaction();
+
+            return createDto(site);
         } catch (RuntimeException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
@@ -91,5 +91,16 @@ public class SiteController {
             siteRepo.rollbackTransaction();
             throw ex;
         }
+    }
+
+    private SiteDTO createDto(Site site){
+        return new SiteDTO(
+                site.getSiteId(),
+                site.getNaam(),
+                site.getLocatie(),
+                site.getCapaciteit(),
+                site.getOperationeleStatus(),
+                site.getProductieStatus()
+        );
     }
 }

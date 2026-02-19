@@ -4,8 +4,7 @@ import domein.SiteController;
 import dto.SiteDTO;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,14 +31,10 @@ public class SiteOverviewController {
     @FXML private Button deleteBtn;
     @FXML private Button refreshBtn;
 
-
-    // ObservableList maakt wijzigingen in deze lijst Observable
-    private final ObservableList<SiteDTO> sites = FXCollections.observableArrayList();
-
-    private final SiteController sc;
+    private final ObservableSites observableSites;
 
     public SiteOverviewController(SiteController sc){
-        this.sc = sc;
+        this.observableSites = new ObservableSites(sc);
     }
 
     @FXML
@@ -51,11 +46,17 @@ public class SiteOverviewController {
         operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().operationeleStatus()));
         productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().productieStatus()));
 
-        // sites ophalen uit DB
-        sites.addAll(sc.getAllSites());
-        siteTable.setItems(sites); // ObservableList linken
-        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        // SortedList in GUI
+        SortedList<SiteDTO> sortedList = new SortedList<>(observableSites.getFilteredSiteList());
+        //binding voor kolomsortering
+        sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
 
+        siteTable.setItems(sortedList);
+
+        //default sortering
+        idCol.setSortType(TableColumn.SortType.ASCENDING);
+        siteTable.getSortOrder().add(idCol);
+        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
 
         editBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
@@ -69,7 +70,7 @@ public class SiteOverviewController {
             loader.setControllerFactory(type ->
             {
                 if (type == SiteFormController.class)
-                    return new SiteFormController(sc);
+                    return new SiteFormController(observableSites);
                 try
                 {
                     return type.getDeclaredConstructor().newInstance();
@@ -84,9 +85,6 @@ public class SiteOverviewController {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
-
-            sites.setAll(sc.getAllSites());
-
         } catch (Exception ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
@@ -101,7 +99,7 @@ public class SiteOverviewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
             loader.setControllerFactory(type -> {
-                if (type == SiteFormController.class) return new SiteFormController(sc);
+                if (type == SiteFormController.class) return new SiteFormController(observableSites);
                 try { return type.getDeclaredConstructor().newInstance(); }
                 catch (Exception e) { throw new RuntimeException(e); }
             });
@@ -115,9 +113,6 @@ public class SiteOverviewController {
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
-
-            sites.setAll(sc.getAllSites());
-
         } catch (Exception ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
@@ -141,8 +136,7 @@ public class SiteOverviewController {
         alert.showAndWait().ifPresent(response -> {
             if (response == deleteBtn) {
                 try {
-                    sc.deleteSite(selected.siteId());
-                    sites.setAll(sc.getAllSites()); // refresh table
+                    observableSites.deleteSite(selected.siteId());
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -152,10 +146,9 @@ public class SiteOverviewController {
         });
     }
 
-    // TODO
     @FXML
-    private void onRefresh(){
-        System.out.println("todo");
+    private void onRefresh() {
+        observableSites.reload();
     }
 
 }
