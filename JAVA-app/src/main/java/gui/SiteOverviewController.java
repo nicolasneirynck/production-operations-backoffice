@@ -54,6 +54,8 @@ public class SiteOverviewController {
         // sites ophalen uit DB
         sites.addAll(sc.getAllSites());
         siteTable.setItems(sites); // ObservableList linken
+        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
 
         editBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
@@ -153,7 +155,7 @@ public class SiteOverviewController {
     // TODO
     @FXML
     private void onRefresh(){
-
+        System.out.println("todo");
     }
 
 }
