@@ -29,6 +29,24 @@ public class Gebruiker {
         return new Builder();
     }
 
+    private static void validate(String email, String gebruikersnaam, String wachtwoord, GebruikerStatus status, Rollen rol) {
+        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email is verplicht.");
+        if (gebruikersnaam == null || gebruikersnaam.isBlank()) throw new IllegalArgumentException("Gebruikersnaam is verplicht.");
+        if (wachtwoord == null || wachtwoord.isBlank()) throw new IllegalArgumentException("Wachtwoord is verplicht.");
+        if (status == null) throw new IllegalArgumentException("GebruikerStatus is verplicht.");
+        if (rol == null) throw new IllegalArgumentException("Rol is verplicht.");
+    }
+
+    public void update(String email, String gebruikersnaam, String wachtwoord, GebruikerStatus status, Rollen rol){
+        validate(email, gebruikersnaam, wachtwoord, status, rol);
+
+        this.email = email;
+        this.gebruikersnaam = gebruikersnaam;
+        this.wachtwoord = wachtwoord;
+        this.status = status;
+        this.rol = rol;
+    }
+
     private Gebruiker(Builder builder){
         this.email = builder.email;
         this.gebruikersnaam = builder.gebruikersnaam;
@@ -70,11 +88,8 @@ public class Gebruiker {
         }
 
         public Gebruiker build() {
-            if (email == null || email.isBlank()) throw new IllegalArgumentException("Email is verplicht.");
-            if (gebruikersnaam == null || gebruikersnaam.isBlank()) throw new IllegalArgumentException("Gebruikersnaam is verplicht.");
-            if (wachtwoord == null || wachtwoord.isBlank()) throw new IllegalArgumentException("Wachtwoord is verplicht.");
-            if (status == null || status == GebruikerStatus.VERWIJDERD) throw new IllegalArgumentException("GebruikerStatus is verplicht en mag niet beginnen als verwijderd.");
-            if (rol == null) throw new IllegalArgumentException("Rol is verplicht.");
+            validate(email, gebruikersnaam, wachtwoord, status, rol);
+            if (status == GebruikerStatus.VERWIJDERD) throw new IllegalArgumentException("GebruikerStatus is verplicht en mag niet beginnen als verwijderd.");
 
             return new Gebruiker(this);
         }
