@@ -2,6 +2,7 @@ package domein;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import util.TaakType;
@@ -9,6 +10,7 @@ import util.TaakType;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode(of = "omschrijving")
 public class Taak {
 
     @Id
