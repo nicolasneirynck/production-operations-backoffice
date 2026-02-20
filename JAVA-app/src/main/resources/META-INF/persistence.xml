@@ -10,12 +10,13 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>domein.Gebruiker</class>
         <class>domein.Site</class>
+        <class>domein.Taak</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://vichogent.be:41219/SDP2_2526_DB_T01?serverTimezone=UTC"/>
             <property name="jakarta.persistence.jdbc.user" value="SDP2-2526-T01"/>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.password" value="supersecretdevpassword"/>
-            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 </persistence>

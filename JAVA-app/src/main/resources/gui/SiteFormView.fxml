@@ -31,8 +31,8 @@
       <Label text="Naam:" />
       <Label text="Locatie:" GridPane.rowIndex="1" />
       <Label text="Capaciteit" GridPane.rowIndex="2" />
-      <Label text="Operationele Status" GridPane.rowIndex="3" />
-      <Label text="Productiestatus" GridPane.rowIndex="4" />
+      <Label text="Operationele Status:" GridPane.rowIndex="3" />
+      <Label text="Productiestatus:" GridPane.rowIndex="4" />
       <TextField fx:id="naamTxt" GridPane.columnIndex="1" />
       <TextField fx:id="locatieTxt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TextField fx:id="capaciteitTxt" GridPane.columnIndex="1" GridPane.rowIndex="2" />

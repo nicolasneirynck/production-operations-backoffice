@@ -59,8 +59,6 @@ public class SiteFormController {
         capaciteitTxt.setText(String.valueOf(dto.capaciteit()));
         operationeleBx.setValue(dto.operationeleStatus());
         productieBx.setValue(dto.productieStatus());
-
-        saveBtn.setText("Wijzigen");
     }
 
     @FXML

@@ -30,9 +30,10 @@ public class SiteOverviewController {
     @FXML private Button addBtn;
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
+    @FXML private Button refreshBtn;
 
 
-    // ObservableList maakt wijzigingen in deze lijst "observeerbaar"
+    // ObservableList maakt wijzigingen in deze lijst Observable
     private final ObservableList<SiteDTO> sites = FXCollections.observableArrayList();
 
     private final SiteController sc;
@@ -149,7 +150,10 @@ public class SiteOverviewController {
         });
     }
 
-    private void loadFxml(String resource){
+    // TODO
+    @FXML
+    private void onRefresh(){
 
     }
+
 }
