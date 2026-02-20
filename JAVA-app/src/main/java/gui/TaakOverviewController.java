@@ -29,7 +29,6 @@ public class TaakOverviewController {
     @FXML private Button refreshBtn;
 
     private final ObservableTaken observableTaken;
-    //private final ObservableList<TaakDTO> taken = FXCollections.observableArrayList();
 
     public TaakOverviewController(TaakController tc){
         this.observableTaken = new ObservableTaken(tc);
