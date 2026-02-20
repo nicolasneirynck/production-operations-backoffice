@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repository.GenericDao;
+import repository.SiteDao;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
@@ -27,7 +28,7 @@ public class SiteControllerTest {
     private final String GELDIGE_LOCATIE = "BELGIË";
 
     @Mock
-    private GenericDao<Site> siteRepo;
+    private SiteDao siteRepo;
 
     @InjectMocks
     private SiteController siteController;

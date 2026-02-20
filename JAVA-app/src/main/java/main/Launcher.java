@@ -1,7 +1,7 @@
 package main;
 
+import gui.SitesBeherenApp;
 import javafx.application.Application;
-import gui.TakenBeherenApp;
 
 public class Launcher {
     public static void main(String[] args) {

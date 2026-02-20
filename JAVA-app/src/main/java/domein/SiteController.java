@@ -3,42 +3,42 @@ package domein;
 import dto.SiteDTO;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
+import repository.SiteDao;
+import repository.SiteDaoJpa;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SiteController {
 
-    private final GenericDao<Site> siteRepo;
+    private final SiteDao siteRepo;
 
     public SiteController() {
-        this(new GenericDaoJpa<>(Site.class));
+        siteRepo = new SiteDaoJpa();
     }
 
     //TODO tijdelijk voor devFase -> Mockito
-    public SiteController(GenericDao<Site> siteRepo) {
+    public SiteController(SiteDao siteRepo) {
         this.siteRepo = siteRepo;
     }
 
     public List<SiteDTO> getAllSites(){
         return siteRepo.findAll().stream()
-                .map(s -> new SiteDTO(
-                        s.getSiteId(),
-                        s.getNaam(),
-                        s.getLocatie(),
-                        s.getCapaciteit(),
-                        s.getOperationeleStatus(),
-                        s.getProductieStatus()
-                ))
+                .map(this::createDto)
                 .toList();
     }
 
-    public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
+    public SiteDTO addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
     {
         Site nieuweSite = Site.builder()
                     .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
                     .build();
+
+        if (siteRepo.existsByName(naam,null)) {
+            throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
+        }
 
         siteRepo.startTransaction();
         try {
@@ -49,16 +49,28 @@ public class SiteController {
             siteRepo.rollbackTransaction();
             throw ex;
         }
+
+        return createDto(nieuweSite);
     }
 
-    public void updateSite(long id, String naam, String locatie, int capaciteit,
+    public SiteDTO updateSite(long id, String naam, String locatie, int capaciteit,
                            OperationeleStatus op, ProductieStatus prod) {
 
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
+            if (site == null)
+                throw new IllegalArgumentException("Site niet gevonden.");
+
             site.update(naam, locatie, capaciteit, op, prod);
+
+            if (siteRepo.existsByName(naam,id)) {
+                throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
+            }
+
             siteRepo.commitTransaction();
+
+            return createDto(site);
         } catch (RuntimeException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
@@ -79,5 +91,16 @@ public class SiteController {
             siteRepo.rollbackTransaction();
             throw ex;
         }
+    }
+
+    private SiteDTO createDto(Site site){
+        return new SiteDTO(
+                site.getSiteId(),
+                site.getNaam(),
+                site.getLocatie(),
+                site.getCapaciteit(),
+                site.getOperationeleStatus(),
+                site.getProductieStatus()
+        );
     }
 }
