@@ -1,15 +1,12 @@
 package domein;
 
 import dto.SiteDTO;
-import repository.GenericDao;
-import repository.GenericDaoJpa;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SiteController {
 
