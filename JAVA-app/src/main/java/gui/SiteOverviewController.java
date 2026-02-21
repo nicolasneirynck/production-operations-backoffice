@@ -12,29 +12,32 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 public class SiteOverviewController {
 
     @FXML private TableView<SiteDTO> siteTable;
-
     @FXML private TableColumn<SiteDTO, Long> idCol;
     @FXML private TableColumn<SiteDTO, String> naamCol;
     @FXML private TableColumn<SiteDTO, String> locatieCol;
     @FXML private TableColumn<SiteDTO, Integer> capaciteitCol;
     @FXML private TableColumn<SiteDTO, OperationeleStatus> operationeleCol;
     @FXML private TableColumn<SiteDTO, ProductieStatus> productieCol;
-
     @FXML private Button addBtn;
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
     @FXML private Button refreshBtn;
 
+    private final AppContext ctx;
+    private final Stage stage;
     private final ObservableSites observableSites;
 
-    public SiteOverviewController(SiteController sc){
-        this.observableSites = new ObservableSites(sc);
+    public SiteOverviewController(AppContext ctx, Stage stage) {
+        this.ctx = ctx;
+        this.stage = stage;
+        this.observableSites = new ObservableSites(ctx.getSiteController());
     }
 
     @FXML
@@ -144,6 +147,30 @@ public class SiteOverviewController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void onBack() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
+            loader.setControllerFactory(type -> {
+                if (type == MainMenuController.class) return new MainMenuController(ctx,stage);
+                try { return type.getDeclaredConstructor().newInstance(); }
+                catch (Exception e) { throw new RuntimeException(e); }
+            });
+
+            Parent root = loader.load();
+
+            stage.setTitle("Hoofdmenu");
+            stage.setScene(new Scene(root));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+        }
+
+
     }
 
     @FXML

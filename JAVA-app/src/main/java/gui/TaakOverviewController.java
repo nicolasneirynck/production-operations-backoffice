@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import main.AppContext;
 import util.TaakType;
 
 public class TaakOverviewController {
@@ -28,10 +29,14 @@ public class TaakOverviewController {
     @FXML private Button deleteBtn;
     @FXML private Button refreshBtn;
 
+    private final AppContext ctx;
+    private final Stage stage;
     private final ObservableTaken observableTaken;
 
-    public TaakOverviewController(TaakController tc){
-        this.observableTaken = new ObservableTaken(tc);
+    public TaakOverviewController(AppContext ctx, Stage stage){
+        this.ctx = ctx;
+        this.stage = stage;
+        this.observableTaken = new ObservableTaken(ctx.getTaakController());
     }
 
     @FXML
@@ -144,6 +149,31 @@ public class TaakOverviewController {
             }
         });
     }
+
+    @FXML
+    private void onBack() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
+            loader.setControllerFactory(type -> {
+                if (type == MainMenuController.class) return new MainMenuController(ctx,stage);
+                try { return type.getDeclaredConstructor().newInstance(); }
+                catch (Exception e) { throw new RuntimeException(e); }
+            });
+
+            Parent root = loader.load();
+
+            stage.setTitle("Hoofdmenu");
+            stage.setScene(new Scene(root));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+        }
+
+
+    }
+
 
     @FXML
     private void onRefresh() {

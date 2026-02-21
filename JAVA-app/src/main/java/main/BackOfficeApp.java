@@ -1,23 +1,25 @@
-package gui;
+package main;
 
-import domein.SiteController;
+import gui.MainMenuController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class SitesBeherenApp extends Application {
+public class BackOfficeApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        SiteController sc = new SiteController();
+
+        AppContext ctx = new AppContext();
 
         // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteOverviewView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
         // controller injecteren
         loader.setControllerFactory(type -> {
-            if (type == SiteOverviewController.class)
-                return new SiteOverviewController(sc); // deze ipv no-args constructor
+            if (type == MainMenuController.class)
+                return new MainMenuController(ctx,stage);
             try {
                 return type.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
@@ -25,13 +27,11 @@ public class SitesBeherenApp extends Application {
             }
         });
 
-        Scene scene = new Scene(loader.load());
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Sites beheren");
+        stage.setTitle("Hoofdmenu");
         stage.show();
     }
-
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
 }
+
