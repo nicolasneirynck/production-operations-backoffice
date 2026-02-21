@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.validator.routines.EmailValidator;
 import util.GebruikerStatus;
 import util.Rollen;
 
@@ -14,10 +15,14 @@ import util.Rollen;
 @Getter
 public class Gebruiker {
 
+    private static final EmailValidator VALIDATOR = EmailValidator.getInstance(false, false);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long gebruikerId;
+    @Column(unique=true)
     private String email;
+    @Column(unique=true)
     private String gebruikersnaam;
     private String wachtwoord;
     @Enumerated(EnumType.STRING)
@@ -30,7 +35,7 @@ public class Gebruiker {
     }
 
     private static void validate(String email, String gebruikersnaam, String wachtwoord, GebruikerStatus status, Rollen rol) {
-        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email is verplicht.");
+        if (email == null || email.isBlank() || !VALIDATOR.isValid(email.trim())) throw new IllegalArgumentException("Email is verplicht en moet een geldig formaat hebben.");
         if (gebruikersnaam == null || gebruikersnaam.isBlank()) throw new IllegalArgumentException("Gebruikersnaam is verplicht.");
         if (wachtwoord == null || wachtwoord.isBlank()) throw new IllegalArgumentException("Wachtwoord is verplicht.");
         if (status == null) throw new IllegalArgumentException("GebruikerStatus is verplicht.");
