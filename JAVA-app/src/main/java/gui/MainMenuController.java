@@ -1,6 +1,9 @@
 package gui;
 
 import domein.TaakController;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,15 +14,15 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import main.AppContext;
 
-public class MainMenuController {
+public class MainMenuController implements NavigableController {
 
     @FXML private Button gebruikersBhrnBtn;
     @FXML private Button takenBhrnBtn;
     @FXML private Button sitesBhrnBtn;
     @FXML private Label errorLbl;
 
-    private final AppContext ctx;
-    private final Stage stage;
+    @Setter private Navigator navigator;
+    @Setter private AppContext context;
 
 
     @FXML
@@ -27,59 +30,14 @@ public class MainMenuController {
         System.out.println("gebruikers beheren start");
     }
 
-    public MainMenuController(AppContext ctx, Stage stage){
-        this.ctx = ctx;
-        this.stage = stage;
-    }
-
     @FXML
     private void onTakenBhrn(){
-        try {
-            // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakOverviewView.fxml"));
-            // controller injecteren
-            loader.setControllerFactory(type -> {
-                if (type == TaakOverviewController.class)
-                    return new TaakOverviewController(ctx, stage);
-                try {
-                    return type.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Taken Beheren");
-            }
-            catch(Exception e){
-                errorLbl.setText(e.getMessage());
-            }
+        navigator.goTo(View.TAKEN_OVERVIEW);
     }
 
     @FXML
     private void onSitesBhrn(){
-        try {
-            // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteOverviewView.fxml"));
-            // controller injecteren
-            loader.setControllerFactory(type -> {
-                if (type == SiteOverviewController.class)
-                    return new SiteOverviewController(ctx, stage);
-                try {
-                    return type.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Taken Beheren");
-        }
-        catch(Exception e){
-            errorLbl.setText(e.getMessage());
-        }
+       navigator.goTo(View.SITES_OVERVIEW);
     }
 
 }

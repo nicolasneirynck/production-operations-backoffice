@@ -2,14 +2,18 @@ package gui;
 
 import domein.SiteController;
 import dto.SiteDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
-public class SiteFormController {
+public class SiteFormController{
 
     @FXML private TextField naamTxt;
     @FXML private TextField locatieTxt;
@@ -23,12 +27,12 @@ public class SiteFormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final ObservableSites observableSites;
+    @Setter private Navigator navigator;
+    private ObservableSites observableSites;
     private Long editingId = null; // null = nieuw, anders edit
 
-
-    public SiteFormController(ObservableSites observableSites){
-        this.observableSites = observableSites;
+    public void setContext(AppContext ctx) {
+        this.observableSites = ctx.getObservableSites();
     }
 
     @FXML

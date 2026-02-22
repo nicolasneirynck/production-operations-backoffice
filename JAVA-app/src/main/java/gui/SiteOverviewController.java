@@ -2,6 +2,9 @@ package gui;
 
 import domein.SiteController;
 import dto.SiteDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
@@ -12,11 +15,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
-public class SiteOverviewController {
+public class SiteOverviewController implements NavigableController {
 
     @FXML private TableView<SiteDTO> siteTable;
     @FXML private TableColumn<SiteDTO, Long> idCol;
@@ -30,14 +34,14 @@ public class SiteOverviewController {
     @FXML private Button deleteBtn;
     @FXML private Button refreshBtn;
 
-    private final AppContext ctx;
-    private final Stage stage;
-    private final ObservableSites observableSites;
+    @Setter private Navigator navigator;
+   private AppContext context;
+    private ObservableSites observableSites;
 
-    public SiteOverviewController(AppContext ctx, Stage stage) {
-        this.ctx = ctx;
-        this.stage = stage;
-        this.observableSites = new ObservableSites(ctx.getSiteController());
+    @Override
+    public void setContext(AppContext ctx) {
+        this.context = ctx;
+        this.observableSites = ctx.getObservableSites();
     }
 
     @FXML
@@ -67,31 +71,7 @@ public class SiteOverviewController {
 
     @FXML
     private void onAdd() {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
-            loader.setControllerFactory(type ->
-            {
-                if (type == SiteFormController.class)
-                    return new SiteFormController(observableSites);
-                try
-                {
-                    return type.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            Parent root = loader.load();
-            Stage dialog = new Stage();
-            dialog.setTitle("Nieuwe Site");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+        navigator.showDialog(View.SITES_FORM, "Site toevoegen",null);
     }
 
     @FXML
@@ -99,27 +79,10 @@ public class SiteOverviewController {
         SiteDTO selected = siteTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == SiteFormController.class) return new SiteFormController(observableSites);
-                try { return type.getDeclaredConstructor().newInstance(); }
-                catch (Exception e) { throw new RuntimeException(e); }
-            });
-
-            Parent root = loader.load();
-            SiteFormController form = loader.getController();
-            form.loadForEdit(selected);
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Site wijzigen");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+        navigator.showDialog(View.SITES_FORM, "Site wijzigen", controller -> {
+                SiteFormController form = (SiteFormController) controller;
+                form.loadForEdit(selected); // prefill
+        });
     }
 
     @FXML
@@ -151,26 +114,7 @@ public class SiteOverviewController {
 
     @FXML
     private void onBack() {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == MainMenuController.class) return new MainMenuController(ctx,stage);
-                try { return type.getDeclaredConstructor().newInstance(); }
-                catch (Exception e) { throw new RuntimeException(e); }
-            });
-
-            Parent root = loader.load();
-
-            stage.setTitle("Hoofdmenu");
-            stage.setScene(new Scene(root));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
-
-
+        navigator.goTo(View.MAIN_MENU);
     }
 
     @FXML
