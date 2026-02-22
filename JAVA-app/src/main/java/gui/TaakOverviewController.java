@@ -1,7 +1,7 @@
 package gui;
 
-import domein.SiteController;
-import dto.SiteDTO;
+import domein.TaakController;
+import dto.TaakDTO;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
@@ -13,18 +13,17 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.AppContext;
-import util.OperationeleStatus;
-import util.ProductieStatus;
+import util.TaakType;
 
-public class SiteOverviewController {
+public class TaakOverviewController {
+    @FXML
+    private TableView<TaakDTO> taakTable;
 
-    @FXML private TableView<SiteDTO> siteTable;
-    @FXML private TableColumn<SiteDTO, Long> idCol;
-    @FXML private TableColumn<SiteDTO, String> naamCol;
-    @FXML private TableColumn<SiteDTO, String> locatieCol;
-    @FXML private TableColumn<SiteDTO, Integer> capaciteitCol;
-    @FXML private TableColumn<SiteDTO, OperationeleStatus> operationeleCol;
-    @FXML private TableColumn<SiteDTO, ProductieStatus> productieCol;
+    @FXML private TableColumn<TaakDTO, Long> idCol;
+    @FXML private TableColumn<TaakDTO, TaakType> typeCol;
+    @FXML private TableColumn<TaakDTO, String> omschrijvingCol;
+    @FXML private TableColumn<TaakDTO, Integer> duurtijdCol;
+
     @FXML private Button addBtn;
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
@@ -32,48 +31,46 @@ public class SiteOverviewController {
 
     private final AppContext ctx;
     private final Stage stage;
-    private final ObservableSites observableSites;
+    private final ObservableTaken observableTaken;
 
-    public SiteOverviewController(AppContext ctx, Stage stage) {
+    public TaakOverviewController(AppContext ctx, Stage stage){
         this.ctx = ctx;
         this.stage = stage;
-        this.observableSites = new ObservableSites(ctx.getSiteController());
+        this.observableTaken = new ObservableTaken(ctx.getTaakController());
     }
 
     @FXML
     private void initialize() {
-        idCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().siteId()));
-        naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
-        locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie()));
-        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
-        operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().operationeleStatus()));
-        productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().productieStatus()));
+        idCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().taakId()));
+        typeCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().taakType()));
+        omschrijvingCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().omschrijving()));
+        duurtijdCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().duurtijd()));
 
         // SortedList in GUI
-        SortedList<SiteDTO> sortedList = new SortedList<>(observableSites.getFilteredSiteList());
+        SortedList<TaakDTO> sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
         //binding voor kolomsortering
-        sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
+        sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
 
-        siteTable.setItems(sortedList);
+        taakTable.setItems(sortedList);
 
         //default sortering
         idCol.setSortType(TableColumn.SortType.ASCENDING);
-        siteTable.getSortOrder().add(idCol);
-        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
+        taakTable.getSortOrder().add(idCol);
+        taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
 
-        editBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
-        deleteBtn.disableProperty().bind(siteTable.getSelectionModel().selectedItemProperty().isNull());
+        editBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
+        deleteBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
     @FXML
     private void onAdd() {
         try
         {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakFormView.fxml"));
             loader.setControllerFactory(type ->
             {
-                if (type == SiteFormController.class)
-                    return new SiteFormController(observableSites);
+                if (type == TaakFormController.class)
+                    return new TaakFormController(observableTaken);
                 try
                 {
                     return type.getDeclaredConstructor().newInstance();
@@ -84,10 +81,11 @@ public class SiteOverviewController {
 
             Parent root = loader.load();
             Stage dialog = new Stage();
-            dialog.setTitle("Nieuwe Site");
+            dialog.setTitle("Nieuwe Taak");
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
+
         } catch (Exception ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
@@ -96,41 +94,44 @@ public class SiteOverviewController {
 
     @FXML
     private void onEdit() {
-        SiteDTO selected = siteTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        TaakDTO selected = taakTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return; // of error?
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/SiteFormView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakFormView.fxml"));
             loader.setControllerFactory(type -> {
-                if (type == SiteFormController.class) return new SiteFormController(observableSites);
+                if (type == TaakFormController.class) return new TaakFormController(observableTaken);
                 try { return type.getDeclaredConstructor().newInstance(); }
                 catch (Exception e) { throw new RuntimeException(e); }
             });
 
             Parent root = loader.load();
-            SiteFormController form = loader.getController();
+            TaakFormController form = loader.getController();
             form.loadForEdit(selected);
 
             Stage dialog = new Stage();
-            dialog.setTitle("Site wijzigen");
+            dialog.setTitle("Taak wijzigen");
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
             dialog.showAndWait();
+
         } catch (Exception ex) {
             ex.printStackTrace();
             new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
         }
+
+
     }
 
     @FXML
     private void onDelete() {
-        SiteDTO selected = siteTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        TaakDTO selected = taakTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return; // error?
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Site verwijderen");
-        alert.setHeaderText("Ben je zeker dat je deze site wil verwijderen?");
-        alert.setContentText(selected.naam() + " (" + selected.locatie() + ")");
+        alert.setTitle("Taak verwijderen");
+        alert.setHeaderText("Ben je zeker dat je deze taak wil verwijderen?");
+        alert.setContentText(selected.taakType() + " (" + selected.omschrijving() + ")");
 
         ButtonType deleteBtn = new ButtonType("Verwijderen");
         ButtonType cancelBtn = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -139,7 +140,7 @@ public class SiteOverviewController {
         alert.showAndWait().ifPresent(response -> {
             if (response == deleteBtn) {
                 try {
-                    observableSites.deleteSite(selected.siteId());
+                    observableTaken.deleteTaak(selected.taakId());
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -173,9 +174,10 @@ public class SiteOverviewController {
 
     }
 
+
     @FXML
     private void onRefresh() {
-        observableSites.reload();
+        observableTaken.reload();
     }
 
 }

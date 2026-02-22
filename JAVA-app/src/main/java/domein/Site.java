@@ -2,6 +2,7 @@ package domein;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import util.OperationeleStatus;
@@ -10,6 +11,15 @@ import util.ProductieStatus;
 import java.util.*;
 
 @Entity
+@NamedQueries({
+		@NamedQuery(name = "Site.existsByName",
+						query = """
+								SELECT COUNT(s)
+								FROM Site s
+								WHERE LOWER(s.naam) = LOWER(:naam)
+								AND (:id IS NULL OR s.siteId <> :id)
+								""")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Site {
@@ -19,6 +29,7 @@ public class Site {
 	private long siteId;
 
 	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
+	@Column(unique = true)
 	private String naam;
 	private String locatie;
 	private int capaciteit;

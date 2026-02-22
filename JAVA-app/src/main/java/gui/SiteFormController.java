@@ -23,12 +23,12 @@ public class SiteFormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final SiteController sc;
+    private final ObservableSites observableSites;
     private Long editingId = null; // null = nieuw, anders edit
 
 
-    public SiteFormController(SiteController sc){
-        this.sc = sc;
+    public SiteFormController(ObservableSites observableSites){
+        this.observableSites = observableSites;
     }
 
     @FXML
@@ -59,8 +59,6 @@ public class SiteFormController {
         capaciteitTxt.setText(String.valueOf(dto.capaciteit()));
         operationeleBx.setValue(dto.operationeleStatus());
         productieBx.setValue(dto.productieStatus());
-
-        saveBtn.setText("Wijzigen");
     }
 
     @FXML
@@ -80,9 +78,9 @@ public class SiteFormController {
             ProductieStatus prod = productieBx.getValue();
 
             if (editingId == null) {
-                sc.addSite(naam, locatie, capaciteit, op, prod);
+                observableSites.addSite(naam, locatie, capaciteit, op, prod);
             } else {
-                sc.updateSite(editingId, naam, locatie, capaciteit, op, prod);
+                observableSites.editSite(editingId, naam, locatie, capaciteit, op, prod);
             }
             close();
         } catch (IllegalArgumentException ex) {
