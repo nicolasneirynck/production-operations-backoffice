@@ -1,5 +1,8 @@
 package gui.navigation;
 
+import domein.GebruikerController;
+import gui.GebruikerOverviewController;
+import gui.TaakOverviewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -47,6 +50,33 @@ public class Navigator {
 
         } catch (Exception e) {
             throw new RuntimeException("Kan view niet laden: " + view, e);
+        }
+    }
+
+    public void tempGoTo(View view, String title) {
+        try {
+            // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
+            // controller injecteren
+            loader.setControllerFactory(type -> {
+                if (type == GebruikerOverviewController.class) {
+                    // TODO: gebruik ctx & stage
+                    return new GebruikerOverviewController(new GebruikerController());
+                }
+                try {
+                    return type.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+        }
+        catch(Exception e){
+            //errorLbl.setText(e.getMessage());
+            e.printStackTrace();
         }
     }
 

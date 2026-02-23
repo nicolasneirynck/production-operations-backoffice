@@ -2,10 +2,14 @@ package gui;
 
 import domein.GebruikerController;
 import dto.GebruikerDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.GebruikerStatus;
 import util.Rollen;
 

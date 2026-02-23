@@ -5,7 +5,9 @@ public enum View {
     TAKEN_OVERVIEW("/gui/TaakOverviewView.fxml", "Taken beheren"),
     TAKEN_FORM("/gui/TaakFormView.fxml","Taken beheren"),
     SITES_OVERVIEW("/gui/SiteOverviewView.fxml","Sites beheren"),
-    SITES_FORM("/gui/SiteFormView.fxml","Sites beheren");
+    SITES_FORM("/gui/SiteFormView.fxml","Sites beheren"),
+    GEBRUIKER_OVERVIEW("/gui/GebruikerOverviewView.fxml","Gebruikers beheren"),
+    GEBRUIKER_FORM("/gui/GebruikerFormView.fxml","Gebruikers beheren");
 
     public final String fxml;
     public final String title;

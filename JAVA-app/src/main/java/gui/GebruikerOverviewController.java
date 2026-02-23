@@ -2,6 +2,8 @@ package gui;
 
 import domein.GebruikerController;
 import dto.GebruikerDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -13,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.GebruikerStatus;
 import util.Rollen;
 

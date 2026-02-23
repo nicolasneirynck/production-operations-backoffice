@@ -27,7 +27,7 @@ public class MainMenuController implements NavigableController {
 
     @FXML
     private void onGebruikersBhrn(){
-        System.out.println("gebruikers beheren start");
+        navigator.tempGoTo(View.GEBRUIKER_OVERVIEW,"Gebruikers beheren");
     }
 
     @FXML
@@ -36,22 +36,7 @@ public class MainMenuController implements NavigableController {
     }
 
     @FXML
-    private void onSitesBhrn(){
-       navigator.goTo(View.SITES_OVERVIEW);
-    }
-
-    @FXML
-    private void onGebruikersBhrn(){
-        openCorrespondingGui("/gui/GebruikerOverviewView.fxml", "Gebruikers Beheren");
-    }
-
-    @FXML
-    private void onTakenBhrn(){
-        openCorrespondingGui("/gui/TaakOverviewView.fxml", "Taken Beheren");
-    }
-
-    @FXML
     private void onSitesBhrn() {
-        openCorrespondingGui("/gui/SiteOverviewView.fxml", "Sites Beheren");
+        navigator.goTo(View.SITES_OVERVIEW);
     }
 }
