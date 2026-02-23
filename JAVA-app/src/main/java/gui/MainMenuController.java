@@ -2,6 +2,9 @@ package gui;
 
 import domein.GebruikerController;
 import domein.TaakController;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,50 +15,29 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import main.AppContext;
 
-public class MainMenuController {
+public class MainMenuController implements NavigableController {
 
     @FXML private Button gebruikersBhrnBtn;
     @FXML private Button takenBhrnBtn;
     @FXML private Button sitesBhrnBtn;
     @FXML private Label errorLbl;
 
-    private final AppContext ctx;
-    private final Stage stage;
+    @Setter private Navigator navigator;
+    @Setter private AppContext context;
 
-    public MainMenuController(AppContext ctx, Stage stage){
-        this.ctx = ctx;
-        this.stage = stage;
+    @FXML
+    private void onGebruikersBhrn(){
+        System.out.println("gebruikers beheren start");
     }
 
-    private void openCorrespondingGui(String resource, String title) {
-        try {
-            // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
-            // controller injecteren
-            loader.setControllerFactory(type -> {
-                if (type == TaakOverviewController.class)
-                    return new TaakOverviewController(ctx, stage);
-                else if (type == SiteOverviewController.class) {
-                    return new SiteOverviewController(ctx, stage);
-                } else if (type == GebruikerOverviewController.class) {
-                    // TODO: gebruik ctx & stage
-                    return new GebruikerOverviewController(new GebruikerController());
-                }
-                try {
-                    return type.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+    @FXML
+    private void onTakenBhrn(){
+        navigator.goTo(View.TAKEN_OVERVIEW);
+    }
 
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.setTitle(title);
-        }
-        catch(Exception e){
-            errorLbl.setText(e.getMessage());
-            e.printStackTrace();
-        }
+    @FXML
+    private void onSitesBhrn(){
+       navigator.goTo(View.SITES_OVERVIEW);
     }
 
     @FXML

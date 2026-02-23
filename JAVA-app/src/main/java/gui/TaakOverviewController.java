@@ -1,7 +1,11 @@
 package gui;
 
 import domein.TaakController;
+import dto.SiteDTO;
 import dto.TaakDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
@@ -12,10 +16,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
 import main.AppContext;
 import util.TaakType;
 
-public class TaakOverviewController {
+public class TaakOverviewController implements NavigableController {
     @FXML
     private TableView<TaakDTO> taakTable;
 
@@ -29,14 +34,16 @@ public class TaakOverviewController {
     @FXML private Button deleteBtn;
     @FXML private Button refreshBtn;
 
-    private final AppContext ctx;
-    private final Stage stage;
-    private final ObservableTaken observableTaken;
+    @Setter
+    private Navigator navigator;
+    private AppContext context;
+   // private final Stage stage;
+    private ObservableTaken observableTaken;
 
-    public TaakOverviewController(AppContext ctx, Stage stage){
-        this.ctx = ctx;
-        this.stage = stage;
-        this.observableTaken = new ObservableTaken(ctx.getTaakController());
+    @Override
+    public void setContext(AppContext ctx) {
+        this.context = ctx;
+        this.observableTaken = ctx.getObservableTaken();
     }
 
     @FXML
@@ -64,63 +71,21 @@ public class TaakOverviewController {
 
     @FXML
     private void onAdd() {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakFormView.fxml"));
-            loader.setControllerFactory(type ->
-            {
-                if (type == TaakFormController.class)
-                    return new TaakFormController(observableTaken);
-                try
-                {
-                    return type.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            Parent root = loader.load();
-            Stage dialog = new Stage();
-            dialog.setTitle("Nieuwe Taak");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+        navigator.showDialog(View.TAKEN_FORM,"Template taak toevoegen",null);
+        observableTaken.reload();
     }
 
     @FXML
     private void onEdit() {
         TaakDTO selected = taakTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return; // of error?
+        if (selected == null) return;
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/TaakFormView.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == TaakFormController.class) return new TaakFormController(observableTaken);
-                try { return type.getDeclaredConstructor().newInstance(); }
-                catch (Exception e) { throw new RuntimeException(e); }
+        navigator.showDialog(View.TAKEN_FORM,"Template taak wijzigen",controller -> {
+                TaakFormController form = (TaakFormController) controller;
+                ((TaakFormController) controller).loadForEdit(selected);
             });
 
-            Parent root = loader.load();
-            TaakFormController form = loader.getController();
-            form.loadForEdit(selected);
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Taak wijzigen");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
-
-
+        observableTaken.reload();
     }
 
     @FXML
@@ -148,30 +113,13 @@ public class TaakOverviewController {
                 }
             }
         });
+
+        observableTaken.reload();
     }
 
     @FXML
     private void onBack() {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == MainMenuController.class) return new MainMenuController(ctx,stage);
-                try { return type.getDeclaredConstructor().newInstance(); }
-                catch (Exception e) { throw new RuntimeException(e); }
-            });
-
-            Parent root = loader.load();
-
-            stage.setTitle("Hoofdmenu");
-            stage.setScene(new Scene(root));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
-
-
+        navigator.goTo(View.MAIN_MENU);
     }
 
 

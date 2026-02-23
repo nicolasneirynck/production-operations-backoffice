@@ -1,16 +1,21 @@
 package gui;
 
 import dto.TaakDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.TaakType;
 
 import java.util.stream.IntStream;
 
-public class TaakFormController {
+public class TaakFormController implements NavigableController{
     @FXML
     private ComboBox<TaakType> typeBx;
     @FXML private TextArea omschrijvingTxt;
@@ -21,11 +26,14 @@ public class TaakFormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final ObservableTaken observableTaken;
+    @Setter private Navigator navigator;
+    private AppContext ctx;
+
+    private ObservableTaken observableTaken;
     private Long editingId = null; // null = nieuw, anders edit
 
-    public TaakFormController(ObservableTaken observableTaken){
-        this.observableTaken = observableTaken;
+    public void setContext(AppContext ctx) {
+        this.observableTaken = ctx.getObservableTaken();
     }
 
     @FXML

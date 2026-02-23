@@ -27,6 +27,7 @@ public class ObservableSites {
     public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
         SiteDTO created = controller.addSite(naam, locatie, capaciteit, op, prod);
         observableSiteList.add(created);
+        reload(); // recente data uit DB halen
     }
 
     public SiteDTO editSite(long id, String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
@@ -35,12 +36,15 @@ public class ObservableSites {
         int idx = indexOf(id);
         if (idx >= 0) observableSiteList.set(idx, updated);
 
+        reload(); // recente data uit DB halen
+
         return updated;
     }
 
     public void deleteSite(long id) {
         controller.deleteSite(id);
         observableSiteList.removeIf(s -> s.siteId() == id);
+        reload(); // recente data uit DB halen
     }
 
     public void reload() {
