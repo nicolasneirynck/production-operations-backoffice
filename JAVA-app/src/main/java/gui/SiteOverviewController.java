@@ -35,13 +35,14 @@ public class SiteOverviewController implements NavigableController {
     @FXML private Button refreshBtn;
 
     @Setter private Navigator navigator;
-   private AppContext context;
+    private AppContext context;
     private ObservableSites observableSites;
 
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableSites = ctx.getObservableSites();
+        this.observableSites.reload(); // recente data van DB ophalen
     }
 
     @FXML
@@ -79,7 +80,7 @@ public class SiteOverviewController implements NavigableController {
         SiteDTO selected = siteTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        navigator.showDialog(View.SITES_FORM, "Site wijzigen", controller -> {
+        navigator.showDialog(View.SITES_FORM, "Site wijzigen",controller -> {
                 SiteFormController form = (SiteFormController) controller;
                 form.loadForEdit(selected); // prefill
         });
@@ -110,6 +111,8 @@ public class SiteOverviewController implements NavigableController {
                 }
             }
         });
+
+        observableSites.reload();
     }
 
     @FXML

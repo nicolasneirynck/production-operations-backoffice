@@ -4,6 +4,7 @@ import domein.SiteController;
 import dto.SiteDTO;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,7 +14,7 @@ import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
-public class SiteFormController{
+public class SiteFormController implements NavigableController{
 
     @FXML private TextField naamTxt;
     @FXML private TextField locatieTxt;
@@ -110,6 +111,12 @@ public class SiteFormController{
             }
         });
     }
+
+//    @FXML
+//    private void onBack() {
+//        navigator.goTo(View.SITES_OVERVIEW,null);
+//    }
+
 
     private void close() {
         Stage stage = (Stage) naamTxt.getScene().getWindow();

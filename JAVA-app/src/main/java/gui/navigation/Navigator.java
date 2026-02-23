@@ -40,6 +40,7 @@ public class Navigator {
             });
 
             Parent root = loader.load();
+
             stage.setScene(new Scene(root));
             stage.setTitle(view.title);
             stage.show();
@@ -49,7 +50,7 @@ public class Navigator {
         }
     }
 
-    public void showDialog(View view, String title, Consumer<Object> initController) {
+    public <T extends NavigableController> void showDialog(View view, String title, Consumer<T> initController) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
 
@@ -69,7 +70,7 @@ public class Navigator {
 
             Parent root = loader.load();
 
-            Object controller = loader.getController();
+            T controller = loader.getController();
             if (initController != null) initController.accept(controller);
 
             Stage dialog = new Stage();

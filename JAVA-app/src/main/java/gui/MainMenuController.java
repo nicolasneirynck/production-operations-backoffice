@@ -24,7 +24,6 @@ public class MainMenuController implements NavigableController {
     @Setter private Navigator navigator;
     @Setter private AppContext context;
 
-
     @FXML
     private void onGebruikersBhrn(){
         System.out.println("gebruikers beheren start");
