@@ -24,18 +24,23 @@ public class GebruikerController {
         return gebruikerRepo.findAll().stream()
                 .map(g -> new GebruikerDTO(
                         g.getGebruikerId(),
+                        g.getPersoneelsnummer(),
+                        g.getNaam(),
+                        g.getVoornaam(),
+                        g.getGeboortedatum(),
+                        g.getAdres(),
                         g.getEmail(),
-                        g.getGebruikersnaam(),
-                        g.getWachtwoord(),
+                        g.getGsm(),
+                        g.getRol(),
                         g.getStatus(),
-                        g.getRol()
+                        g.getWachtwoord()
                 ))
                 .toList();
     }
 
-    public void addGebruiker(String email, String gebruikersnaam, String wachtwoord, GebruikerStatus status, Rollen rol) {
-        Gebruiker nieuweGebruiker = Gebruiker.builder()
-                .email(email).gebruikersnaam(gebruikersnaam).wachtwoord(wachtwoord).status(status).rol(rol)
+    public void addGebruiker(int personeelsnummer, String naam, String voornaam, String geboortedatum, String adres, String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord) {
+        Gebruiker nieuweGebruiker = Gebruiker.builder().personeelsnummer(personeelsnummer).naam(naam).voornaam(voornaam).geboortedatum(geboortedatum).adres(adres)
+                .email(email).gsm(gsm).rol(rol).status(status).wachtwoord(wachtwoord)
                 .build();
 
         gebruikerRepo.startTransaction();
@@ -49,7 +54,7 @@ public class GebruikerController {
         }
     }
 
-    public void updateGebruiker(long id, String email, String gebruikersnaam, String wachtwoord, GebruikerStatus status, Rollen rol) {
+    public void updateGebruiker(long id, int personeelsnummer, String naam, String voornaam, String geboortedatum, String adres, String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord) {
         gebruikerRepo.startTransaction();
         try {
             Gebruiker gebruiker = gebruikerRepo.get(id);
@@ -57,7 +62,7 @@ public class GebruikerController {
             if (gebruiker == null)
                 throw new IllegalArgumentException("Gebruiker niet gevonden.");
 
-            gebruiker.update(email, gebruikersnaam, wachtwoord, status, rol);
+            gebruiker.update(personeelsnummer, naam, voornaam, geboortedatum, adres, email, gsm, rol, status, wachtwoord);
             gebruikerRepo.commitTransaction();
         } catch (RuntimeException ex) {
             gebruikerRepo.rollbackTransaction();
@@ -72,11 +77,11 @@ public class GebruikerController {
 
             if (gebruiker == null)
                 throw new IllegalArgumentException("Gebruiker niet gevonden.");
-            if (gebruiker.getStatus() == GebruikerStatus.VERWIJDERD)
+            if (gebruiker.getStatus() == GebruikerStatus.INACTIEF)
                 throw new IllegalArgumentException("Gebruiker is al verwijderd.");
 
             // Soft-delete de gebruiker (= GebruikerStatus naar verwijderd zetten).
-            gebruiker.update(gebruiker.getEmail(), gebruiker.getGebruikersnaam(), gebruiker.getWachtwoord(), GebruikerStatus.VERWIJDERD, gebruiker.getRol());
+            gebruiker.update(gebruiker.getPersoneelsnummer(), gebruiker.getNaam(), gebruiker.getVoornaam(), gebruiker.getGeboortedatum(), gebruiker.getAdres(), gebruiker.getEmail(), gebruiker.getGsm(), gebruiker.getRol(), GebruikerStatus.INACTIEF, gebruiker.getWachtwoord());
             gebruikerRepo.commitTransaction();
         } catch (RuntimeException ex) {
             gebruikerRepo.rollbackTransaction();

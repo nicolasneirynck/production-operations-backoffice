@@ -5,9 +5,14 @@ import util.Rollen;
 
 public record GebruikerDTO(
         long gebruikerId,
+        int personeelsnummer,
+        String naam,
+        String voornaam,
+        String geboortedatum,
+        String adres,
         String email,
-        String gebruikersnaam,
-        String wachtwoord,
+        String gsm,
+        Rollen rol,
         GebruikerStatus status,
-        Rollen rol
+        String wachtwoord
 ) {}
