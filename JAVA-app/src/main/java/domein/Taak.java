@@ -1,53 +1,116 @@
 package domein;
 
+import exception.TaakException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import util.OperationeleStatus;
+import util.ProductieStatus;
 import util.TaakType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EqualsAndHashCode(of = "omschrijving")
 public class Taak {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long taakId;
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.PROTECTED)
     private TaakType taakType;
+    @Setter(AccessLevel.PROTECTED)
     private String omschrijving;
+    @Setter(AccessLevel.PROTECTED)
     private int duurtijd;
 
-    public Taak(TaakType type, String omschrijving, int duurtijd) {
-        setTaakType(type);
-        setOmschrijving(omschrijving);
-        setDuurtijd(duurtijd);
+    private Taak(Builder builder){
+        this.taakType = builder.type;
+        this.omschrijving = builder.omschrijving;
+        this.duurtijd = builder.duurtijd;
     }
 
-    private void setTaakType(TaakType type) {
-        if (type == null)
-            throw new IllegalArgumentException("Type is verplicht");
+    public static Builder builder(){
+        return new Builder();
+    }
+
+    public void update(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+        validate(type, omschrijving, duurtijd);
+
         this.taakType = type;
-    }
-
-    private void setOmschrijving(String omschrijving) {
-        if (omschrijving == null || omschrijving.isBlank())
-            throw new IllegalArgumentException("Omschrijving is verplicht");
         this.omschrijving = omschrijving;
+        this.duurtijd = duurtijd;
     }
 
-    private void setDuurtijd(int minuten) {
-        if (minuten <= 0 || minuten > 240 || minuten % 15 != 0)
-            throw new IllegalArgumentException("Duurtijd moet in blokken van 15 min zijn en max 4 uur.");
-        this.duurtijd = minuten;
+    private static void validate(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+        Map<String, IllegalArgumentException> errors = new HashMap<>();
+
+        if (type == null) errors.put("taakType", new IllegalArgumentException("Type is verplicht"));
+        if (omschrijving == null || omschrijving.isBlank())
+            errors.put("omschrijving", new IllegalArgumentException("Omschrijving is verplicht"));
+
+        if (duurtijd == null) {
+            errors.put("duurtijd", new IllegalArgumentException("Duurtijd is verplicht"));
+        } else if (duurtijd <= 0) {
+            errors.put("duurtijd", new IllegalArgumentException("Duurtijd moet groter zijn dan 0"));
+        } else if (duurtijd > 240 || duurtijd % 15 != 0) {
+            errors.put("duurtijd", new IllegalArgumentException(
+                    "Duurtijd moet in blokken van 15 min zijn en max 4 uur."
+            ));
+        }
+
+        if (!errors.isEmpty())
+            throw new TaakException(errors);
     }
 
-    public void update(TaakType type, String omschrijving, int duurtijd){
-        setTaakType(type);
-        setOmschrijving(omschrijving);
-        setDuurtijd(duurtijd);
+    public static class Builder {
+        private TaakType type;
+        private String omschrijving;
+        private Integer duurtijd;
+
+        public Builder type(TaakType type){
+            this.type = type;
+            return this;
+        }
+
+        public Builder omschrijving(String omschrijving){
+            this.omschrijving = omschrijving;
+            return this;
+        }
+
+        public Builder duurtijd(Integer minuten){
+            this.duurtijd = minuten;
+            return this;
+        }
+
+        public Taak build() throws TaakException {
+//            Map<String,IllegalArgumentException> errors = new HashMap<>();
+//
+//            if (type == null)
+//                errors.put("taakType",new IllegalArgumentException("Type is verplicht"));
+//
+//            if (omschrijving == null || omschrijving.isBlank())
+//                errors.put("omschrijving",new IllegalArgumentException("Omschrijving is verplicht"));
+//
+//            if (duurtijd == 0){
+//                errors.put("duurtijd",new IllegalArgumentException("Duurtijd is verplicht"));
+//            } else if (duurtijd <= 0) {
+//                errors.put("duurtijd", new IllegalArgumentException("Duurtijd moet groter zijn dan 0"));
+//            } else if (duurtijd > 240 || duurtijd % 15 != 0) {
+//                errors.put("duurtijd", new IllegalArgumentException(
+//                        "Duurtijd moet in blokken van 15 min zijn en max 4 uur."
+//                ));
+//            }
+//
+//            if (!errors.isEmpty())
+//                throw new TaakException(errors);
+
+            validate(type,omschrijving,duurtijd);
+
+            return new Taak(this);
+        }
+
     }
 }

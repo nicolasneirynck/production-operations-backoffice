@@ -38,6 +38,7 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
 
+
 	private Site(Builder builder){
 		this.naam = builder.naam;
 		this.locatie = builder.locatie;
