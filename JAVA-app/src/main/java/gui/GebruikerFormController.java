@@ -10,8 +10,14 @@ import util.GebruikerStatus;
 import util.Rollen;
 
 public class GebruikerFormController {
+    @FXML private TextField personeelsnummerTxt;
+    @FXML private TextField naamTxt;
+    @FXML private TextField voornaamTxt;
+    // TODO: change geboortedatum to date picker?
+    @FXML private TextField geboorteDatumTxt;
+    @FXML private TextField adresTxt;
     @FXML private TextField emailTxt;
-    @FXML private TextField gebruikersnaamTxt;
+    @FXML private TextField gsmTxt;
     @FXML private TextField wachtwoordTxt;
 
     @FXML private ComboBox<GebruikerStatus> statusBx;
@@ -45,23 +51,38 @@ public class GebruikerFormController {
     public void loadForEdit(GebruikerDTO dto) {
         this.editingId = dto.gebruikerId();
 
+        personeelsnummerTxt.setText(String.valueOf(dto.personeelsnummer()));
+        naamTxt.setText(dto.naam());
+        voornaamTxt.setText(dto.voornaam());
+        geboorteDatumTxt.setText(dto.geboortedatum());
+        adresTxt.setText(dto.adres());
         emailTxt.setText(dto.email());
-        gebruikersnaamTxt.setText(dto.gebruikersnaam());
+        gsmTxt.setText(dto.gsm());
         wachtwoordTxt.setText(String.valueOf(dto.wachtwoord()));
         statusBx.setValue(dto.status());
         rolBx.setValue(dto.rol());
 
         // Je mag de gegevens van een verwijderde (= blokkeerde) gebruiker niet wijzigen, dit mag pas als je de
         // gebruiker gedeblokkeerd hebt.
-        if (dto.status() == GebruikerStatus.VERWIJDERD) {
+        if (dto.status() == GebruikerStatus.INACTIEF) {
+            personeelsnummerTxt.setDisable(true);
+            naamTxt.setDisable(true);
+            voornaamTxt.setDisable(true);
+            geboorteDatumTxt.setDisable(true);
+            adresTxt.setDisable(true);
             emailTxt.setDisable(true);
-            gebruikersnaamTxt.setDisable(true);
+            gsmTxt.setDisable(true);
             wachtwoordTxt.setDisable(true);
             statusBx.setDisable(false);
             rolBx.setDisable(true);
         } else {
+            personeelsnummerTxt.setDisable(false);
+            naamTxt.setDisable(false);
+            voornaamTxt.setDisable(false);
+            geboorteDatumTxt.setDisable(false);
+            adresTxt.setDisable(false);
             emailTxt.setDisable(false);
-            gebruikersnaamTxt.setDisable(false);
+            gsmTxt.setDisable(false);
             wachtwoordTxt.setDisable(false);
             statusBx.setDisable(false);
             rolBx.setDisable(false);
@@ -73,17 +94,22 @@ public class GebruikerFormController {
     @FXML
     private void onSave() {
         try {
+            int personeelsnummer = Integer.parseInt(personeelsnummerTxt.getText());
+            String naam = naamTxt.getText();
+            String voornaam = voornaamTxt.getText();
+            String geboortedatum = geboorteDatumTxt.getText();
+            String adres = adresTxt.getText();
             String email = emailTxt.getText();
-            String gebruikersnaam = gebruikersnaamTxt.getText();
+            String gsm = gsmTxt.getText();
             String wachtwoord = wachtwoordTxt.getText();
 
             GebruikerStatus status = statusBx.getValue();
             Rollen rol = rolBx.getValue();
 
             if (editingId == null) {
-                gc.addGebruiker(email, gebruikersnaam, wachtwoord, status, rol);
+                gc.addGebruiker(personeelsnummer, naam, voornaam, geboortedatum, adres, email, gsm, rol, status, wachtwoord);
             } else {
-                gc.updateGebruiker(editingId, email, gebruikersnaam, wachtwoord, status, rol);
+                gc.updateGebruiker(editingId, personeelsnummer, naam, voornaam, geboortedatum, adres, email, gsm, rol, status, wachtwoord);
             }
             close();
         } catch (IllegalArgumentException ex) {
