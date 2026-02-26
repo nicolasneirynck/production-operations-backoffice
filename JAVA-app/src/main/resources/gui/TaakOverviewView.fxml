@@ -44,11 +44,11 @@
                </padding>
                <children>
                   <TextField fx:id="searchField" promptText="Zoeken.." />
-                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="">
-                       <graphic>
-                           <FontIcon iconLiteral="fas-sync-alt"/>
-                       </graphic>
-                   </Button>
+<!--                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="">-->
+<!--                       <graphic>-->
+<!--                           <FontIcon iconLiteral="fas-sync-alt"/>-->
+<!--                       </graphic>-->
+<!--                   </Button>-->
 <!--                   zet lijn hieronder uit commentaar om met scenebuilder te werken -->
 <!--                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="Ververs" />-->
                </children>

@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 import domein.Site;
 import domein.SiteController;
 import dto.SiteDTO;
+import exception.SiteException;
+import exception.TaakException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +36,7 @@ public class SiteControllerTest {
     private SiteController siteController;
 
     @Test
-    public void getAllSites_geeftAlleSites() {
+    public void getAllSites_geeftAlleSites() throws Exception{
 
         Site eenSite = Site.builder()
                 .naam(GELDIGE_NAAM)
@@ -54,7 +56,7 @@ public class SiteControllerTest {
     }
 
     @Test
-    public void addSite_GeldigeParameters_voegtSiteToe() {
+    public void addSite_GeldigeParameters_voegtSiteToe() throws Exception {
 
         siteController.addSite(
                 GELDIGE_NAAM,
@@ -89,7 +91,7 @@ public class SiteControllerTest {
     @MethodSource("ongeldigeParameters")
     public void addSite_ongeldigeParameters_gooitException_enRaaktRepoNiet(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(SiteException.class, () ->
                 siteController.addSite(naam, locatie, capaciteit, op, prod)
         );
 
@@ -97,7 +99,7 @@ public class SiteControllerTest {
     }
 
     @Test
-    public void updateSite_geldigeParameters_pastSiteAan() {
+    public void updateSite_geldigeParameters_pastSiteAan() throws Exception {
         long id = 1L;
 
         Site bestaande = Site.builder()
@@ -135,7 +137,7 @@ public class SiteControllerTest {
     @MethodSource("ongeldigeParameters")
     public void updateSite_ongeldigeParameters_gooitException_enRollback(
             String naam, String locatie, int capaciteit,
-            OperationeleStatus op, ProductieStatus prod) {
+            OperationeleStatus op, ProductieStatus prod) throws Exception {
 
         long id = 1L;
 
@@ -149,7 +151,7 @@ public class SiteControllerTest {
 
         when(siteRepo.get(id)).thenReturn(bestaande);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(SiteException.class, () ->
                 siteController.updateSite(id, naam, locatie, capaciteit, op, prod)
         );
 
@@ -160,7 +162,7 @@ public class SiteControllerTest {
     }
 
     @Test
-    public void deleteSite_bestaandeSite_verwijdertEnCommit() {
+    public void deleteSite_bestaandeSite_verwijdertEnCommit() throws Exception {
         long id = 1L;
 
         Site bestaande = Site.builder()

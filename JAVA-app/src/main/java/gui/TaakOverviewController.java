@@ -44,6 +44,7 @@ public class TaakOverviewController implements NavigableController {
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableTaken = ctx.getObservableTaken();
+        this.observableTaken.reload();
     }
 
     @FXML
@@ -72,7 +73,7 @@ public class TaakOverviewController implements NavigableController {
     @FXML
     private void onAdd() {
         navigator.showDialog(View.TAKEN_FORM,"Template taak toevoegen",null);
-        observableTaken.reload();
+        //observableTaken.reload();
     }
 
     @FXML
@@ -85,7 +86,7 @@ public class TaakOverviewController implements NavigableController {
                 ((TaakFormController) controller).loadForEdit(selected);
             });
 
-        observableTaken.reload();
+        //observableTaken.reload();
     }
 
     @FXML
@@ -114,7 +115,7 @@ public class TaakOverviewController implements NavigableController {
             }
         });
 
-        observableTaken.reload();
+        //observableTaken.reload();
     }
 
     @FXML
@@ -123,9 +124,9 @@ public class TaakOverviewController implements NavigableController {
     }
 
 
-    @FXML
-    private void onRefresh() {
-        observableTaken.reload();
-    }
+//    @FXML
+//    private void onRefresh() {
+//        observableTaken.reload();
+//    }
 
 }

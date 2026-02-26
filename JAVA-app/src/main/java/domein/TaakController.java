@@ -27,7 +27,7 @@ public class TaakController {
                 .toList();
     }
 
-    public TaakDTO addTaak(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+    public void addTaak(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
 
         Taak nieuweTaak = Taak.builder().type(type).omschrijving(omschrijving).duurtijd(duurtijd).build();
         //Taak nieuweTaak = new Taak(type, omschrijving, duurtijd);
@@ -41,10 +41,10 @@ public class TaakController {
                 throw ex;
             }
 
-            return createDto(nieuweTaak);
+           // return createDto(nieuweTaak);
     }
 
-    public TaakDTO updateTaak(long id, TaakType type, String omschrijving, Integer duurtijd) throws TaakException{
+    public void updateTaak(long id, TaakType type, String omschrijving, Integer duurtijd) throws TaakException{
         taakRepo.startTransaction();
         try {
             Taak taak = taakRepo.get(id);
@@ -53,7 +53,7 @@ public class TaakController {
 
             taak.update(type, omschrijving, duurtijd);
             taakRepo.commitTransaction();
-            return createDto(taak);
+            //return createDto(taak); // gebruiken we dit nog?
 
         } catch (TaakException ex) {
             taakRepo.rollbackTransaction();

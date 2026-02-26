@@ -1,4 +1,5 @@
 import domein.Site;
+import exception.SiteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ public class SiteTest {
 
     @ParameterizedTest
     @MethodSource("geldigeCombinaties")
-    void builder_GeldigeCombinaties_GeenException(OperationeleStatus op, ProductieStatus prod) {
+    void builder_GeldigeCombinaties_GeenException(OperationeleStatus op, ProductieStatus prod) throws Exception {
 
         Site site = Site.builder()
                 .naam("Site-A")
@@ -46,8 +47,8 @@ public class SiteTest {
             names = {"OFFLINE"},
             mode = EnumSource.Mode.EXCLUDE
     )
-    void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod) {
-        assertThrows(IllegalArgumentException.class, () ->
+    void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod){
+        assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("Brugge")
                         .locatie("België")
@@ -61,7 +62,7 @@ public class SiteTest {
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -10})
     void builder_OngeldigeCapaciteit_GooitException(int cap) {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("X")
                         .locatie("Y")
@@ -76,7 +77,7 @@ public class SiteTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigeNaam_GooitException(String naam) {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam(naam)
                         .locatie("Y")
@@ -91,7 +92,7 @@ public class SiteTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigeLocatie_GooitException(String locatie) {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("X")
                         .locatie(locatie)
