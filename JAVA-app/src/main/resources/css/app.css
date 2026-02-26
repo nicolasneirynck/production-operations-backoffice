@@ -1,0 +1,168 @@
+/* ===== Root background ===== */
+#root {
+    -fx-background-color: #f5f7fb;
+    -fx-font-family: "Inter", "Segoe UI", "System";
+}
+
+/* =========================================================
+   LOGO HEADER (links boven – kruising sidebar/topbar)
+   ========================================================= */
+
+#logoHeader {
+    -fx-background-color: #011e46;
+    -fx-padding: 0;
+    -fx-border-color: #e9edf5;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* =========================================================
+   SIDEBAR (links onder)
+   ========================================================= */
+
+#sidebar {
+    -fx-background-color: white;
+    -fx-padding: 18 0 0 0; /* boven wat ruimte */
+    -fx-border-color: #e9edf5;
+    -fx-border-width: 0 1 0 0; /* verticale lijn rechts */
+}
+
+/* nav container */
+#nav {
+    -fx-padding: 0;
+}
+
+/* wrapper: indicator + button */
+.nav-wrapper {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 0;
+}
+
+/* indicator (blauwe lijn tegen vensterrand) */
+.active-indicator {
+    -fx-pref-width: 4;
+    -fx-min-width: 4;
+    -fx-max-width: 4;
+    -fx-background-color: transparent;
+}
+
+/* inset zone zodat button niet tegen rand zit */
+.nav-inset {
+    -fx-padding: 0 18;
+}
+
+/* standaard nav button */
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1f2a37;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 14;
+    -fx-background-radius: 10;
+}
+
+/* hover effect */
+.nav-wrapper:hover .nav-item {
+    -fx-background-color: rgba(95, 134, 246, 0.12);
+}
+
+/* actieve state */
+.nav-wrapper.active .active-indicator {
+    -fx-background-color: #2f64ff;
+}
+
+.nav-wrapper.active .nav-item {
+    -fx-background-color: #5f86f6;
+    -fx-text-fill: white;
+}
+
+/* logout */
+.logout-wrapper {
+    -fx-padding: 0 18 18 18;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-item--danger {
+    -fx-text-fill: #dc2626;
+}
+
+/* =========================================================
+   TOPBAR (rechts boven)
+   ========================================================= */
+
+#topbar {
+    -fx-background-color: white;
+    -fx-padding: 12 18;
+    -fx-border-color: #e9edf5;
+    -fx-border-width: 0;
+}
+
+.icon {
+    -fx-font-size: 18;
+}
+
+/* notificatie badge */
+.badge {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-size: 11;
+    -fx-padding: 2 6;
+    -fx-background-radius: 999;
+    -fx-translate-x: 10;
+    -fx-translate-y: -10;
+}
+
+/* avatar placeholder */
+#avatar {
+    -fx-background-radius: 999;
+    -fx-background-color: #e5e7eb;
+}
+
+/* =========================================================
+   CONTENT (rechts onder)
+   ========================================================= */
+
+#content {
+    -fx-padding: 26;
+}
+
+.page-title {
+    -fx-font-size: 30;
+    -fx-font-weight: 700;
+}
+
+#card {
+    -fx-background-color: white;
+    -fx-padding: 22;
+    -fx-background-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0.2, 0, 8);
+    -fx-max-width: 520;
+}
+
+.card-title {
+    -fx-font-size: 18;
+    -fx-font-weight: 700;
+}
+
+.card-subtitle {
+    -fx-text-fill: #6b7280;
+}
+
+/* tiles */
+.tile {
+    -fx-background-color: #5f86f6;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-background-radius: 12;
+    -fx-padding: 14 16;
+    -fx-pref-width: 140;
+    -fx-pref-height: 90;
+    -fx-wrap-text: true;
+    -fx-alignment: CENTER;
+}
+
+.tile:hover {
+    -fx-background-color: #4f78f2;
+}
+
+#topSeparator {
+    -fx-background-color: #e9edf5;
+}
