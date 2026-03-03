@@ -17,7 +17,17 @@ public class BackOfficeApp extends Application {
         AppContext context = new AppContext();
         Navigator navigator = new Navigator(stage,context);
 
-        navigator.goTo(View.MAIN_MENU);
+       // navigator.goTo(View.MAIN_MENU);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ManagerHomeView.fxml"));
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root, 1200, 800);
+        scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
+
+        stage.setTitle("Manager - Home");
+        stage.setScene(scene);
+        stage.show();
     }
 }
 
