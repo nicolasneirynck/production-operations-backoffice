@@ -24,14 +24,14 @@ public class LayoutController {
     @FXML private HBox homeRow;
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
-    @FXML private HBox machinesRow;
+   // @FXML private HBox machinesRow;
 
     // content
     @FXML private StackPane contentHost;
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, teamsRow, sitesRow, machinesRow); // TODO autorisatie? setSideNav()?
+        navRows = List.of(homeRow, teamsRow, sitesRow); // TODO autorisatie? setSideNav()?
 
         // logo
         logoImage.setViewport(null);
@@ -96,13 +96,6 @@ public class LayoutController {
         //setContent("/gui/SitesOverviewContent.fxml"); // TODO
         System.out.println("sites beheer geopend");
         setActive(sitesRow);
-    }
-
-    @FXML
-    private void onMachines() {
-        //setContent("/gui/MachinesOverviewContent.fxml"); // TODO
-        System.out.println("machines beheer geopend");
-        setActive(machinesRow);
     }
 
     @FXML

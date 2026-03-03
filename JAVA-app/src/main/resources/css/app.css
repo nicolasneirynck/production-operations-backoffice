@@ -133,17 +133,26 @@
     -fx-text-fill: #6b7280;
 }
 
-/* tiles */
 .tile {
     -fx-background-color: #5F86F6;
-    -fx-text-fill: white;
-    -fx-font-weight: 600;
     -fx-background-radius: 12;
-    -fx-padding: 14 16;
-    -fx-pref-width: 140;
-    -fx-pref-height: 90;
-    -fx-wrap-text: true;
+    -fx-padding: 0;
+    -fx-pref-width: 112;
+    -fx-pref-height: 112;
+    -fx-cursor: hand;
+}
+
+.tile .tile-content {
+    -fx-padding: 14 16 12 16;
+}
+
+.tile .tile-text {
+    fx-font-family: "Nunito Sans SemiBold";
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
     -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-wrap-text: true;
 }
 
 .tile:hover {

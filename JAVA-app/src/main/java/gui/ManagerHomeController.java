@@ -8,7 +8,6 @@ public class ManagerHomeController {
 
     @FXML private Button teamsTile;
     @FXML private Button sitesTile;
-    @FXML private Button machinesTile;
 
     @Setter
     private LayoutController layout;
@@ -28,11 +27,5 @@ public class ManagerHomeController {
     private void onSitesTile() {
         System.out.println("Sites beheren via tile");
         //layout.setContent("/gui/SitesOverviewContent.fxml");
-    }
-
-    @FXML
-    private void onMachinesTile() {
-        System.out.println("Machines beheren via tile");
-        //layout.setContent("/gui/MachinesOverviewContent.fxml");
     }
 }

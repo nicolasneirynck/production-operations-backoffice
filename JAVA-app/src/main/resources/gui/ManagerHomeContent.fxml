@@ -5,6 +5,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx/17.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.ManagerHomeController"
@@ -20,9 +22,33 @@
         </VBox>
 
         <HBox fx:id="tilesRow" spacing="18">
-            <Button fx:id="teamsTile" styleClass="tile" text="Teams&#10;Beheren" onAction="#onTeamsTile"/>
-            <Button fx:id="sitesTile" styleClass="tile" text="Sites&#10;Beheren" onAction="#onSitesTile"/>
-            <Button fx:id="machinesTile" styleClass="tile" text="Machines&#10;Beheren" onAction="#onMachinesTile"/>
+            <Button fx:id="teamsTile" styleClass="tile" onAction="#onTeamsTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <image>
+                                <Image url="@/images/teams.png"/>
+                            </image>
+                        </ImageView>
+
+                        <Label text="Teams&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Button fx:id="sitesTile" styleClass="tile" onAction="#onTeamsTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <image>
+                                <Image url="@/images/sites.png"/>
+                            </image>
+                        </ImageView>
+
+                        <Label text="Sites&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+
         </HBox>
     </VBox>
 
