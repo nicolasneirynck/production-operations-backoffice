@@ -36,7 +36,11 @@ public class ManagerHomeController {
 
         // Kies 1 van deze 2:
         logoImage.setFitHeight(44);   // meestal best voor header van 56px
+<<<<<<< HEAD
         //logoImage.setFitWidth(220); // alternatief als je vooral breedte wil sturen
+=======
+        logoImage.setFitWidth(220); // alternatief als je vooral breedte wil sturen
+>>>>>>> origin/feature-sites-beheren
 
     }
 
