@@ -19,13 +19,14 @@ public class BackOfficeApp extends Application {
 
        // navigator.goTo(View.MAIN_MENU);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ManagerHomeView.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ManagerHomeView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/LayoutView.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 1200, 800);
         scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
 
-        stage.setTitle("Manager - Home");
+        stage.setTitle("Backoffice APP");
         stage.setScene(scene);
         stage.show();
     }

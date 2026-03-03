@@ -5,7 +5,7 @@
 }
 
 /* =========================================================
-   LOGO HEADER (links boven – kruising sidebar/topbar)
+   LOGO HEADER
    ========================================================= */
 
 #logoHeader {
@@ -16,7 +16,7 @@
 }
 
 /* =========================================================
-   SIDEBAR (links onder)
+   SIDEBAR
    ========================================================= */
 
 #sidebar {
@@ -85,7 +85,7 @@
 }
 
 /* =========================================================
-   TOPBAR (rechts boven)
+   TOPBAR
    ========================================================= */
 
 #topbar {
@@ -110,14 +110,8 @@
     -fx-translate-y: -10;
 }
 
-/* avatar placeholder */
-#avatar {
-    -fx-background-radius: 999;
-    -fx-background-color: #e5e7eb;
-}
-
 /* =========================================================
-   CONTENT (rechts onder)
+   CONTENT
    ========================================================= */
 
 #content {
@@ -129,7 +123,7 @@
     -fx-font-weight: 700;
 }
 
-#card {
+.card {
     -fx-background-color: white;
     -fx-padding: 22;
     -fx-background-radius: 14;
