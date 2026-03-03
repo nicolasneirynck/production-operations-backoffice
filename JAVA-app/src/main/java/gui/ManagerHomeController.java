@@ -2,6 +2,7 @@ package gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import lombok.Setter;
 
 public class ManagerHomeController {
 
@@ -9,15 +10,12 @@ public class ManagerHomeController {
     @FXML private Button sitesTile;
     @FXML private Button machinesTile;
 
+    @Setter
     private LayoutController layout;
 
     @FXML
     private void initialize() {
         // TODO
-    }
-
-    public void setLayout(LayoutController layout) {
-        this.layout = layout;
     }
 
     @FXML

@@ -31,15 +31,16 @@ public class LayoutController {
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, teamsRow, sitesRow, machinesRow);
+        navRows = List.of(homeRow, teamsRow, sitesRow, machinesRow); // TODO autorisatie? setSideNav()?
 
-        // Logo sizing
+        // logo
         logoImage.setViewport(null);
         logoImage.setPreserveRatio(true);
         logoImage.setSmooth(true);
-        logoImage.setFitHeight(44);
+        logoImage.setFitHeight(20);
+       // logoImage.setFitWidth(140);
 
-        // tijdelijk -> later afhankelijk van rol
+        // tijdelijk
         setContent("/gui/ManagerHomeContent.fxml");
         // default
         setActive(homeRow);

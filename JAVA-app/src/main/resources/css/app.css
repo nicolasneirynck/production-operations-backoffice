@@ -1,7 +1,6 @@
-/* ===== Root background ===== */
 #root {
-    -fx-background-color: #f5f7fb;
-    -fx-font-family: "Inter", "Segoe UI", "System";
+    -fx-background-color: #f5f6fa;
+    -fx-font-family: "Nunito Sans", sans-serif;
 }
 
 /* =========================================================
@@ -13,75 +12,7 @@
     -fx-padding: 0;
     -fx-border-color: #e9edf5;
     -fx-border-width: 0 1 0 0;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-#sidebar {
-    -fx-background-color: white;
-    -fx-padding: 18 0 0 0; /* boven wat ruimte */
-    -fx-border-color: #e9edf5;
-    -fx-border-width: 0 1 0 0; /* verticale lijn rechts */
-}
-
-/* nav container */
-#nav {
-    -fx-padding: 0;
-}
-
-/* wrapper: indicator + button */
-.nav-wrapper {
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 0;
-}
-
-/* indicator (blauwe lijn tegen vensterrand) */
-.active-indicator {
-    -fx-pref-width: 4;
-    -fx-min-width: 4;
-    -fx-max-width: 4;
-    -fx-background-color: transparent;
-}
-
-/* inset zone zodat button niet tegen rand zit */
-.nav-inset {
-    -fx-padding: 0 18;
-}
-
-/* standaard nav button */
-.nav-item {
-    -fx-background-color: transparent;
-    -fx-text-fill: #1f2a37;
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 12 14;
-    -fx-background-radius: 10;
-}
-
-/* hover effect */
-.nav-wrapper:hover .nav-item {
-    -fx-background-color: rgba(95, 134, 246, 0.12);
-}
-
-/* actieve state */
-.nav-wrapper.active .active-indicator {
-    -fx-background-color: #2f64ff;
-}
-
-.nav-wrapper.active .nav-item {
-    -fx-background-color: #5f86f6;
-    -fx-text-fill: white;
-}
-
-/* logout */
-.logout-wrapper {
-    -fx-padding: 0 18 18 18;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.nav-item--danger {
-    -fx-text-fill: #dc2626;
+    -fx-alignment: CENTER;
 }
 
 /* =========================================================
@@ -92,7 +23,7 @@
     -fx-background-color: white;
     -fx-padding: 12 18;
     -fx-border-color: #e9edf5;
-    -fx-border-width: 0;
+    -fx-border-width: 0 0 1 0;
 }
 
 .icon {
@@ -111,23 +42,85 @@
 }
 
 /* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+#sidebar {
+    -fx-background-color: white;
+    -fx-padding: 18 0 0 0;
+    -fx-border-color: #e9edf5;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* = active-indicator + button */
+.nav-wrapper {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 0;
+}
+
+.active-indicator {
+    -fx-pref-width: 4;
+    -fx-min-width: 4;
+    -fx-max-width: 4;
+    -fx-background-color: transparent;
+}
+
+/* zodat button niet tegen rand zit */
+.nav-inset {
+    -fx-padding: 0 18;
+}
+
+/* standaard button */
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1f2a37;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 14;
+    -fx-background-radius: 10;
+}
+
+.nav-wrapper:hover .nav-item {
+    -fx-background-color: rgba(95, 134, 246, 0.12);
+}
+
+.nav-wrapper.active .active-indicator {
+    -fx-background-color: #5F86F6;
+}
+
+.nav-wrapper.active .nav-item {
+    -fx-background-color: #5F86F6;
+    -fx-text-fill: white;
+}
+
+/* logout */
+.logout-wrapper {
+    -fx-padding: 0 18 18 18;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-item--danger {
+    -fx-text-fill: #dc2626;
+}
+
+
+/* =========================================================
    CONTENT
    ========================================================= */
 
-#content {
+#contentHost {
     -fx-padding: 26;
 }
 
 .page-title {
     -fx-font-size: 30;
-    -fx-font-weight: 700;
+    -fx-font-weight: bold;
 }
 
 .card {
     -fx-background-color: white;
     -fx-padding: 22;
-    -fx-background-radius: 14;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 18, 0.2, 0, 8);
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 60, 0, 6, 6);
     -fx-max-width: 520;
 }
 
@@ -142,7 +135,7 @@
 
 /* tiles */
 .tile {
-    -fx-background-color: #5f86f6;
+    -fx-background-color: #5F86F6;
     -fx-text-fill: white;
     -fx-font-weight: 600;
     -fx-background-radius: 12;
@@ -154,9 +147,5 @@
 }
 
 .tile:hover {
-    -fx-background-color: #4f78f2;
-}
-
-#topSeparator {
-    -fx-background-color: #e9edf5;
+    -fx-background-color: #4F78F2;
 }
