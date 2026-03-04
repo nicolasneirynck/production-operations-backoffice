@@ -31,15 +31,9 @@ public class ObservableSites {
         reload(); // recente data uit DB halen
     }
 
-    public void editSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
         controller.updateSite(id, naam, straat, nummer, postcode , stad, land, capaciteit, op, prod);
-
-//        int idx = indexOf(id);
-//        if (idx >= 0) observableSiteList.set(idx, updated);
-
         reload();
-
-       // return updated;
     }
 
     public void deleteSite(long id) {

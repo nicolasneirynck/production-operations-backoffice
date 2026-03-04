@@ -64,7 +64,7 @@ public class SiteOverviewController implements NavigableController {
     @FXML
     private void initialize() {
         naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
-        locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie()));
+        locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie().volledigeLocatie()));
         capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
 
         configureStatusColumns();
@@ -206,8 +206,8 @@ public class SiteOverviewController implements NavigableController {
                     return;
                 }
 
-                //editBtn.setOnAction(e -> showEditForm(item));
-                //deleteBtn.setOnAction(e -> deleteSite(item));
+                editBtn.setOnAction(e -> showEditForm(item));
+                deleteBtn.setOnAction(e -> deleteSite(item));
 
                 setGraphic(box);
             }
@@ -217,12 +217,16 @@ public class SiteOverviewController implements NavigableController {
     // tijdelijke oplossing
     @FXML
     private void onAdd() {
+        showCreateForm();
+    }
+
+    private void showCreateForm() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(View.SITES_FORM.fxml));
             Parent form = loader.load();
 
             SiteFormController formController = loader.getController();
-            formController.setContext(context); // context moet niet null zijn
+            formController.setContext(context);
             formController.loadForCreate();
 
             formController.setOnClose(() -> {
@@ -238,6 +242,54 @@ public class SiteOverviewController implements NavigableController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void showEditForm(SiteDTO site) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.SITES_FORM.fxml));
+            Parent form = loader.load();
+
+            SiteFormController formController = loader.getController();
+            formController.setContext(context);
+            formController.loadForEdit(site);
+
+            formController.setOnClose(() -> {
+                formHost.getChildren().clear();
+                formHost.setManaged(false);
+                formHost.setVisible(false);
+            });
+
+            formHost.getChildren().setAll(form);
+            formHost.setManaged(true);
+            formHost.setVisible(true);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteSite(SiteDTO site) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Site verwijderen");
+        alert.setHeaderText("Ben je zeker dat je deze site wil verwijderen?");
+        alert.setContentText(site.naam() + " (" + site.locatie().volledigeLocatie() + ")");
+
+        ButtonType delete = new ButtonType("Verwijderen");
+        ButtonType cancel = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(delete, cancel);
+
+        alert.showAndWait().ifPresent(choice -> {
+            if (choice == delete) {
+                try {
+                    observableSites.deleteSite(site.siteId()); // moet bestaan
+                    observableSites.reload();
+                } catch (IllegalArgumentException ex) {
+                    new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+                } catch (RuntimeException ex) {
+                    new Alert(Alert.AlertType.ERROR, "Verwijderen mislukt: " + ex.getMessage()).showAndWait();
+                }
+            }
+        });
     }
 
 }

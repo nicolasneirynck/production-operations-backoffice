@@ -56,7 +56,7 @@ public class Site {
 	}
 
 
-	public void update(String naam, Locatie locatie, Integer capaciteit,
+	public void update(String naam, Locatie locatie, int capaciteit,
 					   OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		validate(naam, locatie, capaciteit, op, prod);
@@ -68,27 +68,25 @@ public class Site {
 		this.productieStatus = prod;
 	}
 
-	private static void validate(String naam, Locatie locatie, Integer capaciteit,
+	private static void validate(String naam, Locatie locatie, int capaciteit,
 								 OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		Map<String, IllegalArgumentException> errors = new HashMap<>();
 
 		if (naam == null || naam.isBlank())
-			errors.put("naam", new IllegalArgumentException("Naam is verplicht."));
+			errors.put("naam", new IllegalArgumentException("Naam vereist."));
 
-		if (locatie == null)
-			errors.put("locatie", new IllegalArgumentException("Locatie is verplicht."));
+//		if (locatie == null)
+//			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
 
-		if (capaciteit == null)
-			errors.put("capaciteit", new IllegalArgumentException("Capaciteit is verplicht."));
-		else if (capaciteit <= 0)
+		if (capaciteit <= 0)
 			errors.put("capaciteit", new IllegalArgumentException("Capaciteit moet groter zijn dan 0."));
 
 		if (op == null)
-			errors.put("operationeleStatus", new IllegalArgumentException("Operationele status is verplicht."));
+			errors.put("operationeleStatus", new IllegalArgumentException("Operationele status vereist."));
 
 		if (prod == null)
-			errors.put("productieStatus", new IllegalArgumentException("Productiestatus is verplicht."));
+			errors.put("productieStatus", new IllegalArgumentException("Productiestatus vereist."));
 
 		if (op != null && prod != null) {
 			if (op == OperationeleStatus.NON_ACTIEF && prod != ProductieStatus.OFFLINE) {
@@ -106,7 +104,7 @@ public class Site {
 	public static class Builder {
 		private String naam;
 		private Locatie locatie;
-		private Integer capaciteit;
+		private int capaciteit;
 		private OperationeleStatus operationeleStatus;
 		private ProductieStatus productieStatus;
 
@@ -120,7 +118,7 @@ public class Site {
 			return this;
 		}
 
-		public Builder capaciteit(Integer capaciteit){
+		public Builder capaciteit(int capaciteit){
 
 			this.capaciteit = capaciteit;
 			return this;

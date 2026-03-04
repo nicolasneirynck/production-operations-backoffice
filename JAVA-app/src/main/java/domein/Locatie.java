@@ -44,19 +44,19 @@ public class Locatie {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (straat == null || straat.isBlank())
-            errors.put("locatie.straat", new IllegalArgumentException("Straat is verplicht."));
+            errors.put("locatie.straat", new IllegalArgumentException("Straat vereist."));
 
         if (nummer == null || nummer.isBlank())
-            errors.put("locatie.nummer", new IllegalArgumentException("Nummer is verplicht."));
+            errors.put("locatie.nummer", new IllegalArgumentException("Nummer vereist."));
 
         if (postcode == null || postcode.isBlank())
-            errors.put("locatie.postcode", new IllegalArgumentException("Postcode is verplicht."));
+            errors.put("locatie.postcode", new IllegalArgumentException("Postcode vereist."));
 
         if (stad == null || stad.isBlank())
-            errors.put("locatie.stad", new IllegalArgumentException("Stad is verplicht."));
+            errors.put("locatie.stad", new IllegalArgumentException("Stad vereist."));
 
         if (land == null || land.isBlank())
-            errors.put("locatie.land", new IllegalArgumentException("Land is verplicht."));
+            errors.put("locatie.land", new IllegalArgumentException("Land vereist."));
 
         if (!errors.isEmpty())
             throw new SiteException(errors);
