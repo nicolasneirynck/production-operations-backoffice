@@ -171,7 +171,6 @@
     -fx-padding: 0;
 }
 
-/* remove default backgrounds */
 .table .virtual-flow {
     -fx-background-color: transparent;
 }
@@ -179,9 +178,8 @@
     -fx-background-color: transparent;
 }
 
-/* ===== HEADER ===== */
 .table .column-header-background {
-    -fx-background-color: #f7f9fc;
+    -fx-background-color: #F9FAFB;
     -fx-background-radius: 10 10 0 0;
     -fx-border-color: #e9edf5;
     -fx-border-width: 0 0 1 0;
@@ -193,55 +191,44 @@
 }
 
 .table .column-header .label {
-    -fx-text-fill: #6b7280;
+    -fx-text-fill: #202224;
     -fx-font-size: 12px;
     -fx-font-family: "Nunito Sans";
-    -fx-font-weight: 700; /* semibold/bold feel */
+    -fx-font-weight: 700;
 }
 
-/* remove header separators */
+/* header separators wegdoen */
 .table .column-header, .table .filler {
     -fx-border-color: transparent;
 }
 
-/* ===== CELLS ===== */
 .table .table-cell {
     -fx-border-color: transparent;
-    -fx-padding: 10 12;  /* belangrijk voor “lucht” */
+    -fx-padding: 10 12;
     -fx-text-fill: #111827;
     -fx-font-size: 13px;
 }
 
-/* ===== ROWS (subtle separators like mock) ===== */
 .table .table-row-cell {
     -fx-background-color: transparent;
     -fx-border-color: #eef2f7;
-    -fx-border-width: 0 0 1 0;  /* alleen onderlijn */
+    -fx-border-width: 0 0 1 0;
 }
 
 .table .table-row-cell:empty {
     -fx-border-width: 0;
 }
 
-/* hover */
 .table .table-row-cell:hover {
     -fx-background-color: rgba(95, 134, 246, 0.06);
 }
 
-/* selected (als je selection gebruikt) */
-.table .table-row-cell:selected {
-    -fx-background-color: rgba(95, 134, 246, 0.12);
-}
-.table .table-row-cell:selected .table-cell {
-    -fx-text-fill: #111827;
-}
-
-/* ===== SCROLLBAR (optioneel subtiel) ===== */
 .table .scroll-bar:vertical .thumb,
 .table .scroll-bar:horizontal .thumb {
     -fx-background-color: rgba(17, 24, 39, 0.18);
     -fx-background-radius: 999;
 }
+
 .table .scroll-bar:vertical,
 .table .scroll-bar:horizontal {
     -fx-background-color: transparent;
@@ -281,4 +268,24 @@
 
 .btn-link-danger:hover {
     -fx-underline: true;
+}
+
+.status-badge{
+    -fx-padding:4 10;
+    -fx-background-radius:20;
+}
+
+.status-green{
+    -fx-background-color:#d1f2eb;
+    -fx-text-fill:#0f766e;
+}
+
+.status-red{
+    -fx-background-color:#fde2e2;
+    -fx-text-fill:#b91c1c;
+}
+
+.status-yellow{
+    -fx-background-color:#fff3cd;
+    -fx-text-fill:#92400e;
 }

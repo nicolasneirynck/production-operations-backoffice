@@ -32,7 +32,10 @@ public class Site {
 	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	@Column(unique = true)
 	private String naam;
-	private String locatie;
+
+	@Embedded
+	private Locatie locatie;
+
 	private int capaciteit;
 	@Enumerated(EnumType.STRING)
 	private ProductieStatus productieStatus;
@@ -53,7 +56,7 @@ public class Site {
 	}
 
 
-	public void update(String naam, String locatie, Integer capaciteit,
+	public void update(String naam, Locatie locatie, Integer capaciteit,
 					   OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		validate(naam, locatie, capaciteit, op, prod);
@@ -65,7 +68,7 @@ public class Site {
 		this.productieStatus = prod;
 	}
 
-	private static void validate(String naam, String locatie, Integer capaciteit,
+	private static void validate(String naam, Locatie locatie, Integer capaciteit,
 								 OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		Map<String, IllegalArgumentException> errors = new HashMap<>();
@@ -73,7 +76,7 @@ public class Site {
 		if (naam == null || naam.isBlank())
 			errors.put("naam", new IllegalArgumentException("Naam is verplicht."));
 
-		if (locatie == null || locatie.isBlank())
+		if (locatie == null)
 			errors.put("locatie", new IllegalArgumentException("Locatie is verplicht."));
 
 		if (capaciteit == null)
@@ -102,8 +105,8 @@ public class Site {
 
 	public static class Builder {
 		private String naam;
-		private String locatie;
-		private int capaciteit;
+		private Locatie locatie;
+		private Integer capaciteit;
 		private OperationeleStatus operationeleStatus;
 		private ProductieStatus productieStatus;
 
@@ -112,12 +115,12 @@ public class Site {
 			return this;
 		}
 
-		public Builder locatie(String locatie){
+		public Builder locatie(Locatie locatie){
 			this.locatie = locatie;
 			return this;
 		}
 
-		public Builder capaciteit(int capaciteit){
+		public Builder capaciteit(Integer capaciteit){
 
 			this.capaciteit = capaciteit;
 			return this;

@@ -10,4 +10,6 @@ public record SiteDTO(
         int capaciteit,
         OperationeleStatus operationeleStatus,
         ProductieStatus productieStatus
-) {}
+) {
+
+}

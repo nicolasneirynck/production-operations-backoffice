@@ -73,28 +73,28 @@ public class SiteFormController implements NavigableController {
 
     @FXML
     private void onSave() {
-        clearErrors();
-
-        try {
-            String naam = naamTxt.getText();
-            String locatie = locatieTxt.getText();
-            Integer capaciteit = parseCapaciteitNullable(capaciteitTxt.getText());
-
-            OperationeleStatus op = operationeleBx.getValue();
-            ProductieStatus prod = productieBx.getValue();
-
-            if (editingId == null) {
-                observableSites.addSite(naam, locatie, capaciteit, op, prod);
-            } else {
-                observableSites.editSite(editingId, naam, locatie, capaciteit, op, prod);
-            }
-            close();
-
-        } catch (SiteException ex) {
-            showValidationErrors(ex);
-        } catch (IllegalArgumentException ex) {
-            formErrorLbl.setText(ex.getMessage());
-        }
+//        clearErrors();
+//
+//        try {
+//            String naam = naamTxt.getText();
+//            String locatie = locatieTxt.getText();
+//            Integer capaciteit = parseCapaciteitNullable(capaciteitTxt.getText());
+//
+//            OperationeleStatus op = operationeleBx.getValue();
+//            ProductieStatus prod = productieBx.getValue();
+//
+//            if (editingId == null) {
+//                //observableSites.addSite(naam, locatie, capaciteit, op, prod);
+//            } else {
+//                observableSites.editSite(editingId, naam, locatie, capaciteit, op, prod);
+//            }
+//            close();
+//
+//        } catch (SiteException ex) {
+//            showValidationErrors(ex);
+//        } catch (IllegalArgumentException ex) {
+//            formErrorLbl.setText(ex.getMessage());
+//        }
     }
 
     // GUI check

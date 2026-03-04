@@ -28,15 +28,20 @@ public class SiteController {
                 .toList();
     }
 
-    public void addSite(String naam, String locatie, Integer capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
+    public void addSite(String naam, String straat, String nummer, String postcode, String stad, String land,
+                        Integer capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
+
+        Locatie locatie = Locatie.builder(straat, nummer, postcode, stad, land);
+
         Site nieuweSite = Site.builder()
-                    .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
-                    .build();
+                .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
+                .build();
 
         if (siteRepo.existsByName(naam,null)) {
             throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
         }
+
 
         siteRepo.startTransaction();
         try {
@@ -51,8 +56,8 @@ public class SiteController {
         //return createDto(nieuweSite);
     }
 
-    public void updateSite(long id, String naam, String locatie, Integer capaciteit,
-                           OperationeleStatus op, ProductieStatus prod) throws SiteException {
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land,
+                           Integer capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
         siteRepo.startTransaction();
         try {
@@ -63,6 +68,8 @@ public class SiteController {
             if (siteRepo.existsByName(naam,id)) {
                 throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
             }
+
+            Locatie locatie = Locatie.builder(straat, nummer, postcode, stad, land);
 
             site.update(naam, locatie, capaciteit, op, prod);
 
@@ -95,7 +102,7 @@ public class SiteController {
         return new SiteDTO(
                 site.getSiteId(),
                 site.getNaam(),
-                site.getLocatie(),
+                site.getLocatie() == null ? "" : site.getLocatie().toString(),
                 site.getCapaciteit(),
                 site.getOperationeleStatus(),
                 site.getProductieStatus()

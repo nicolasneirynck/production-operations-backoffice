@@ -47,15 +47,72 @@ public class SiteOverviewController implements NavigableController {
         this.observableSites.reload(); // recente data van DB ophalen
     }
 
+    // TODO -> badge-factory maken?
     @FXML
     private void initialize() {
         naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
         locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie()));
         capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
-        operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().operationeleStatus()));
-        productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().productieStatus()));
 
-        // Acties: we geven de volledige row DTO door aan de cell
+        operationeleCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().operationeleStatus()));
+        operationeleCol.setCellFactory(col -> new TableCell<>() {
+
+            private final Label label = new Label();
+
+            @Override
+            protected void updateItem(OperationeleStatus status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                label.setText(status.toString());
+
+                label.getStyleClass().clear();
+                label.getStyleClass().add("status-badge");
+
+                switch (status) {
+                    case ACTIEF -> label.getStyleClass().add("status-green");
+                    case NON_ACTIEF -> label.getStyleClass().add("status-red");
+                }
+
+                // tablecell heeft of text of een graphic (bij ons dus laatste)
+                setGraphic(label);
+            }
+        });
+
+        productieCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().productieStatus()));
+        productieCol.setCellFactory(col -> new TableCell<>() {
+
+            private final Label label = new Label();
+
+            @Override
+            protected void updateItem(ProductieStatus status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                label.setText(status.toString());
+
+                label.getStyleClass().clear();
+                label.getStyleClass().add("status-badge");
+
+                switch (status) {
+                    case GEZOND -> label.getStyleClass().add("status-green");
+                    case PROBLEMEN -> label.getStyleClass().add("status-yellow");
+                    case OFFLINE -> label.getStyleClass().add("status-red");
+                }
+
+                // tablecell heeft of text of een graphic (bij ons dus laatste)
+                setGraphic(label);
+            }
+        });
+
         actiesCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue()));
         actiesCol.setCellFactory(col -> new TableCell<>() {
 
