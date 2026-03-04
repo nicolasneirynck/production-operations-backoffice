@@ -122,16 +122,24 @@
     -fx-padding: 22;
     -fx-background-radius: 4;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 60, 0, 6, 6);
-    -fx-max-width: 520;
+    -fx-max-width: 820;
 }
 
 .card-title {
-    -fx-font-size: 18;
+    -fx-font-size: 20;
     -fx-font-weight: 700;
+}
+
+.section-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #374151;
+    -fx-padding: 6 0 4 0;
 }
 
 .card-subtitle {
     -fx-text-fill: #6b7280;
+
 }
 
 .tile {
@@ -247,6 +255,7 @@
     -fx-background-radius: 10;
     -fx-padding: 10 14;
     -fx-font-weight: 700;
+    -fx-cursor: hand;
 }
 
 .btn-link {
@@ -301,4 +310,57 @@
     -fx-background-color: transparent;
     -fx-padding: 4;
     -fx-cursor: hand;
+}
+
+/* FORMS */
+
+.text-field,
+.combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1;
+    -fx-padding: 6 8;
+    -fx-background-color: white;
+}
+
+.text-field:focused,
+.combo-box:focused {
+    -fx-border-color: #5F86F6;
+}
+
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-padding: 10 14;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+
+}
+
+.btn-ghost:hover {
+    -fx-background-color: #f3f4f6;
+}
+
+.form-card {
+    -fx-padding: 14;
+}
+
+.form-card .label {
+    -fx-font-size: 12px;
+}
+
+.form-card .card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+
+.text-field, .combo-box {
+    -fx-pref-height: 34;
+}
+
+.section-title {
+    -fx-padding: 0 0 4 0;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
 }

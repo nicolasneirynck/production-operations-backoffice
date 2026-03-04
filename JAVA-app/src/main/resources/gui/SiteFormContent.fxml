@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.SiteFormController"
+      fx:id="root"
+      spacing="10">
+
+    <styleClass>
+        <String fx:value="card"/>
+        <String fx:value="form-card"/>
+    </styleClass>
+
+    <Label text="Site aanmaken" styleClass="card-title"/>
+
+    <HBox spacing="24">
+        <!-- LINKS: Algemene gegevens -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label text="Algemene gegevens" styleClass="section-title"/>
+
+            <GridPane hgap="10" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="150" hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Site naam" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="naamTf" promptText="bv. Gent Plant"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Capaciteit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="capaciteitTf" promptText="bv. 120"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Operationele status" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="operationeelCb"
+                          GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Productie status" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="productieCb"
+                          GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+
+        <!-- RECHTS: Adres -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label text="Adres" styleClass="section-title"/>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="90" hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints prefWidth="45" hgrow="NEVER"/>
+                    <ColumnConstraints prefWidth="90" hgrow="NEVER"/>
+                </columnConstraints>
+
+                <!-- Straat + Nr -->
+                <Label text="Straat" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="straatTf" promptText="Kortrijksesteenweg"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Nr" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <TextField fx:id="nummerTf" promptText="80"
+                           GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <!-- Postcode + Stad -->
+                <Label text="Postcode" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="postcodeTf" promptText="9000"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Stad" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <TextField fx:id="stadTf" promptText="Gent"
+                           GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <!-- Land -->
+                <Label text="Land" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="landTf" promptText="België"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1"
+                           GridPane.columnSpan="3"/>
+            </GridPane>
+        </VBox>
+
+    </HBox>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
+        <Button fx:id="cancelBtn" text="✖" onAction="#onCancel" styleClass="btn-ghost"/>
+    </HBox>
+
+</VBox>

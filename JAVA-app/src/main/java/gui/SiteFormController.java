@@ -1,13 +1,15 @@
 package gui;
 
-import dto.SiteDTO;
 import exception.SiteException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
@@ -15,169 +17,105 @@ import util.ProductieStatus;
 
 public class SiteFormController implements NavigableController {
 
-    @FXML private TextField naamTxt;
-    @FXML private TextField locatieTxt;
-    @FXML private TextField capaciteitTxt;
+    @FXML private VBox root;
 
-    @FXML private ComboBox<OperationeleStatus> operationeleBx;
-    @FXML private ComboBox<ProductieStatus> productieBx;
+    @FXML private TextField naamTf;
+    @FXML private TextField capaciteitTf;
 
-    @FXML private Label naamErrorLbl;
-    @FXML private Label locatieErrorLbl;
-    @FXML private Label capaciteitErrorLbl;
-    @FXML private Label operationeleErrorLbl;
-    @FXML private Label productieErrorLbl;
-    @FXML private Label formErrorLbl;
+    @FXML private ComboBox<OperationeleStatus> operationeelCb;
+    @FXML private ComboBox<ProductieStatus> productieCb;
+
+    @FXML private TextField straatTf;
+    @FXML private TextField nummerTf;
+    @FXML private TextField postcodeTf;
+    @FXML private TextField stadTf;
+    @FXML private TextField landTf;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
     @Setter private Navigator navigator;
-
+    private AppContext context;
     private ObservableSites observableSites;
-    private Long editingId = null;
 
+    @Setter private Runnable onClose;
+
+    @Override
     public void setContext(AppContext ctx) {
+        context = ctx;
         this.observableSites = ctx.getObservableSites();
+        this.observableSites.reload();
     }
 
     @FXML
     private void initialize() {
-        operationeleBx.setItems(FXCollections.observableArrayList(OperationeleStatus.values()));
-        productieBx.setItems(FXCollections.observableArrayList(ProductieStatus.values()));
+        operationeelCb.setItems(FXCollections.observableArrayList(OperationeleStatus.values()));
+        productieCb.setItems(FXCollections.observableArrayList(ProductieStatus.values()));
 
-        operationeleBx.setValue(OperationeleStatus.ACTIEF);
-        productieBx.setValue(ProductieStatus.GEZOND);
-
-        operationeleBx.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == OperationeleStatus.NON_ACTIEF) {
-                productieBx.setValue(ProductieStatus.OFFLINE);
-                productieBx.setDisable(true);
-            } else {
-                productieBx.setDisable(false);
-            }
-        });
-
-        clearErrors();
+        operationeelCb.getSelectionModel().select(OperationeleStatus.ACTIEF);
+        productieCb.getSelectionModel().select(ProductieStatus.GEZOND);
     }
 
-    public void loadForEdit(SiteDTO dto) {
-        this.editingId = dto.siteId();
+    public void loadForCreate() {
+        naamTf.clear();
+        capaciteitTf.clear();
+        straatTf.clear();
+        nummerTf.clear();
+        postcodeTf.clear();
+        stadTf.clear();
+        if (landTf.getText() == null || landTf.getText().isBlank()) landTf.setText("België");
 
-        naamTxt.setText(dto.naam());
-        locatieTxt.setText(dto.locatie());
-        capaciteitTxt.setText(String.valueOf(dto.capaciteit()));
-        operationeleBx.setValue(dto.operationeleStatus());
-        productieBx.setValue(dto.productieStatus());
-    }
-
-    @FXML
-    private void onSave() {
-//        clearErrors();
-//
-//        try {
-//            String naam = naamTxt.getText();
-//            String locatie = locatieTxt.getText();
-//            Integer capaciteit = parseCapaciteitNullable(capaciteitTxt.getText());
-//
-//            OperationeleStatus op = operationeleBx.getValue();
-//            ProductieStatus prod = productieBx.getValue();
-//
-//            if (editingId == null) {
-//                //observableSites.addSite(naam, locatie, capaciteit, op, prod);
-//            } else {
-//                observableSites.editSite(editingId, naam, locatie, capaciteit, op, prod);
-//            }
-//            close();
-//
-//        } catch (SiteException ex) {
-//            showValidationErrors(ex);
-//        } catch (IllegalArgumentException ex) {
-//            formErrorLbl.setText(ex.getMessage());
-//        }
-    }
-
-    // GUI check
-    private Integer parseCapaciteitNullable(String input) {
-        if (input == null) return null;
-        String s = input.trim();
-        if (s.isEmpty()) return null;
-
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException ex) {
-            capaciteitErrorLbl.setText("Capaciteit moet een getal zijn.");
-            capaciteitTxt.getStyleClass().add("field-error");
-            throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
-        }
-    }
-
-    private void showValidationErrors(SiteException ex) {
-        clearErrors();
-
-        ex.getExceptionMap().forEach((field, iae) -> {
-            String msg = iae.getMessage();
-
-            switch (field) {
-                case "naam" -> {
-                    naamErrorLbl.setText(msg);
-                    naamTxt.getStyleClass().add("field-error");
-                }
-                case "locatie" -> {
-                    locatieErrorLbl.setText(msg);
-                    locatieTxt.getStyleClass().add("field-error");
-                }
-                case "capaciteit" -> {
-                    capaciteitErrorLbl.setText(msg);
-                    capaciteitTxt.getStyleClass().add("field-error");
-                }
-                case "operationeleStatus" -> {
-                    operationeleErrorLbl.setText(msg);
-                    operationeleBx.getStyleClass().add("field-error");
-                }
-                case "productieStatus" -> {
-                    productieErrorLbl.setText(msg);
-                    productieBx.getStyleClass().add("field-error");
-                }
-                default -> formErrorLbl.setText(msg);
-            }
-        });
-    }
-
-    private void clearErrors() {
-        naamErrorLbl.setText("");
-        locatieErrorLbl.setText("");
-        capaciteitErrorLbl.setText("");
-        operationeleErrorLbl.setText("");
-        productieErrorLbl.setText("");
-        formErrorLbl.setText("");
-
-        naamTxt.getStyleClass().remove("field-error");
-        locatieTxt.getStyleClass().remove("field-error");
-        capaciteitTxt.getStyleClass().remove("field-error");
-        operationeleBx.getStyleClass().remove("field-error");
-        productieBx.getStyleClass().remove("field-error");
+        operationeelCb.getSelectionModel().select(OperationeleStatus.ACTIEF);
+        productieCb.getSelectionModel().select(ProductieStatus.GEZOND);
     }
 
     @FXML
     private void onCancel() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Annuleren");
-        alert.setHeaderText("Wijzigingen annuleren?");
-        alert.setContentText("Niet-opgeslagen wijzigingen gaan verloren.");
-
-        ButtonType yesBtn = new ButtonType("Ja");
-        ButtonType noBtn = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(yesBtn, noBtn);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == yesBtn) close();
-        });
+        close();
     }
 
     private void close() {
-        Stage stage = (Stage) naamTxt.getScene().getWindow();
-        stage.close();
+        if (onClose != null) onClose.run();
     }
+
+    @FXML
+    private void onSave() {
+        try {
+            String naam = naamTf.getText();
+            String straat = straatTf.getText();
+            String nummer = nummerTf.getText();
+            String postcode = postcodeTf.getText();
+            String stad = stadTf.getText();
+            String land = landTf.getText();
+
+            Integer capaciteit = parseCapaciteit(capaciteitTf.getText());
+            OperationeleStatus op = operationeelCb.getValue();
+            ProductieStatus prod = productieCb.getValue();
+
+            observableSites.addSite(
+                    naam, straat, nummer, postcode, stad, land,
+                    capaciteit, op, prod
+            );
+
+            observableSites.reload();
+            close();
+
+        } catch (SiteException ex) {
+            new Alert(Alert.AlertType.ERROR, "Ongeldige invoer. Controleer de velden.").showAndWait();
+        } catch (IllegalArgumentException ex) {
+            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+        } catch (RuntimeException ex) {
+            new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
+        }
+    }
+
+    private Integer parseCapaciteit(String text) {
+        if (text == null || text.isBlank()) return null;
+        try {
+            return Integer.parseInt(text.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
+        }
+    }
+
 }
