@@ -2,6 +2,7 @@ package gui;
 
 import domein.SiteController;
 import dto.SiteDTO;
+import exception.SiteException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,23 +25,27 @@ public class ObservableSites {
         this.filteredSiteList = new FilteredList<>(observableSiteList, s -> true);
     }
 
-    public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
-        SiteDTO created = controller.addSite(naam, locatie, capaciteit, op, prod);
-        observableSiteList.add(created);
+    public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        controller.addSite(naam, locatie, capaciteit, op, prod);
+        //observableSiteList.add(created);
+        reload(); // recente data uit DB halen
     }
 
-    public SiteDTO editSite(long id, String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
-        SiteDTO updated = controller.updateSite(id, naam, locatie, capaciteit, op, prod);
+    public void editSite(long id, String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        controller.updateSite(id, naam, locatie, capaciteit, op, prod);
 
-        int idx = indexOf(id);
-        if (idx >= 0) observableSiteList.set(idx, updated);
+//        int idx = indexOf(id);
+//        if (idx >= 0) observableSiteList.set(idx, updated);
 
-        return updated;
+        reload();
+
+       // return updated;
     }
 
     public void deleteSite(long id) {
         controller.deleteSite(id);
         observableSiteList.removeIf(s -> s.siteId() == id);
+        reload(); // recente data uit DB halen
     }
 
     public void reload() {

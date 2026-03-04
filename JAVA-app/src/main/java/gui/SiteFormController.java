@@ -1,15 +1,19 @@
 package gui;
 
-import domein.SiteController;
 import dto.SiteDTO;
+import exception.SiteException;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
-public class SiteFormController {
+public class SiteFormController implements NavigableController {
 
     @FXML private TextField naamTxt;
     @FXML private TextField locatieTxt;
@@ -18,17 +22,23 @@ public class SiteFormController {
     @FXML private ComboBox<OperationeleStatus> operationeleBx;
     @FXML private ComboBox<ProductieStatus> productieBx;
 
-    @FXML private Label errorLbl;
+    @FXML private Label naamErrorLbl;
+    @FXML private Label locatieErrorLbl;
+    @FXML private Label capaciteitErrorLbl;
+    @FXML private Label operationeleErrorLbl;
+    @FXML private Label productieErrorLbl;
+    @FXML private Label formErrorLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final ObservableSites observableSites;
-    private Long editingId = null; // null = nieuw, anders edit
+    @Setter private Navigator navigator;
 
+    private ObservableSites observableSites;
+    private Long editingId = null;
 
-    public SiteFormController(ObservableSites observableSites){
-        this.observableSites = observableSites;
+    public void setContext(AppContext ctx) {
+        this.observableSites = ctx.getObservableSites();
     }
 
     @FXML
@@ -48,7 +58,7 @@ public class SiteFormController {
             }
         });
 
-        errorLbl.setText("");
+        clearErrors();
     }
 
     public void loadForEdit(SiteDTO dto) {
@@ -63,16 +73,12 @@ public class SiteFormController {
 
     @FXML
     private void onSave() {
+        clearErrors();
+
         try {
             String naam = naamTxt.getText();
             String locatie = locatieTxt.getText();
-
-            int capaciteit;
-            try {
-                capaciteit = Integer.parseInt(capaciteitTxt.getText().trim());
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
-            }
+            Integer capaciteit = parseCapaciteitNullable(capaciteitTxt.getText());
 
             OperationeleStatus op = operationeleBx.getValue();
             ProductieStatus prod = productieBx.getValue();
@@ -83,9 +89,74 @@ public class SiteFormController {
                 observableSites.editSite(editingId, naam, locatie, capaciteit, op, prod);
             }
             close();
+
+        } catch (SiteException ex) {
+            showValidationErrors(ex);
         } catch (IllegalArgumentException ex) {
-            errorLbl.setText(ex.getMessage());
+            formErrorLbl.setText(ex.getMessage());
         }
+    }
+
+    // GUI check
+    private Integer parseCapaciteitNullable(String input) {
+        if (input == null) return null;
+        String s = input.trim();
+        if (s.isEmpty()) return null;
+
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException ex) {
+            capaciteitErrorLbl.setText("Capaciteit moet een getal zijn.");
+            capaciteitTxt.getStyleClass().add("field-error");
+            throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
+        }
+    }
+
+    private void showValidationErrors(SiteException ex) {
+        clearErrors();
+
+        ex.getExceptionMap().forEach((field, iae) -> {
+            String msg = iae.getMessage();
+
+            switch (field) {
+                case "naam" -> {
+                    naamErrorLbl.setText(msg);
+                    naamTxt.getStyleClass().add("field-error");
+                }
+                case "locatie" -> {
+                    locatieErrorLbl.setText(msg);
+                    locatieTxt.getStyleClass().add("field-error");
+                }
+                case "capaciteit" -> {
+                    capaciteitErrorLbl.setText(msg);
+                    capaciteitTxt.getStyleClass().add("field-error");
+                }
+                case "operationeleStatus" -> {
+                    operationeleErrorLbl.setText(msg);
+                    operationeleBx.getStyleClass().add("field-error");
+                }
+                case "productieStatus" -> {
+                    productieErrorLbl.setText(msg);
+                    productieBx.getStyleClass().add("field-error");
+                }
+                default -> formErrorLbl.setText(msg);
+            }
+        });
+    }
+
+    private void clearErrors() {
+        naamErrorLbl.setText("");
+        locatieErrorLbl.setText("");
+        capaciteitErrorLbl.setText("");
+        operationeleErrorLbl.setText("");
+        productieErrorLbl.setText("");
+        formErrorLbl.setText("");
+
+        naamTxt.getStyleClass().remove("field-error");
+        locatieTxt.getStyleClass().remove("field-error");
+        capaciteitTxt.getStyleClass().remove("field-error");
+        operationeleBx.getStyleClass().remove("field-error");
+        productieBx.getStyleClass().remove("field-error");
     }
 
     @FXML
@@ -101,9 +172,7 @@ public class SiteFormController {
         alert.getButtonTypes().setAll(yesBtn, noBtn);
 
         alert.showAndWait().ifPresent(response -> {
-            if (response == yesBtn) {
-                close();
-            }
+            if (response == yesBtn) close();
         });
     }
 

@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import domein.Taak;
 import domein.TaakController;
 import dto.TaakDTO;
+import exception.TaakException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,9 +34,13 @@ public class TaakControllerTest {
     private TaakController taakController;
 
     @Test
-    public void getAllTaken_geeftAlleTaken() {
+    public void getAllTaken_geeftAlleTaken() throws Exception {
 
-        Taak eenTaak = new Taak(GELDIG_TYPE, GELDIGE_OMSCHRIJVING, GELDIGE_DUURTIJD);
+        Taak eenTaak = Taak.builder()
+                .type(GELDIG_TYPE)
+                .omschrijving(GELDIGE_OMSCHRIJVING)
+                .duurtijd(GELDIGE_DUURTIJD)
+                .build();
 
         when(taakRepo.findAll()).thenReturn(Arrays.asList(eenTaak));
 
@@ -50,7 +55,7 @@ public class TaakControllerTest {
     }
 
     @Test
-    public void addTaak_GeldigeParameters_voegtTaakToe() {
+    public void addTaak_GeldigeParameters_voegtTaakToe() throws Exception {
 
         taakController.addTaak(
                 GELDIG_TYPE,
@@ -83,7 +88,7 @@ public class TaakControllerTest {
     public void addTaak_ongeldigeParameters_gooitException_enRaaktRepoNiet(
             TaakType type, String omschrijving, int duurtijd) {
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(TaakException.class, () ->
                 taakController.addTaak(type, omschrijving, duurtijd)
         );
 
@@ -91,10 +96,14 @@ public class TaakControllerTest {
     }
 
     @Test
-    public void updateTaak_geldigeParameters_pastTaakAan() {
+    public void updateTaak_geldigeParameters_pastTaakAan() throws Exception {
         long id = 1L;
 
-        Taak bestaande = new Taak(TaakType.INSPECTIE, "OUD", 30);
+        Taak bestaande = Taak.builder()
+                .type(TaakType.INSPECTIE)
+                .omschrijving("OUD")
+                .duurtijd(30)
+                .build();;
 
         when(taakRepo.get(id)).thenReturn(bestaande);
 
@@ -118,15 +127,19 @@ public class TaakControllerTest {
     @ParameterizedTest
     @MethodSource("ongeldigeParameters")
     public void updateTaak_ongeldigeParameters_gooitException_enRollback(
-            TaakType type, String omschrijving, int duurtijd) {
+            TaakType type, String omschrijving, int duurtijd) throws Exception{
 
         long id = 1L;
 
-        Taak bestaande = new Taak(TaakType.INSPECTIE, "OUD", 30);
+        Taak bestaande = Taak.builder()
+                .type(TaakType.INSPECTIE)
+                .omschrijving("OUD")
+                .duurtijd(30)
+                .build();
 
         when(taakRepo.get(id)).thenReturn(bestaande);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(TaakException.class, () ->
                 taakController.updateTaak(id, type, omschrijving, duurtijd)
         );
 
@@ -137,10 +150,14 @@ public class TaakControllerTest {
     }
 
     @Test
-    public void deleteTaak_bestaandeTaak_verwijdertEnCommit() {
+    public void deleteTaak_bestaandeTaak_verwijdertEnCommit() throws Exception{
         long id = 1L;
 
-        Taak bestaande = new Taak(GELDIG_TYPE, GELDIGE_OMSCHRIJVING, GELDIGE_DUURTIJD);
+        Taak bestaande = Taak.builder()
+                .type(GELDIG_TYPE)
+                .omschrijving(GELDIGE_OMSCHRIJVING)
+                .duurtijd(GELDIGE_DUURTIJD)
+                .build();
 
         when(taakRepo.get(id)).thenReturn(bestaande);
 

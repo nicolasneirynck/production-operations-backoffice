@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.ManagerHomeController"
+      fx:id="content"
+      spacing="18">
+
+    <Label styleClass="page-title" text="Home"/>
+
+    <VBox fx:id="card" spacing="14" styleClass="card">
+        <VBox spacing="4">
+            <Label styleClass="card-title" text="Welkom!"/>
+            <Label styleClass="card-subtitle" text="Waar wil je mee aan de slag?"/>
+        </VBox>
+
+        <HBox fx:id="tilesRow" spacing="18">
+            <Button fx:id="teamsTile" styleClass="tile" onAction="#onTeamsTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <image>
+                                <Image url="@/images/teams.png"/>
+                            </image>
+                        </ImageView>
+
+                        <Label text="Teams&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Button fx:id="sitesTile" styleClass="tile" onAction="#onTeamsTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <image>
+                                <Image url="@/images/sites.png"/>
+                            </image>
+                        </ImageView>
+
+                        <Label text="Sites&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+
+        </HBox>
+    </VBox>
+
+</VBox>

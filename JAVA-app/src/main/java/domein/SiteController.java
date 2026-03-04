@@ -1,15 +1,13 @@
 package domein;
 
 import dto.SiteDTO;
-import repository.GenericDao;
-import repository.GenericDaoJpa;
+import exception.SiteException;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SiteController {
 
@@ -30,7 +28,7 @@ public class SiteController {
                 .toList();
     }
 
-    public SiteDTO addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
+    public void addSite(String naam, String locatie, Integer capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
         Site nieuweSite = Site.builder()
                     .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
@@ -50,11 +48,11 @@ public class SiteController {
             throw ex;
         }
 
-        return createDto(nieuweSite);
+        //return createDto(nieuweSite);
     }
 
-    public SiteDTO updateSite(long id, String naam, String locatie, int capaciteit,
-                           OperationeleStatus op, ProductieStatus prod) {
+    public void updateSite(long id, String naam, String locatie, Integer capaciteit,
+                           OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
         siteRepo.startTransaction();
         try {
@@ -62,16 +60,16 @@ public class SiteController {
             if (site == null)
                 throw new IllegalArgumentException("Site niet gevonden.");
 
-            site.update(naam, locatie, capaciteit, op, prod);
-
             if (siteRepo.existsByName(naam,id)) {
                 throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
             }
 
+            site.update(naam, locatie, capaciteit, op, prod);
+
             siteRepo.commitTransaction();
 
-            return createDto(site);
-        } catch (RuntimeException ex) {
+            //return createDto(site);
+        } catch (RuntimeException | SiteException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
         }

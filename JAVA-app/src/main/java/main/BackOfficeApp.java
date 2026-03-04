@@ -1,33 +1,39 @@
 package main;
 
+import dto.SiteDTO;
+import exception.SiteException;
 import gui.MainMenuController;
+import gui.ObservableSites;
 import gui.navigation.Navigator;
 import gui.navigation.View;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import util.OperationeleStatus;
+import util.ProductieStatus;
 
 public class BackOfficeApp extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-Regular.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-Bold.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-SemiBold.ttf").toExternalForm(), 10);
 
         AppContext context = new AppContext();
-        Navigator navigator = new Navigator(stage,context);
+        Navigator navigator = new Navigator(stage, context);
 
-       // navigator.goTo(View.MAIN_MENU);
+        try {
+            MockdataSeeder.seed(context);
+        } catch (SiteException e) {
+            throw new RuntimeException(e);
+        }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/ManagerHomeView.fxml"));
-        Parent root = loader.load();
-
-        Scene scene = new Scene(root, 1200, 800);
-        scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
-
-        stage.setTitle("Manager - Home");
-        stage.setScene(scene);
-        stage.show();
+        navigator.initLayout("/gui/LayoutView.fxml", "BackOffice", 1200, 800, "/css/app.css");
     }
 }
 

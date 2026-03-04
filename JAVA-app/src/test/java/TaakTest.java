@@ -1,4 +1,5 @@
 import domein.Taak;
+import exception.TaakException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import util.TaakType;
@@ -20,9 +21,13 @@ public class TaakTest {
 
     @ParameterizedTest
     @MethodSource("geldigeTaken")
-    void constructor_GeldigeTaak_GeenException(TaakType type, String omschrijving, int duurtijd) {
+    void constructor_GeldigeTaak_GeenException(TaakType type, String omschrijving, int duurtijd) throws Exception {
 
-        Taak taak = new Taak(type, omschrijving, duurtijd);
+        Taak taak = Taak.builder()
+                .type(type)
+                .omschrijving(omschrijving)
+                .duurtijd(duurtijd)
+                .build();
 
         assertEquals(type, taak.getTaakType());
         assertEquals(omschrijving, taak.getOmschrijving());
@@ -32,18 +37,28 @@ public class TaakTest {
     @ParameterizedTest
     @NullSource
     void constructor_GeenTaakType_GooitException(TaakType type) {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Taak(type, "Test", 60)
+        TaakException ex = assertThrows(TaakException.class, () ->
+                Taak.builder()
+                        .type(type)
+                        .omschrijving("Test")
+                        .duurtijd(60)
+                        .build()
         );
+        assertTrue(ex.getExceptionMap().containsKey("taakType"));
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void constructor_OngeldigeOmschrijving_GooitException(String omschrijving) {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Taak(TaakType.ONDERHOUD, omschrijving, 60)
+        TaakException ex = assertThrows(TaakException.class, () ->
+                Taak.builder()
+                        .type(TaakType.ONDERHOUD)
+                        .omschrijving(omschrijving)
+                        .duurtijd(60)
+                        .build()
         );
+        assertTrue(ex.getExceptionMap().containsKey("omschrijving"));
     }
 
     static Stream<Integer> ongeldigeDuur() {
@@ -53,8 +68,13 @@ public class TaakTest {
     @ParameterizedTest
     @MethodSource("ongeldigeDuur")
     void constructor_OngeldigeDuur_GooitException(int minuten) {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Taak(TaakType.INSPECTIE, "Test", minuten)
+        TaakException ex = assertThrows(TaakException.class, () ->
+                Taak.builder()
+                        .type(TaakType.INSPECTIE)
+                        .omschrijving("Test")
+                        .duurtijd(minuten)
+                        .build()
         );
+        assertTrue(ex.getExceptionMap().containsKey("duurtijd"));
     }
 }
