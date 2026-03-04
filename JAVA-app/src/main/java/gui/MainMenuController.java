@@ -27,7 +27,7 @@ public class MainMenuController implements NavigableController {
 
     @FXML
     private void onGebruikersBhrn(){
-        navigator.tempGoTo(View.GEBRUIKER_OVERVIEW,"Gebruikers beheren");
+        //navigator.tempGoTo(View.GEBRUIKER_OVERVIEW,"Gebruikers beheren");
     }
 
     @FXML

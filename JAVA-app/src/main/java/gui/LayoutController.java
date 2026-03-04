@@ -1,17 +1,24 @@
 package gui;
 
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import lombok.Getter;
+import lombok.Setter;
+import main.AppContext;
 
 import java.io.IOException;
 import java.util.List;
 
-public class LayoutController {
+public class LayoutController implements NavigableController {
 
     // topbar
     @FXML private StackPane logoHeader;
@@ -27,7 +34,11 @@ public class LayoutController {
    // @FXML private HBox machinesRow;
 
     // content
+    @Getter
     @FXML private StackPane contentHost;
+
+    @Setter private Navigator navigator;
+    @Setter private AppContext context;
 
     @FXML
     private void initialize() {
@@ -40,10 +51,9 @@ public class LayoutController {
         logoImage.setFitHeight(20);
        // logoImage.setFitWidth(140);
 
-        // tijdelijk
-        setContent("/gui/ManagerHomeContent.fxml");
         // default
         setActive(homeRow);
+        setContent(View.HOME);
     }
 
     // TODO
@@ -52,22 +62,37 @@ public class LayoutController {
         userRoleLbl.setText(role);
     }
 
-    public void setContent(String fxmlPath) {
+    public void setContent(View view) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
+
+            loader.setControllerFactory(type -> {
+                try {
+                    Object controller = type.getDeclaredConstructor().newInstance();
+
+                    if (controller instanceof NavigableController nc) {
+                        nc.setNavigator(navigator);
+                        nc.setContext(context);
+                    }
+
+                    return controller;
+
+                } catch (Exception e) {
+                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
+                }
+            });
+
             Parent content = loader.load();
-
-            Object controller = loader.getController();
-
-            if (controller instanceof ManagerHomeController homeController) {
-                homeController.setLayout(this);
-            }
 
             contentHost.getChildren().setAll(content);
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("Kan content niet laden: " + view, e);
         }
+    }
+
+    public void setContent(Node node) {
+        contentHost.getChildren().setAll(node);
     }
 
     private void setActive(HBox activeRow) {
@@ -80,7 +105,7 @@ public class LayoutController {
 
     @FXML
     private void onHome() {
-        setContent("/gui/ManagerHomeContent.fxml");
+        setContent(View.HOME);
         setActive(homeRow);
     }
 
@@ -94,7 +119,7 @@ public class LayoutController {
     @FXML
     private void onSites() {
         //setContent("/gui/SitesOverviewContent.fxml"); // TODO
-        System.out.println("sites beheer geopend");
+        setContent(View.SITES_OVERVIEW);
         setActive(sitesRow);
     }
 

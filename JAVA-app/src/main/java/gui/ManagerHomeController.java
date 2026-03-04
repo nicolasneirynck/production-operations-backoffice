@@ -1,13 +1,20 @@
 package gui;
 
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import lombok.Setter;
+import main.AppContext;
 
-public class ManagerHomeController {
+public class ManagerHomeController implements NavigableController {
 
     @FXML private Button teamsTile;
     @FXML private Button sitesTile;
+
+
+    @Setter private Navigator navigator;
+    @Setter private AppContext context;
 
     @Setter
     private LayoutController layout;
@@ -24,8 +31,7 @@ public class ManagerHomeController {
     }
 
     @FXML
-    private void onSitesTile() {
-        System.out.println("Sites beheren via tile");
-        //layout.setContent("/gui/SitesOverviewContent.fxml");
+    public void onSitesTile() {
+        navigator.goTo(gui.navigation.View.SITES_OVERVIEW);
     }
 }

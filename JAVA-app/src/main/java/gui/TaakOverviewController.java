@@ -72,7 +72,7 @@ public class TaakOverviewController implements NavigableController {
 
     @FXML
     private void onAdd() {
-        navigator.showDialog(View.TAKEN_FORM,"Template taak toevoegen",null);
+        //navigator.showDialog(View.TAKEN_FORM,"Template taak toevoegen",null);
         //observableTaken.reload();
     }
 
@@ -81,10 +81,10 @@ public class TaakOverviewController implements NavigableController {
         TaakDTO selected = taakTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        navigator.showDialog(View.TAKEN_FORM,"Template taak wijzigen",controller -> {
-                TaakFormController form = (TaakFormController) controller;
-                ((TaakFormController) controller).loadForEdit(selected);
-            });
+//        navigator.showDialog(View.TAKEN_FORM,"Template taak wijzigen",controller -> {
+//                TaakFormController form = (TaakFormController) controller;
+//                ((TaakFormController) controller).loadForEdit(selected);
+//            });
 
         //observableTaken.reload();
     }
