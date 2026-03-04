@@ -171,6 +171,14 @@
     -fx-padding: 0;
 }
 
+.table-view{
+    -fx-background-radius:10;
+}
+
+.table-row-cell{
+    -fx-cell-size:45px;
+}
+
 .table .virtual-flow {
     -fx-background-color: transparent;
 }
@@ -197,7 +205,6 @@
     -fx-font-weight: 700;
 }
 
-/* header separators wegdoen */
 .table .column-header, .table .filler {
     -fx-border-color: transparent;
 }
@@ -288,4 +295,10 @@
 .status-yellow{
     -fx-background-color:#fff3cd;
     -fx-text-fill:#92400e;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+    -fx-cursor: hand;
 }

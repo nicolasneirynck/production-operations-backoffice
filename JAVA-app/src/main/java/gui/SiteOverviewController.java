@@ -1,21 +1,17 @@
 package gui;
 
-import domein.SiteController;
 import dto.SiteDTO;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
-import gui.navigation.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
@@ -116,31 +112,28 @@ public class SiteOverviewController implements NavigableController {
         actiesCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue()));
         actiesCol.setCellFactory(col -> new TableCell<>() {
 
-            private final Button editBtn = new Button("Bewerk");
-            private final Button deleteBtn = new Button("Verwijder");
+            private final Button editBtn = new Button();
+            private final Button deleteBtn = new Button();
             private final HBox box = new HBox(8, editBtn, deleteBtn);
             {
-                box.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                box.setAlignment(Pos.CENTER);
 
-                editBtn.getStyleClass().add("btn-link");
-                deleteBtn.getStyleClass().add("btn-link-danger");
+                ImageView editIcon = new ImageView(new Image("/images/pencil-write.png"));
+                editIcon.setFitHeight(16);
+                editIcon.setFitWidth(16);
 
-                editBtn.setOnAction(e -> {
-                    SiteDTO site = getItem();
-                    if (site == null) return;
+                ImageView deleteIcon = new ImageView(new Image("/images/bin.png"));
+                deleteIcon.setFitHeight(16);
+                deleteIcon.setFitWidth(16);
 
-                    // later: naar form + prefill
-                   // if (layout != null) layout.setContent("/gui/SiteFormContent.fxml");
-                    System.out.printf("%s %s%n", "edit site: ",site.naam());
-                });
+                editBtn.setGraphic(editIcon);
+                deleteBtn.setGraphic(deleteIcon);
 
-                deleteBtn.setOnAction(e -> {
-                    SiteDTO site = getItem();
-                    if (site == null) return;
+                editBtn.setTooltip(new Tooltip("Bewerken"));
+                deleteBtn.setTooltip(new Tooltip("Verwijderen"));
 
-                    // later: confirm dialog + delete via domeinlaag
-                    siteTable.getItems().remove(site);
-                });
+                editBtn.getStyleClass().add("icon-button");
+                deleteBtn.getStyleClass().add("icon-button");
             }
 
             @Override
@@ -150,6 +143,12 @@ public class SiteOverviewController implements NavigableController {
             }
         });
 
+        naamCol.setStyle("-fx-alignment: CENTER;");
+        locatieCol.setStyle("-fx-alignment: CENTER;");
+        capaciteitCol.setStyle("-fx-alignment: CENTER;");
+        operationeleCol.setStyle("-fx-alignment: CENTER;");
+        productieCol.setStyle("-fx-alignment: CENTER;");
+        actiesCol.setStyle("-fx-alignment: CENTER;");
         siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         siteTable.setFixedCellSize(44); // rijhoogte
         siteTable.setSelectionModel(null);
