@@ -2,6 +2,7 @@ package gui.taken;
 
 import dto.TaakDTO;
 import exception.TaakException;
+import gui.FormController;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
@@ -18,7 +19,7 @@ import util.TaakType;
 
 import java.util.stream.IntStream;
 
-public class TaakFormController implements NavigableController{
+public class TaakFormController implements FormController {
 
     @FXML private VBox root;
     @FXML private Label titleLabel;
@@ -44,11 +45,6 @@ public class TaakFormController implements NavigableController{
     public void setContext(AppContext ctx) {
         this.ctx = ctx;
         this.observableTaken = ctx.getObservableTaken();
-        this.observableTaken.reload();
-
-        // tijdelijk denk ik, vind efkes geen andere oplossing maar niet zo proper he
-        typeBx.setItems(FXCollections.observableArrayList(ctx.getTaakController().getAllTaakTypes()));
-
     }
 
     @FXML
@@ -66,10 +62,20 @@ public class TaakFormController implements NavigableController{
 
     }
 
+    public void loadData() {
+        observableTaken.reload();
+
+        typeBx.setItems(FXCollections.observableArrayList(
+                ctx.getTaakController().getAllTaakTypes()
+        ));
+    }
+
     public void loadForCreate() {
         editingId = null;
 
         titleLabel.setText("Taak aanmaken");
+        typeBx.setValue(null);
+        duurtijdBx.setValue(15);
         omschrijvingTxt.clear();
 
         clearErrors();
@@ -88,10 +94,11 @@ public class TaakFormController implements NavigableController{
 
     @FXML
     private void onSave() {
+
         clearErrors();
 
         try {
-            String type = typeBx.getValue();
+            String type = typeBx.isEditable() ? typeBx.getEditor().getText() : typeBx.getValue();
             String omschrijving = omschrijvingTxt.getText();
             Integer duurtijd = duurtijdBx.getValue();
 
@@ -156,9 +163,9 @@ public class TaakFormController implements NavigableController{
 
     private void clearError(String key) {
         switch (key) {
-            case "type" -> {
+            case "taakType" -> {
                 typeErrorLbl.setText("");
-                typeErrorLbl.getStyleClass().remove("field-error");
+                typeBx.getStyleClass().remove("field-error");
             }
             case "omschrijving" -> {
                 omschrijvingErrorLbl.setText("");

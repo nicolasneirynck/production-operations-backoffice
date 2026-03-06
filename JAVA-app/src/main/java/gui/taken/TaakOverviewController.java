@@ -1,6 +1,7 @@
 package gui.taken;
 
 import dto.TaakDTO;
+import gui.FormLoader;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
 import gui.navigation.NavigableController;
@@ -38,7 +39,6 @@ public class TaakOverviewController implements NavigableController {
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableTaken = ctx.getObservableTaken();
-        this.observableTaken.reload(); // recente data van DB ophalen
     }
 
     @FXML
@@ -48,7 +48,7 @@ public class TaakOverviewController implements NavigableController {
         omschrijvingCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().omschrijving()));
         duurtijdCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().duurtijd()));
 
-        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteTaak);
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::deleteTaak);
 
         typeCol.setStyle("-fx-alignment: center-left;");
         omschrijvingCol.setStyle("-fx-alignment: center-left;");
@@ -58,76 +58,32 @@ public class TaakOverviewController implements NavigableController {
         taakTable.setFixedCellSize(44);
         taakTable.setSelectionModel(null);
 
-        // SortedList in GUI
+        addBtn.disableProperty().bind(formHost.visibleProperty());
+    }
+
+    public void loadData(){
+        observableTaken.reload();
         SortedList<TaakDTO> sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
         //binding voor kolomsortering
         sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
-
         taakTable.setItems(sortedList);
-
-        addBtn.disableProperty().bind(formHost.visibleProperty());
-
-
         //default sortering
-      //  idCol.setSortType(TableColumn.SortType.ASCENDING);
-      //  taakTable.getSortOrder().add(idCol);
-        //taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
+        //  idCol.setSortType(TableColumn.SortType.ASCENDING);
+        //  taakTable.getSortOrder().add(idCol);
+        //taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedteSystem.out.println("Taak loadData()");
 
-     //   editBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
-      //  deleteBtn.disableProperty().bind(taakTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
     @FXML
     private void onAdd() {
-        showCreateForm();
+        FormLoader.showForm(formHost, context, View.TAKEN_FORM.fxml,
+                TaakFormController::loadForCreate);
     }
 
-    private void showCreateForm() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.TAKEN_FORM.fxml));
-            Parent form = loader.load();
-
-            TaakFormController formController = loader.getController();
-            formController.setContext(context);
-            formController.loadForCreate();
-
-            formController.setOnClose(() -> {
-                formHost.getChildren().clear();
-                formHost.setManaged(false);
-                formHost.setVisible(false);
-            });
-
-            formHost.getChildren().setAll(form);
-            formHost.setManaged(true);
-            formHost.setVisible(true);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void showEditForm(TaakDTO taak) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.TAKEN_FORM.fxml));
-            Parent form = loader.load();
-
-            TaakFormController formController = loader.getController();
-            formController.setContext(context);
-            formController.loadForEdit(taak);
-
-            formController.setOnClose(() -> {
-                formHost.getChildren().clear();
-                formHost.setManaged(false);
-                formHost.setVisible(false);
-            });
-
-            formHost.getChildren().setAll(form);
-            formHost.setManaged(true);
-            formHost.setVisible(true);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private void edit(TaakDTO taak) {
+        FormLoader.showForm(formHost, context, View.TAKEN_FORM.fxml,
+                (TaakFormController controller) -> controller.loadForEdit(taak)
+        );
     }
 
     private void deleteTaak(TaakDTO taak) {

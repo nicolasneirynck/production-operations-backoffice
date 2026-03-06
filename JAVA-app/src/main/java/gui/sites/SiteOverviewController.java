@@ -67,17 +67,6 @@ public class SiteOverviewController implements NavigableController {
         siteTable.setFixedCellSize(44); // rijhoogte
         siteTable.setSelectionModel(null);
 
-        //SortedList in GUI
-        SortedList<SiteDTO> sortedList = new SortedList<>(observableSites.getFilteredSiteList());
-        //binding voor kolomsortering
-        sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
-
-        siteTable.setItems(sortedList);
-
-        //default sortering
-        // idCol.setSortType(TableColumn.SortType.ASCENDING);
-        //siteTable.getSortOrder().add(idCol);
-      //  siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
 
         addBtn.disableProperty().bind(formHost.visibleProperty());
     }

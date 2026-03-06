@@ -13,7 +13,6 @@ public class MockdataSeeder {
         SiteController sc = context.getSiteController();
         TaakController tc = context.getTaakController();
 
-
         sc.addSite(
                 "Gent Plant",
                 "Kortrijksesteenweg",

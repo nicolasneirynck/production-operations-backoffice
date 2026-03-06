@@ -33,8 +33,6 @@ public class LayoutController implements NavigableController {
    // @FXML private HBox machinesRow;
     @FXML public HBox takenRow;
 
-
-    // content
     @Getter
     @FXML private StackPane contentHost;
 
@@ -50,11 +48,12 @@ public class LayoutController implements NavigableController {
         logoImage.setPreserveRatio(true);
         logoImage.setSmooth(true);
         logoImage.setFitHeight(20);
-       // logoImage.setFitWidth(140);
+    }
 
-        // default
+    @Override
+    public void loadData() {
         setActive(homeRow);
-        setContent(View.HOME);
+        navigator.goTo(View.HOME);
     }
 
     // TODO
@@ -63,36 +62,36 @@ public class LayoutController implements NavigableController {
         userRoleLbl.setText(role);
     }
 
-    public void setContent(View view) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-
-            loader.setControllerFactory(type -> {
-                try {
-                    Object controller = type.getDeclaredConstructor().newInstance();
-
-                    if (controller instanceof NavigableController nc) {
-                        nc.setNavigator(navigator);
-                        nc.setContext(context);
-                    }
-
-                    return controller;
-
-                } catch (Exception e) {
-                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
-                }
-            });
-
-            Parent content = loader.load();
-
-            contentHost.getChildren().setAll(content);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Kan content niet laden: " + view, e);
-        }
-    }
-
-    public void setContent(Node node) {
+//    public void setContent(View view) {
+//        try {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
+//
+//            loader.setControllerFactory(type -> {
+//                try {
+//                    Object controller = type.getDeclaredConstructor().newInstance();
+//
+//                    if (controller instanceof NavigableController nc) {
+//                        nc.setNavigator(navigator);
+//                        nc.setContext(context);
+//                    }
+//
+//                    return controller;
+//
+//                } catch (Exception e) {
+//                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
+//                }
+//            });
+//
+//            Parent content = loader.load();
+//
+//            contentHost.getChildren().setAll(content);
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Kan content niet laden: " + view, e);
+//        }
+//    }
+//
+    public void showContent(Node node) {
         contentHost.getChildren().setAll(node);
     }
 
@@ -106,7 +105,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void onHome() {
-        setContent(View.HOME);
+        navigator.goTo(View.HOME);
         setActive(homeRow);
     }
 
@@ -120,14 +119,14 @@ public class LayoutController implements NavigableController {
     @FXML
     private void onSites() {
         //setContent("/gui/SitesOverviewContent.fxml"); // TODO
-        setContent(View.SITES_OVERVIEW);
+        navigator.goTo(View.SITES_OVERVIEW);
         setActive(sitesRow);
     }
 
     @FXML
     private void onTaken() {
         //setContent("/gui/SitesOverviewContent.fxml"); // TODO
-        setContent(View.TAKEN_OVERVIEW);
+        navigator.goTo(View.TAKEN_OVERVIEW);
         setActive(takenRow);
     }
 
