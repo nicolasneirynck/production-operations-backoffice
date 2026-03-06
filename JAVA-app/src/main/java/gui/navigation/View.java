@@ -10,7 +10,8 @@ public enum View {
     GEBRUIKER_FORM("/gui/GebruikerFormView.fxml","Gebruikers beheren"),
     HOME("/gui/ManagerHomeContent.fxml", "Home"),
     SITES_OVERVIEW("/gui/SitesOverviewContent.fxml", "Sites Beheren"),
-    SITE_FORM("/gui/SiteFormContent.fxml", "Site aanmaken");
+    SITE_FORM("/gui/SiteFormContent.fxml", "Site aanmaken"),
+    LOGIN("/gui/LoginView.fxml", "Login");
 
     public final String fxml;
     public final String title;
