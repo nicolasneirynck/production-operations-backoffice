@@ -115,7 +115,7 @@
                 <Label text="Land" styleClass="form-label"
                        GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
                 <VBox spacing="2" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS">
-                    <TextField fx:id="landTf" maxWidth="Infinity"/>
+                    <ComboBox fx:id="landCb" maxWidth="Infinity"/>
                     <Label fx:id="landErr" styleClass="error-label"/>
                 </VBox>
 

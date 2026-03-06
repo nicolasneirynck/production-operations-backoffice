@@ -6,6 +6,7 @@ import exception.SiteException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -13,6 +14,10 @@ import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class SiteFormController implements NavigableController {
 
@@ -26,7 +31,8 @@ public class SiteFormController implements NavigableController {
     @FXML private TextField nummerTf;
     @FXML private TextField postcodeTf;
     @FXML private TextField stadTf;
-    @FXML private TextField landTf;
+   // @FXML private TextField landTf;
+   @FXML private ComboBox<String> landCb;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
@@ -64,6 +70,22 @@ public class SiteFormController implements NavigableController {
         operationeelCb.getSelectionModel().select(OperationeleStatus.ACTIEF);
         productieCb.getSelectionModel().select(ProductieStatus.GEZOND);
 
+        operationeelCb.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == OperationeleStatus.NON_ACTIEF) {
+                productieCb.setValue(ProductieStatus.OFFLINE);
+                productieCb.setDisable(true);
+
+                clearError("operationeleStatus");
+                clearError("productieStatus");
+            } else {
+                productieCb.setDisable(false);
+
+                if (productieCb.getValue() == null) {
+                    productieCb.setValue(ProductieStatus.GEZOND);
+                }
+            }
+        });
+
         naamTf.textProperty().addListener((o, a, b) -> clearError("naam"));
         capaciteitTf.textProperty().addListener((o, a, b) -> clearError("capaciteit"));
 
@@ -74,7 +96,15 @@ public class SiteFormController implements NavigableController {
         nummerTf.textProperty().addListener((o, a, b) -> clearError("locatie.nummer"));
         postcodeTf.textProperty().addListener((o, a, b) -> clearError("locatie.postcode"));
         stadTf.textProperty().addListener((o, a, b) -> clearError("locatie.stad"));
-        landTf.textProperty().addListener((o, a, b) -> clearError("locatie.land"));
+        //landTf.textProperty().addListener((o, a, b) -> clearError("locatie.land"));
+
+        List<String> landen = Arrays.stream(Locale.getISOCountries())
+                .map(code -> Locale.of("", code).getDisplayCountry())
+                .sorted()
+                .toList();
+
+        landCb.setItems(FXCollections.observableArrayList(landen));
+        landCb.setVisibleRowCount(10);
 
         nummerTf.setTextFormatter(new TextFormatter<String>(change -> {
             String newText = change.getControlNewText();
@@ -115,7 +145,7 @@ public class SiteFormController implements NavigableController {
         nummerTf.setText(loc.nummer());
         postcodeTf.setText(loc.postcode());
         stadTf.setText(loc.stad());
-        landTf.setText(loc.land());
+        landCb.setValue(loc.land());
 
         operationeelCb.getSelectionModel().select(site.operationeleStatus());
         productieCb.getSelectionModel().select(site.productieStatus());
@@ -150,7 +180,7 @@ public class SiteFormController implements NavigableController {
             String nummer = nummerTf.getText();
             String postcode = postcodeTf.getText();
             String stad = stadTf.getText();
-            String land = landTf.getText();
+            String land = landCb.getValue();
 
             OperationeleStatus op = operationeelCb.getValue();
             ProductieStatus prod = productieCb.getValue();
@@ -218,7 +248,7 @@ public class SiteFormController implements NavigableController {
                 }
                 case "locatie.land" -> {
                     showError(landErr,msg);
-                    landTf.getStyleClass().add("field-error");
+                    landCb.getStyleClass().add("field-error"); // nog nodig?
                 }
                 default -> {
                     new Alert(Alert.AlertType.ERROR, msg).showAndWait();
@@ -283,7 +313,7 @@ public class SiteFormController implements NavigableController {
             }
             case "locatie.land" -> {
                 clearLabel(landErr);
-                landTf.getStyleClass().remove("field-error");
+                landCb.getStyleClass().remove("field-error"); // nog nodig?
             }
         }
     }
@@ -315,7 +345,7 @@ public class SiteFormController implements NavigableController {
         nummerTf.getStyleClass().remove("field-error");
         postcodeTf.getStyleClass().remove("field-error");
         stadTf.getStyleClass().remove("field-error");
-        landTf.getStyleClass().remove("field-error");
+        landCb.getStyleClass().remove("field-error"); // nog nodig?
     }
 
 }

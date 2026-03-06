@@ -63,7 +63,7 @@ public class Site {
 
 		this.naam = naam;
 		this.locatie = locatie;
-		this.capaciteit = capaciteit; // safe
+		this.capaciteit = capaciteit;
 		this.operationeleStatus = op;
 		this.productieStatus = prod;
 	}
