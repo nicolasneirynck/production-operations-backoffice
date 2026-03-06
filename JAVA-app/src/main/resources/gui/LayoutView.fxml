@@ -99,6 +99,20 @@
                 </HBox>
             </HBox>
 
+<!--            TIJDELIJK!!!! -> tot autorisatie in orde is-->
+
+            <HBox fx:id="takenRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator"/>
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="takenBtn"
+                            text="Taken Beheren"
+                            onAction="#onTaken"
+                            styleClass="nav-item"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="1.7976931348623157E308"/>
+                </HBox>
+            </HBox>
+
         </VBox>
 
         <Region VBox.vgrow="ALWAYS"/>

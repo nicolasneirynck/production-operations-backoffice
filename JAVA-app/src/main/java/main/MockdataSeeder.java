@@ -1,14 +1,17 @@
 package main;
 
 import domein.SiteController;
+import domein.TaakController;
 import exception.SiteException;
+import exception.TaakException;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 public class MockdataSeeder {
-    public static void seed(AppContext context) throws SiteException {
+    public static void seed(AppContext context) throws SiteException, TaakException {
 
         SiteController sc = context.getSiteController();
+        TaakController tc = context.getTaakController();
 
         sc.addSite(
                 "Gent Plant",
@@ -44,6 +47,54 @@ public class MockdataSeeder {
                 200,
                 OperationeleStatus.NON_ACTIEF,
                 ProductieStatus.OFFLINE
+        );
+
+        tc.addTaak(
+                "Onderhoud",
+                "Maandelijks onderhoud van productiemachine",
+                60
+        );
+
+        tc.addTaak(
+                "Inspectie",
+                "Visuele controle van assemblagelijn",
+                15
+        );
+
+        tc.addTaak(
+                "Herstel",
+                "Vervangen van aandrijfriem",
+                120
+        );
+
+        tc.addTaak(
+                "Schoonmaak",
+                "Reiniging van werkstation",
+                30
+        );
+
+        tc.addTaak(
+                "Kalibratie",
+                "Kalibreren van momentsleutel",
+                45
+        );
+
+        tc.addTaak(
+                "Software update",
+                "Firmware update van productiemachine",
+                30
+        );
+
+        tc.addTaak(
+                "Testprocedure",
+                "Functionele test van nieuwe fietsmodellen",
+                90
+        );
+
+        tc.addTaak(
+                "Kwaliteitscontrole",
+                "Controle van afgewerkte fietsen",
+                15
         );
     }
 }

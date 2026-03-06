@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
+@NamedQuery(
+        name = "Taak.findAllTaakTypes",
+        query = "SELECT DISTINCT t.taakType FROM Taak t ORDER BY t.taakType"
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Taak {
@@ -18,16 +22,15 @@ public class Taak {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long taakId;
-    @Enumerated(EnumType.STRING)
     @Setter(AccessLevel.PROTECTED)
-    private TaakType taakType;
+    private String taakType;
     @Setter(AccessLevel.PROTECTED)
     private String omschrijving;
     @Setter(AccessLevel.PROTECTED)
     private int duurtijd;
 
     private Taak(Builder builder){
-        this.taakType = builder.type;
+        this.taakType = builder.type.trim().toUpperCase();
         this.omschrijving = builder.omschrijving;
         this.duurtijd = builder.duurtijd;
     }
@@ -36,24 +39,24 @@ public class Taak {
         return new Builder();
     }
 
-    public void update(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+    public void update(String type, String omschrijving, int duurtijd) throws TaakException {
         validate(type, omschrijving, duurtijd);
 
-        this.taakType = type;
+        this.taakType = type.trim().toUpperCase();
         this.omschrijving = omschrijving;
         this.duurtijd = duurtijd;
     }
 
-    private static void validate(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+    private static void validate(String type, String omschrijving, int duurtijd) throws TaakException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
-        if (type == null) errors.put("taakType", new IllegalArgumentException("Type is verplicht"));
+        if (type == null || type.isBlank()) errors.put("taakType", new IllegalArgumentException("Type is vereist"));
         if (omschrijving == null || omschrijving.isBlank())
-            errors.put("omschrijving", new IllegalArgumentException("Omschrijving is verplicht"));
+            errors.put("omschrijving", new IllegalArgumentException("Omschrijving is vereist"));
 
-        if (duurtijd == null) {
-            errors.put("duurtijd", new IllegalArgumentException("Duurtijd is verplicht"));
-        } else if (duurtijd <= 0) {
+//        if (duurtijd == null) {
+//            errors.put("duurtijd", new IllegalArgumentException("Duurtijd is verplicht"));
+        if (duurtijd <= 0) {
             errors.put("duurtijd", new IllegalArgumentException("Duurtijd moet groter zijn dan 0"));
         } else if (duurtijd > 240 || duurtijd % 15 != 0) {
             errors.put("duurtijd", new IllegalArgumentException(
@@ -66,11 +69,11 @@ public class Taak {
     }
 
     public static class Builder {
-        private TaakType type;
+        private String type;
         private String omschrijving;
         private Integer duurtijd;
 
-        public Builder type(TaakType type){
+        public Builder type(String type){
             this.type = type;
             return this;
         }

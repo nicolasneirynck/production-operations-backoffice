@@ -16,14 +16,15 @@ public class SiteController {
 
     private final SiteDao siteRepo;
 
+    public SiteController(SiteDao siteRepo) {
+        this.siteRepo = siteRepo;
+    }
+
+    //TODO tijdelijk voor devFase -> Mockito
     public SiteController() {
         siteRepo = new SiteDaoJpa();
     }
 
-    //TODO tijdelijk voor devFase -> Mockito
-    public SiteController(SiteDao siteRepo) {
-        this.siteRepo = siteRepo;
-    }
 
     public List<SiteDTO> getAllSites(){
         return siteRepo.findAll().stream()
@@ -31,7 +32,7 @@ public class SiteController {
                 .toList();
     }
 
-    public void addSite(String naam, String straat, String nummer, String postcode, String stad, String land,
+    public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
                         int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
 
@@ -39,7 +40,7 @@ public class SiteController {
 
         Locatie locatie = null;
         try {
-            locatie = Locatie.builder(straat, nummer, postcode, stad, land);
+            locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
         } catch (SiteException ex) {
             errors.putAll(ex.getExceptionMap());
         }
@@ -78,7 +79,7 @@ public class SiteController {
         //return createDto(nieuweSite);
     }
 
-    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land,
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
         siteRepo.startTransaction();
@@ -96,7 +97,7 @@ public class SiteController {
 
             Locatie locatie = null;
             try {
-                locatie = Locatie.builder(straat, nummer, postcode, stad, land);
+                locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
             } catch (SiteException ex) {
                 errors.putAll(ex.getExceptionMap());
             }
@@ -143,7 +144,7 @@ public class SiteController {
                 loc.getStraat(),
                 loc.getNummer(),
                 loc.getPostcode(),
-                loc.getStad(),
+                loc.getGemeente(),
                 loc.getLand()
         );
 

@@ -30,6 +30,14 @@ public class Gebruiker {
     @Enumerated(EnumType.STRING)
     private Rollen rol;
 
+ //   private Site site;
+
+//    @OneToOne
+//    private Team verantwoordelijkeTeam;
+//
+//    @ManyToMany
+//    private Team medewerkerTeam;
+
     public static Builder builder() {
         return new Builder();
     }

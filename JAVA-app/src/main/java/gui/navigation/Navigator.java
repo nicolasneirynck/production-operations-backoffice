@@ -1,20 +1,17 @@
 package gui.navigation;
 
-import domein.GebruikerController;
-import gui.GebruikerOverviewController;
 import gui.LayoutController;
-import gui.TaakOverviewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
+import util.View;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
+// TODO nu ingewikkeld systeem met controllerfactory, is dit wel nodig? (afwachten tot authorisatie geïmplementeerd is)
 public class Navigator {
 
     @Getter
@@ -34,11 +31,7 @@ public class Navigator {
             Parent root = loader.load();
 
             this.layoutController = loader.getController();
-
-            if (layoutController instanceof NavigableController nc) {
-                nc.setNavigator(this);
-                nc.setContext(context);
-            }
+            initializeController(layoutController);
 
             Scene scene = new Scene(root, width, height);
             if (cssPath != null) {
@@ -61,27 +54,19 @@ public class Navigator {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
+//            loader.setControllerFactory(type -> {
+//                try {
+//                    return type.getDeclaredConstructor().newInstance();
+//                } catch (Exception e) {
+//                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
+//                }
+//            });
 
-            loader.setControllerFactory(type -> {
-                try {
-                    Object controller = type.getDeclaredConstructor().newInstance();
+            Parent content = loader.load(); // FXML injecteren + initialize() oproepen
+            initializeController(loader.getController());
 
-                    if (controller instanceof NavigableController nc) {
-                        nc.setNavigator(this);
-                        nc.setContext(context);
-                    }
-                    return controller;
-
-                } catch (Exception e) {
-                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
-                }
-            });
-
-            Parent content = loader.load();
-            layoutController.setContent(content);
-
-            String title = view.title;
-            stage.setTitle(title);
+            layoutController.showContent(content);
+            stage.setTitle(view.title);
 
         } catch (Exception e) {
             throw new RuntimeException("Kan content view niet laden: " + view, e);
@@ -93,17 +78,21 @@ public class Navigator {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
             Parent root = loader.load();
 
-            Object controller = loader.getController();
-
-            if (controller instanceof NavigableController nc) {
-                nc.setContext(context);
-                nc.setNavigator(this);
-            }
+            initializeController(loader.getController());
 
             return root;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void initializeController(Object controller) {
+
+        if (controller instanceof NavigableController nc) {
+            nc.setNavigator(this);
+            nc.setContext(context);
+            nc.loadData();
         }
     }
 

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import lombok.Setter;
 import main.AppContext;
+import util.View;
 
 public class ManagerHomeController implements NavigableController {
 
@@ -32,6 +33,6 @@ public class ManagerHomeController implements NavigableController {
 
     @FXML
     public void onSitesTile() {
-        navigator.goTo(gui.navigation.View.SITES_OVERVIEW);
+        navigator.goTo(View.SITES_OVERVIEW);
     }
 }

@@ -12,16 +12,16 @@ public class TaakTest {
 
     static Stream<Arguments> geldigeTaken() {
         return Stream.of(
-                Arguments.of(TaakType.ONDERHOUD, "Maandelijks onderhoud compressor", 60),
-                Arguments.of(TaakType.INSPECTIE, "Visuele controle", 15),
-                Arguments.of(TaakType.HERSTEL, "Vervang riem", 240),
-                Arguments.of(TaakType.SCHOONMAAK, "Machine schoonmaken", 30)
+                Arguments.of("Onderhoud", "Maandelijks onderhoud compressor", 60),
+                Arguments.of("Inspectie", "Visuele controle", 15),
+                Arguments.of("Herstel", "Vervang riem", 240),
+                Arguments.of("Herstel", "Machine schoonmaken", 30)
         );
     }
 
     @ParameterizedTest
     @MethodSource("geldigeTaken")
-    void constructor_GeldigeTaak_GeenException(TaakType type, String omschrijving, int duurtijd) throws Exception {
+    void constructor_GeldigeTaak_GeenException(String type, String omschrijving, int duurtijd) throws Exception {
 
         Taak taak = Taak.builder()
                 .type(type)
@@ -29,14 +29,16 @@ public class TaakTest {
                 .duurtijd(duurtijd)
                 .build();
 
-        assertEquals(type, taak.getTaakType());
+        assertEquals(type.toUpperCase(), taak.getTaakType());
         assertEquals(omschrijving, taak.getOmschrijving());
         assertEquals(duurtijd, taak.getDuurtijd());
     }
 
     @ParameterizedTest
     @NullSource
-    void constructor_GeenTaakType_GooitException(TaakType type) {
+    @EmptySource
+    @ValueSource(strings = {" ", "   "})
+    void constructor_GeenOfOngeldigTaakType_GooitException(String type) {
         TaakException ex = assertThrows(TaakException.class, () ->
                 Taak.builder()
                         .type(type)
@@ -53,7 +55,7 @@ public class TaakTest {
     void constructor_OngeldigeOmschrijving_GooitException(String omschrijving) {
         TaakException ex = assertThrows(TaakException.class, () ->
                 Taak.builder()
-                        .type(TaakType.ONDERHOUD)
+                        .type("Onderhoud")
                         .omschrijving(omschrijving)
                         .duurtijd(60)
                         .build()
@@ -70,7 +72,7 @@ public class TaakTest {
     void constructor_OngeldigeDuur_GooitException(int minuten) {
         TaakException ex = assertThrows(TaakException.class, () ->
                 Taak.builder()
-                        .type(TaakType.INSPECTIE)
+                        .type("Onderhoud")
                         .omschrijving("Test")
                         .duurtijd(minuten)
                         .build()

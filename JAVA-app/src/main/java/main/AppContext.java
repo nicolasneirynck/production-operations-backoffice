@@ -2,8 +2,8 @@ package main;
 
 import domein.SiteController;
 import domein.TaakController;
-import gui.ObservableSites;
-import gui.ObservableTaken;
+import gui.sites.ObservableSites;
+import gui.taken.ObservableTaken;
 
 public class AppContext {
     private final TaakController taakController = new TaakController();
