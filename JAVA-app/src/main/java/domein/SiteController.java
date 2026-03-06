@@ -16,14 +16,15 @@ public class SiteController {
 
     private final SiteDao siteRepo;
 
+    public SiteController(SiteDao siteRepo) {
+        this.siteRepo = siteRepo;
+    }
+
+    //TODO tijdelijk voor devFase -> Mockito
     public SiteController() {
         siteRepo = new SiteDaoJpa();
     }
 
-    //TODO tijdelijk voor devFase -> Mockito
-    public SiteController(SiteDao siteRepo) {
-        this.siteRepo = siteRepo;
-    }
 
     public List<SiteDTO> getAllSites(){
         return siteRepo.findAll().stream()

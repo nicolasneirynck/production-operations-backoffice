@@ -9,10 +9,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
+import util.View;
+
+import java.io.IOException;
 
 public class TaakOverviewController implements NavigableController {
     @FXML private VBox formHost;
@@ -78,55 +83,51 @@ public class TaakOverviewController implements NavigableController {
     }
 
     private void showCreateForm() {
-        System.out.println("maak Taak");
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.TAKEN_FORM.fxml));
-//            Parent form = loader.load();
-//
-//            TaakFormController formController = loader.getController();
-//            formController.setContext(context);
-//            formController.loadForCreate();
-//
-//            formController.setOnClose(() -> {
-//                formHost.getChildren().clear();
-//                formHost.setManaged(false);
-//                formHost.setVisible(false);
-//            });
-//
-//            formHost.getChildren().setAll(form);
-//            formHost.setManaged(true);
-//            formHost.setVisible(true);
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.TAKEN_FORM.fxml));
+            Parent form = loader.load();
+
+            TaakFormController formController = loader.getController();
+            formController.setContext(context);
+            formController.loadForCreate();
+
+            formController.setOnClose(() -> {
+                formHost.getChildren().clear();
+                formHost.setManaged(false);
+                formHost.setVisible(false);
+            });
+
+            formHost.getChildren().setAll(form);
+            formHost.setManaged(true);
+            formHost.setVisible(true);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void showEditForm(TaakDTO taak) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.TAKEN_FORM.fxml));
+            Parent form = loader.load();
 
-        System.out.println("Edit taak");
-//
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.SITES_FORM.fxml));
-//            Parent form = loader.load();
-//
-//            TaakFormController formController = loader.getController();
-//            formController.setContext(context);
-//            formController.loadForEdit(taak);
-//
-//            formController.setOnClose(() -> {
-//                formHost.getChildren().clear();
-//                formHost.setManaged(false);
-//                formHost.setVisible(false);
-//            });
-//
-//            formHost.getChildren().setAll(form);
-//            formHost.setManaged(true);
-//            formHost.setVisible(true);
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+            TaakFormController formController = loader.getController();
+            formController.setContext(context);
+            formController.loadForEdit(taak);
+
+            formController.setOnClose(() -> {
+                formHost.getChildren().clear();
+                formHost.setManaged(false);
+                formHost.setVisible(false);
+            });
+
+            formHost.getChildren().setAll(form);
+            formHost.setManaged(true);
+            formHost.setVisible(true);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void deleteTaak(TaakDTO taak) {

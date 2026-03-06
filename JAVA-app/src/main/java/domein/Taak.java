@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
+@NamedQuery(
+        name = "Taak.findAllTaakTypes",
+        query = "SELECT DISTINCT t.taakType FROM Taak t ORDER BY t.taakType"
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Taak {
@@ -26,7 +30,7 @@ public class Taak {
     private int duurtijd;
 
     private Taak(Builder builder){
-        this.taakType = builder.type.toUpperCase();
+        this.taakType = builder.type.trim().toUpperCase();
         this.omschrijving = builder.omschrijving;
         this.duurtijd = builder.duurtijd;
     }
@@ -38,7 +42,7 @@ public class Taak {
     public void update(String type, String omschrijving, int duurtijd) throws TaakException {
         validate(type, omschrijving, duurtijd);
 
-        this.taakType = type.toUpperCase();
+        this.taakType = type.trim().toUpperCase();
         this.omschrijving = omschrijving;
         this.duurtijd = duurtijd;
     }

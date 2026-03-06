@@ -33,9 +33,6 @@ public class SiteFormController implements NavigableController {
    // @FXML private TextField landTf;
    @FXML private ComboBox<String> landCb;
 
-    @FXML private Button saveBtn;
-    @FXML private Button cancelBtn;
-
     @FXML private Label naamErr;
     @FXML private Label capaciteitErr;
     @FXML private Label operationeelErr;
@@ -46,11 +43,15 @@ public class SiteFormController implements NavigableController {
     @FXML private Label stadErr;
     @FXML private Label landErr;
 
+    @FXML private Button saveBtn;
+    @FXML private Button cancelBtn;
+
     @Setter private Navigator navigator;
+    @Setter private Runnable onClose;
+
     private AppContext context;
     private ObservableSites observableSites;
 
-    @Setter private Runnable onClose;
 
     private Long editingSiteId = null;
 
@@ -153,15 +154,6 @@ public class SiteFormController implements NavigableController {
     }
 
     @FXML
-    private void onCancel() {
-        close();
-    }
-
-    private void close() {
-        if (onClose != null) onClose.run();
-    }
-
-    @FXML
     private void onSave() {
         clearErrors();
 
@@ -205,6 +197,30 @@ public class SiteFormController implements NavigableController {
         }
     }
 
+    @FXML
+    private void onCancel() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Annuleren");
+        alert.setHeaderText("Wijzigingen annuleren?");
+        alert.setContentText("Niet-opgeslagen wijzigingen gaan verloren.");
+
+        ButtonType yesBtn = new ButtonType("Ja");
+        ButtonType noBtn = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == yesBtn) {
+                close();
+            }
+        });
+    }
+
+    private void close() {
+        if (onClose != null) onClose.run();
+    }
+
+
     private void showValidationErrors(SiteException ex) {
         clearErrors();
 
@@ -213,40 +229,40 @@ public class SiteFormController implements NavigableController {
 
             switch (field) {
                 case "naam" -> {
-                    showError(naamErr,msg);
+                    naamErr.setText(msg);
                     naamTf.getStyleClass().add("field-error");
                 }
                 case "capaciteit" -> {
-                    showError(capaciteitErr,msg);
+                    capaciteitErr.setText(msg);
                     capaciteitTf.getStyleClass().add("field-error");
                 }
                 case "operationeleStatus" -> {
-                    showError(operationeelErr,msg);
+                    operationeelErr.setText(msg);
                     operationeelCb.getStyleClass().add("field-error");
                 }
                 case "productieStatus" -> {
-                    showError(productieErr,msg);
+                    productieErr.setText(msg);
                     productieCb.getStyleClass().add("field-error");
                 }
 
                 case "locatie.straat" -> {
-                    showError(straatErr,msg);
+                    straatErr.setText(msg);
                     straatTf.getStyleClass().add("field-error");
                 }
                 case "locatie.nummer" -> {
-                    showError(nummerErr,msg);
+                    nummerErr.setText(msg);
                     nummerTf.getStyleClass().add("field-error");
                 }
                 case "locatie.postcode" -> {
-                    showError(postcodeErr,msg);
+                    postcodeErr.setText(msg);
                     postcodeTf.getStyleClass().add("field-error");
                 }
                 case "locatie.stad" -> {
-                    showError(stadErr,msg);
+                    stadErr.setText(msg);
                     stadTf.getStyleClass().add("field-error");
                 }
                 case "locatie.land" -> {
-                    showError(landErr,msg);
+                    landErr.setText(msg);
                     landCb.getStyleClass().add("field-error"); // nog nodig?
                 }
                 default -> {
@@ -254,11 +270,6 @@ public class SiteFormController implements NavigableController {
                 }
             }
         });
-    }
-
-    private void showError(Label lbl) {
-        lbl.setManaged(true);
-        lbl.setVisible(true);
     }
 
     private int parseCapaciteit(String input) {
@@ -269,7 +280,7 @@ public class SiteFormController implements NavigableController {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException ex) {
-            showError(capaciteitErr, "Capaciteit moet een getal zijn.");
+            capaciteitErr.setText("Capaciteit moet een getal zijn.");
             capaciteitTf.getStyleClass().add("field-error");
             throw new IllegalArgumentException("Capaciteit moet een getal zijn.");
         }
@@ -278,63 +289,56 @@ public class SiteFormController implements NavigableController {
     private void clearError(String key) {
         switch (key) {
             case "naam" -> {
-                clearLabel(naamErr);
+                naamErr.setText("");
                 naamTf.getStyleClass().remove("field-error");
             }
             case "capaciteit" -> {
-                clearLabel(capaciteitErr);
+                capaciteitErr.setText("");
                 capaciteitTf.getStyleClass().remove("field-error");
             }
             case "operationeleStatus" -> {
-                clearLabel(operationeelErr);
+                operationeelErr.setText("");
                 operationeelCb.getStyleClass().remove("field-error");
             }
             case "productieStatus" -> {
-                clearLabel(productieErr);
+                productieErr.setText("");
                 productieCb.getStyleClass().remove("field-error");
             }
 
             case "locatie.straat" -> {
-                clearLabel(straatErr);
+                straatErr.setText("");
                 straatTf.getStyleClass().remove("field-error");
             }
             case "locatie.nummer" -> {
-                clearLabel(nummerErr);
+                nummerErr.setText("");
                 nummerTf.getStyleClass().remove("field-error");
             }
             case "locatie.postcode" -> {
-                clearLabel(postcodeErr);
+                postcodeErr.setText("");
                 postcodeTf.getStyleClass().remove("field-error");
             }
             case "locatie.stad" -> {
-                clearLabel(stadErr);
+                stadErr.setText("");
                 stadTf.getStyleClass().remove("field-error");
             }
             case "locatie.land" -> {
-                clearLabel(landErr);
+                landErr.setText("");
                 landCb.getStyleClass().remove("field-error"); // nog nodig?
             }
         }
     }
 
-    private void clearLabel(Label lbl) {
-        lbl.setText("");
-    }
-
-    private void showError(Label lbl, String msg) {
-        lbl.setText(msg);
-    }
 
     private void clearErrors() {
-        clearLabel(naamErr);
-        clearLabel(capaciteitErr);
-        clearLabel(operationeelErr);
-        clearLabel(productieErr);
-        clearLabel(straatErr);
-        clearLabel(nummerErr);
-        clearLabel(postcodeErr);
-        clearLabel(stadErr);
-        clearLabel(landErr);
+        naamErr.setText("");
+        capaciteitErr.setText("");
+        operationeelErr.setText("");
+        productieErr.setText("");
+        straatErr.setText("");
+        nummerErr.setText("");
+        postcodeErr.setText("");
+        stadErr.setText("");
+        landErr.setText("");
 
         naamTf.getStyleClass().remove("field-error");
         capaciteitTf.getStyleClass().remove("field-error");

@@ -25,9 +25,7 @@
 
             <GridPane hgap="4" vgap="4">
                 <columnConstraints>
-                    <!-- iets smaller zodat label + input dichter bij elkaar zitten -->
                     <ColumnConstraints prefWidth="120" hgrow="NEVER" halignment="LEFT"/>
-                    <!-- fillWidth is belangrijk -->
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
 
@@ -70,12 +68,11 @@
         <VBox spacing="8" HBox.hgrow="ALWAYS">
             <Label text="Adres" styleClass="section-title"/>
 
-            <GridPane hgap="4" vgap="4" alignment="TOP_LEFT">
+            <GridPane hgap="4" vgap="4">
                 <columnConstraints>
                     <ColumnConstraints prefWidth="70" hgrow="NEVER" halignment="LEFT"/>
                     <ColumnConstraints hgrow="ALWAYS"/>
                     <ColumnConstraints prefWidth="40" hgrow="NEVER" halignment="LEFT"/>
-                    <!-- nr veld iets breder maar mag niet forceren -->
                     <ColumnConstraints prefWidth="110" hgrow="NEVER"/>
                 </columnConstraints>
 
@@ -125,7 +122,7 @@
     </HBox>
 
     <!-- Buttons -->
-    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="form-actions">
+    <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
         <Button fx:id="cancelBtn" text="✖" onAction="#onCancel" styleClass="btn-ghost"/>
     </HBox>

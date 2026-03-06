@@ -4,21 +4,23 @@ import dto.TaakDTO;
 import exception.TaakException;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
+import repository.TaakDao;
+import repository.TaakDaoJpa;
 import util.TaakType;
 
 import java.util.List;
 
 public class TaakController {
 
-    private final GenericDao<Taak> taakRepo;
+    private final TaakDao taakRepo;
 
-    public TaakController() {
-        this(new GenericDaoJpa<>(Taak.class));
+    public TaakController(TaakDao taakRepo) {
+        this.taakRepo = taakRepo;
     }
 
     // TODO tijdelijk voor devFase -> Mockito
-    public TaakController(GenericDao<Taak> taakRepo) {
-        this.taakRepo = taakRepo;
+    public TaakController() {
+        this(new TaakDaoJpa(Taak.class));
     }
 
     public List<TaakDTO> getAllTaken() {
@@ -86,5 +88,9 @@ public class TaakController {
                 taak.getOmschrijving(),
                 taak.getDuurtijd()
         );
+    }
+
+    public List<String> getAllTaakTypes() {
+        return taakRepo.findAllTaakTypes();
     }
 }

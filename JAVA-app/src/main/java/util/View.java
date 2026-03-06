@@ -1,14 +1,16 @@
 package util;
 
 public enum View {
-    MAIN_MENU("/gui/MainMenuView.fxml", "Hoofdmenu"),
-    TAKEN_OVERVIEW("/gui/TaakOverviewContent.fxml", "Taken beheren"),
-    TAKEN_FORM("/gui/oldTaakFormView.fxml","Taken beheren"),
-    GEBRUIKER_OVERVIEW("/gui/GebruikerOverviewView.fxml","Gebruikers beheren"),
-    GEBRUIKER_FORM("/gui/GebruikerFormView.fxml","Gebruikers beheren"),
     HOME("/gui/ManagerHomeContent.fxml", "Home"),
-    SITES_OVERVIEW("/gui/SitesOverviewContent.fxml", "Sites Beheren"),
-    SITES_FORM("/gui/SiteFormContent.fxml","Sites beheren");
+
+    TAKEN_OVERVIEW("/gui/taken/TaakOverviewContent.fxml", "Taken beheren"),
+    TAKEN_FORM("/gui/taken/TaakFormContent.fxml","Taken beheren"),
+
+    GEBRUIKER_OVERVIEW("/gui/gebruikers/GebruikerOverviewView.fxml","Gebruikers beheren"),
+    GEBRUIKER_FORM("/gui/gebruikers/GebruikerFormView.fxml","Gebruikers beheren"),
+
+    SITES_OVERVIEW("/gui/sites/SitesOverviewContent.fxml", "Sites Beheren"),
+    SITES_FORM("/gui/sites/SiteFormContent.fxml","Sites beheren");
 
     public final String fxml;
     public final String title;
