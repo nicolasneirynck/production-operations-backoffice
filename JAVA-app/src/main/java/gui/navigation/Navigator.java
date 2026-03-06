@@ -53,7 +53,7 @@ public class Navigator {
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
         }
-
+ 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
 //            loader.setControllerFactory(type -> {
