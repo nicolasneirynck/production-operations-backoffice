@@ -13,7 +13,7 @@
 <GridPane hgap="10.0" vgap="6.0"
           xmlns="http://javafx.com/javafx/17.0.6"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="gui.TaakFormController">
+          fx:controller="gui.taken.TaakFormController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="120.0" />
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />

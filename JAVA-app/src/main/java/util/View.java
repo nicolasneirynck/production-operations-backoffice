@@ -1,4 +1,4 @@
-package gui.navigation;
+package util;
 
 public enum View {
     MAIN_MENU("/gui/MainMenuView.fxml", "Hoofdmenu"),

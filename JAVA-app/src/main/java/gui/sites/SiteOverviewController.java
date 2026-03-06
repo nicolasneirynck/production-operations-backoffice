@@ -1,10 +1,11 @@
-package gui;
+package gui.sites;
 
 import dto.SiteDTO;
+import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
-import gui.navigation.View;
+import util.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
@@ -13,9 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;

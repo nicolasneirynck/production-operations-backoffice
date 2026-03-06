@@ -1,4 +1,4 @@
-package gui;
+package gui.sites;
 
 import domein.SiteController;
 import dto.SiteDTO;

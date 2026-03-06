@@ -1,4 +1,4 @@
-package gui;
+package gui.taken;
 
 import domein.TaakController;
 import dto.TaakDTO;
@@ -7,7 +7,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Getter;
-import util.TaakType;
 
 public class ObservableTaken {
     private final TaakController controller;

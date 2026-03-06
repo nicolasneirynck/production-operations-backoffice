@@ -1,19 +1,15 @@
 package gui.navigation;
 
-import domein.GebruikerController;
-import gui.GebruikerOverviewController;
 import gui.LayoutController;
-import gui.TaakOverviewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
+import util.View;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class Navigator {
 

@@ -2,7 +2,7 @@ package gui;
 
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
-import gui.navigation.View;
+import util.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.Setter;
 import main.AppContext;
 
-import java.io.IOException;
 import java.util.List;
 
 public class LayoutController implements NavigableController {

@@ -1,10 +1,9 @@
-package gui;
+package gui.taken;
 
 import dto.TaakDTO;
 import exception.TaakException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
-import gui.navigation.View;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

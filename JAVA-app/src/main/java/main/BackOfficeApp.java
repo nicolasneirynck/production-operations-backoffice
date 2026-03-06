@@ -1,20 +1,11 @@
 package main;
 
-import dto.SiteDTO;
 import exception.SiteException;
 import exception.TaakException;
-import gui.MainMenuController;
-import gui.ObservableSites;
 import gui.navigation.Navigator;
-import gui.navigation.View;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import util.OperationeleStatus;
-import util.ProductieStatus;
 
 public class BackOfficeApp extends Application {
 

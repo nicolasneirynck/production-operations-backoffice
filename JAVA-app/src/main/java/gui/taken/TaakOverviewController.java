@@ -1,17 +1,15 @@
-package gui;
+package gui.taken;
 
 import dto.TaakDTO;
+import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
-import gui.factories.IconButtonFactory;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;

@@ -1,4 +1,4 @@
-package gui;
+package gui.sites;
 
 import dto.LocatieDTO;
 import dto.SiteDTO;
@@ -6,7 +6,6 @@ import exception.SiteException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;

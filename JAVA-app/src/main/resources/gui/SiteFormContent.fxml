@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.SiteFormController"
+      fx:controller="gui.sites.SiteFormController"
       fx:id="root"
       spacing="10">
 
