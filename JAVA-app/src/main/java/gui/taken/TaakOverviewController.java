@@ -1,7 +1,7 @@
 package gui.taken;
 
 import dto.TaakDTO;
-import gui.FormLoader;
+import gui.navigation.FormLoader;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
 import gui.navigation.NavigableController;
@@ -10,15 +10,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 import util.View;
-
-import java.io.IOException;
 
 public class TaakOverviewController implements NavigableController {
     @FXML private VBox formHost;
@@ -34,6 +30,8 @@ public class TaakOverviewController implements NavigableController {
     @Setter private LayoutController layout;
     @Setter private Navigator navigator;
     private ObservableTaken observableTaken;
+
+    private SortedList<TaakDTO> sortedList;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -63,15 +61,12 @@ public class TaakOverviewController implements NavigableController {
 
     public void loadData(){
         observableTaken.reload();
-        SortedList<TaakDTO> sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
-        //binding voor kolomsortering
-        sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
-        taakTable.setItems(sortedList);
-        //default sortering
-        //  idCol.setSortType(TableColumn.SortType.ASCENDING);
-        //  taakTable.getSortOrder().add(idCol);
-        //taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedteSystem.out.println("Taak loadData()");
 
+        if (sortedList == null) {
+            sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
+            sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
+            taakTable.setItems(sortedList);
+        }
     }
 
     @FXML

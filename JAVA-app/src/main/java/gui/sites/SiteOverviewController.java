@@ -3,6 +3,7 @@ package gui.sites;
 import dto.SiteDTO;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
+import gui.navigation.FormLoader;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import util.View;
@@ -10,17 +11,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
-
-import java.io.IOException;
 
 public class SiteOverviewController implements NavigableController {
 
@@ -40,11 +37,12 @@ public class SiteOverviewController implements NavigableController {
     @Setter private Navigator navigator;
     private ObservableSites observableSites;
 
+    private SortedList<SiteDTO> sortedList;
+
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableSites = ctx.getObservableSites();
-        this.observableSites.reload(); // recente data van DB ophalen
     }
 
     // TODO -> badge-factory maken?
@@ -141,58 +139,34 @@ public class SiteOverviewController implements NavigableController {
         });
     }
 
-    // tijdelijke oplossing
-    @FXML
-    private void onAdd() {
-        showCreateForm();
+    @Override
+    public void loadData() {
+        observableSites.reload();
+
+        if (sortedList == null) {
+            sortedList = new SortedList<>(observableSites.getFilteredSiteList());
+            sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
+            siteTable.setItems(sortedList);
+        }
     }
 
-    private void showCreateForm() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.SITES_FORM.fxml));
-            Parent form = loader.load();
-
-            SiteFormController formController = loader.getController();
-            formController.setContext(context);
-            formController.loadForCreate();
-
-            formController.setOnClose(() -> {
-                formHost.getChildren().clear();
-                formHost.setManaged(false);
-                formHost.setVisible(false);
-            });
-
-            formHost.getChildren().setAll(form);
-            formHost.setManaged(true);
-            formHost.setVisible(true);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    @FXML
+    private void onAdd() {
+        FormLoader.showForm(
+                formHost,
+                context,
+                View.SITES_FORM.fxml,
+                SiteFormController::loadForCreate
+        );
     }
 
     private void showEditForm(SiteDTO site) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(View.SITES_FORM.fxml));
-            Parent form = loader.load();
-
-            SiteFormController formController = loader.getController();
-            formController.setContext(context);
-            formController.loadForEdit(site);
-
-            formController.setOnClose(() -> {
-                formHost.getChildren().clear();
-                formHost.setManaged(false);
-                formHost.setVisible(false);
-            });
-
-            formHost.getChildren().setAll(form);
-            formHost.setManaged(true);
-            formHost.setVisible(true);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FormLoader.showForm(
+                formHost,
+                context,
+                View.SITES_FORM.fxml,
+                (SiteFormController controller) -> controller.loadForEdit(site)
+        );
     }
 
     private void deleteSite(SiteDTO site) {
@@ -209,7 +183,7 @@ public class SiteOverviewController implements NavigableController {
             if (choice == delete) {
                 try {
                     observableSites.deleteSite(site.siteId()); // moet bestaan
-                    observableSites.reload();
+                   loadData();
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -217,6 +191,7 @@ public class SiteOverviewController implements NavigableController {
                 }
             }
         });
+
     }
 
 }

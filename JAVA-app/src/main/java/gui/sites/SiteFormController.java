@@ -3,7 +3,7 @@ package gui.sites;
 import dto.LocatieDTO;
 import dto.SiteDTO;
 import exception.SiteException;
-import gui.navigation.NavigableController;
+import gui.navigation.FormController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class SiteFormController implements NavigableController {
+public class SiteFormController implements FormController {
 
     @FXML private VBox root;
     @FXML private Label titleLabel;
@@ -46,7 +46,6 @@ public class SiteFormController implements NavigableController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    @Setter private Navigator navigator;
     @Setter private Runnable onClose;
 
     private AppContext context;
@@ -59,7 +58,6 @@ public class SiteFormController implements NavigableController {
     public void setContext(AppContext ctx) {
         context = ctx;
         this.observableSites = ctx.getObservableSites();
-        this.observableSites.reload();
     }
 
     @FXML
@@ -116,15 +114,22 @@ public class SiteFormController implements NavigableController {
         }));
     }
 
+    @Override
+    public void loadData() {
+        observableSites.reload();
+    }
+
     public void loadForCreate() {
         editingSiteId = null;
         titleLabel.setText("Site aanmaken");
+
         naamTf.clear();
         capaciteitTf.clear();
         straatTf.clear();
         nummerTf.clear();
         postcodeTf.clear();
         stadTf.clear();
+        landCb.setValue(null);
 
         operationeelCb.getSelectionModel().select(OperationeleStatus.ACTIEF);
         productieCb.getSelectionModel().select(ProductieStatus.GEZOND);
@@ -187,11 +192,11 @@ public class SiteFormController implements NavigableController {
 
         } catch (SiteException ex) {
             showValidationErrors(ex);
-        } catch (IllegalArgumentException ex) {
-            naamErr.setText(ex.getMessage());
-            naamErr.setManaged(true);
-            naamErr.setVisible(true);
-            naamTf.getStyleClass().add("field-error");
+//        } catch (IllegalArgumentException ex) {
+//            naamErr.setText(ex.getMessage());
+//            naamErr.setManaged(true);
+//            naamErr.setVisible(true);
+//            naamTf.getStyleClass().add("field-error");
         } catch (RuntimeException ex) {
             new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
         }

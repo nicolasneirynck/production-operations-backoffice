@@ -2,20 +2,15 @@ package gui.taken;
 
 import dto.TaakDTO;
 import exception.TaakException;
-import gui.FormController;
-import gui.navigation.NavigableController;
+import gui.navigation.FormController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import lombok.Setter;
 import main.AppContext;
-import util.OperationeleStatus;
-import util.ProductieStatus;
-import util.TaakType;
 
 import java.util.stream.IntStream;
 
@@ -34,7 +29,6 @@ public class TaakFormController implements FormController {
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    @Setter private Navigator navigator;
     @Setter private Runnable onClose;
 
     private AppContext ctx;

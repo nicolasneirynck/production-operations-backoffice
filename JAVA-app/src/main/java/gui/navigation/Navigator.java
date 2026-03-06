@@ -48,12 +48,10 @@ public class Navigator {
     }
 
     public void goTo(View view) {
-        System.out.println("Navigator goTo: " + view);
-
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
         }
- 
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
 //            loader.setControllerFactory(type -> {
