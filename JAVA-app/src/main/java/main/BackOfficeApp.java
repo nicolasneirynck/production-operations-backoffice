@@ -14,11 +14,12 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import util.OperationeleStatus;
 import util.ProductieStatus;
+import main.dev.DevSeeder;
 
 public class BackOfficeApp extends Application {
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
 
         Font.loadFont(getClass().getResource("/fonts/NunitoSans-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(getClass().getResource("/fonts/NunitoSans-Bold.ttf").toExternalForm(), 10);
@@ -28,6 +29,7 @@ public class BackOfficeApp extends Application {
         Navigator navigator = new Navigator(stage, context);
 
         try {
+            new DevSeeder(context.getGebruikerRepo()).seed();
             MockdataSeeder.seed(context);
         } catch (SiteException e) {
             throw new RuntimeException(e);
