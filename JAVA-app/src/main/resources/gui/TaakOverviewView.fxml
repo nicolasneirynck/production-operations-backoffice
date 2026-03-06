@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
 <?import org.kordamp.ikonli.javafx.FontIcon?>
@@ -22,16 +23,6 @@
         </columns>
       </TableView>
    </center>
-   <top>
-      <Label text="Taken Beheren" BorderPane.alignment="CENTER">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
-      </Label>
-   </top>
    <bottom>
       <BorderPane BorderPane.alignment="CENTER">
          <left>
@@ -53,11 +44,11 @@
                </padding>
                <children>
                   <TextField fx:id="searchField" promptText="Zoeken.." />
-                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="">
-                       <graphic>
-                           <FontIcon iconLiteral="fas-sync-alt"/>
-                       </graphic>
-                   </Button>
+<!--                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="">-->
+<!--                       <graphic>-->
+<!--                           <FontIcon iconLiteral="fas-sync-alt"/>-->
+<!--                       </graphic>-->
+<!--                   </Button>-->
 <!--                   zet lijn hieronder uit commentaar om met scenebuilder te werken -->
 <!--                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="Ververs" />-->
                </children>
@@ -65,4 +56,26 @@
          </right>
       </BorderPane>
    </bottom>
+   <top>
+      <StackPane BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" text="Taken Beheren">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </Label>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Button fx:id="backBtn" mnemonicParsing="false" onAction="#onBack" text="&lt;" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </StackPane>
+   </top>
 </BorderPane>

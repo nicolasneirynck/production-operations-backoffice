@@ -1,6 +1,7 @@
 package domein;
 
 import dto.TaakDTO;
+import exception.TaakException;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
 import util.TaakType;
@@ -26,33 +27,37 @@ public class TaakController {
                 .toList();
     }
 
-    public TaakDTO addTaak(TaakType type, String omschrijving, int duurtijd) {
-        Taak nieuweTaak = new Taak(type, omschrijving, duurtijd);
+    public void addTaak(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
 
-        taakRepo.startTransaction();
-        try {
-            taakRepo.insert(nieuweTaak);
-            taakRepo.commitTransaction();
-        } catch (RuntimeException ex) {
-            taakRepo.rollbackTransaction();
-            throw ex;
-        }
+        Taak nieuweTaak = Taak.builder().type(type).omschrijving(omschrijving).duurtijd(duurtijd).build();
+        //Taak nieuweTaak = new Taak(type, omschrijving, duurtijd);
 
-        return createDto(nieuweTaak);
+            taakRepo.startTransaction();
+            try {
+                taakRepo.insert(nieuweTaak);
+                taakRepo.commitTransaction();
+            } catch (RuntimeException ex) {
+                taakRepo.rollbackTransaction();
+                throw ex;
+            }
+
+           // return createDto(nieuweTaak);
     }
 
-    public TaakDTO updateTaak(long id, TaakType type, String omschrijving, int duurtijd) {
+    public void updateTaak(long id, TaakType type, String omschrijving, Integer duurtijd) throws TaakException{
         taakRepo.startTransaction();
         try {
             Taak taak = taakRepo.get(id);
-
             if (taak == null)
                 throw new IllegalArgumentException("Taak niet gevonden.");
 
             taak.update(type, omschrijving, duurtijd);
             taakRepo.commitTransaction();
+            //return createDto(taak); // gebruiken we dit nog?
 
-            return createDto(taak);
+        } catch (TaakException ex) {
+            taakRepo.rollbackTransaction();
+            throw ex;
         } catch (RuntimeException ex) {
             taakRepo.rollbackTransaction();
             throw ex;

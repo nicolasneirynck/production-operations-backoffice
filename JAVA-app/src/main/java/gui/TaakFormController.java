@@ -1,31 +1,43 @@
 package gui;
 
 import dto.TaakDTO;
+import exception.TaakException;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
+import gui.navigation.View;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.TaakType;
 
 import java.util.stream.IntStream;
 
-public class TaakFormController {
+public class TaakFormController implements NavigableController{
     @FXML
     private ComboBox<TaakType> typeBx;
     @FXML private TextArea omschrijvingTxt;
     @FXML private ComboBox<Integer> duurtijdBx;
 
-    @FXML private Label errorLbl;
+    @FXML private Label typeErrorLbl;
+    @FXML private Label omschrijvingErrorLbl;
+    @FXML private Label formErrorLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    private final ObservableTaken observableTaken;
+    @Setter private Navigator navigator;
+    private AppContext ctx;
+
+    private ObservableTaken observableTaken;
     private Long editingId = null; // null = nieuw, anders edit
 
-    public TaakFormController(ObservableTaken observableTaken){
-        this.observableTaken = observableTaken;
+    public void setContext(AppContext ctx) {
+        this.observableTaken = ctx.getObservableTaken();
+        // ctx niet nodig dus ik zet hem niet expliciet, maar de setter wordt wel aangeroepen
     }
 
     @FXML
@@ -38,7 +50,6 @@ public class TaakFormController {
                                 .toList()));
 
         duurtijdBx.setValue(15);
-        errorLbl.setText("");
     }
 
     public void loadForEdit(TaakDTO dto) {
@@ -51,10 +62,12 @@ public class TaakFormController {
 
     @FXML
     private void onSave() {
+        clearErrors();
+
         try {
             TaakType type = typeBx.getValue();
             String omschrijving = omschrijvingTxt.getText();
-            int duurtijd = duurtijdBx.getValue();
+            Integer duurtijd = duurtijdBx.getValue();
 
             if (editingId == null) {
                 observableTaken.addTaak(type, omschrijving, duurtijd);
@@ -62,8 +75,10 @@ public class TaakFormController {
                 observableTaken.editTaak(editingId, type, omschrijving, duurtijd);
             }
             close();
+        } catch (TaakException ex) {
+            showValidationErrors(ex);
         } catch (IllegalArgumentException ex) {
-            errorLbl.setText(ex.getMessage());
+            formErrorLbl.setText(ex.getMessage());
         }
     }
 
@@ -89,5 +104,38 @@ public class TaakFormController {
     private void close() {
         Stage stage = (Stage) omschrijvingTxt.getScene().getWindow();
         stage.close();
+    }
+
+    private void showValidationErrors(TaakException ex) {
+        clearErrors();
+
+        ex.getExceptionMap().forEach((field, iae) -> {
+            String msg = iae.getMessage();
+
+            switch (field) {
+                case "taakType" -> {
+                    typeErrorLbl.setText(msg);
+                    typeBx.getStyleClass().add("field-error");
+                }
+                case "omschrijving" -> {
+                    omschrijvingErrorLbl.setText(msg);
+                    omschrijvingTxt.getStyleClass().add("field-error");
+                }
+                default -> {
+                    if (formErrorLbl != null) formErrorLbl.setText(msg);
+                }
+            }
+        });
+    }
+
+    private void clearErrors() {
+        typeErrorLbl.setText("");
+        omschrijvingErrorLbl.setText("");
+        if (formErrorLbl != null) formErrorLbl.setText("");
+
+        typeBx.getStyleClass().remove("field-error");
+        omschrijvingTxt.getStyleClass().remove("field-error");
+        duurtijdBx.getStyleClass().remove("field-error");
+
     }
 }
