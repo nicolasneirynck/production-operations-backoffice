@@ -25,21 +25,15 @@ public class ObservableSites {
         this.filteredSiteList = new FilteredList<>(observableSiteList, s -> true);
     }
 
-    public void addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
-        controller.addSite(naam, locatie, capaciteit, op, prod);
+    public void addSite(String naam, String straat, String nummer, String postcode, String stad, String land, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        controller.addSite(naam, straat, nummer, postcode, stad, land, capaciteit, op, prod);
         //observableSiteList.add(created);
         reload(); // recente data uit DB halen
     }
 
-    public void editSite(long id, String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
-        controller.updateSite(id, naam, locatie, capaciteit, op, prod);
-
-//        int idx = indexOf(id);
-//        if (idx >= 0) observableSiteList.set(idx, updated);
-
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land, int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        controller.updateSite(id, naam, straat, nummer, postcode , stad, land, capaciteit, op, prod);
         reload();
-
-       // return updated;
     }
 
     public void deleteSite(long id) {

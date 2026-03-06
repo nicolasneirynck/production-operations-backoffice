@@ -32,7 +32,10 @@ public class Site {
 	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	@Column(unique = true)
 	private String naam;
-	private String locatie;
+
+	@Embedded
+	private Locatie locatie;
+
 	private int capaciteit;
 	@Enumerated(EnumType.STRING)
 	private ProductieStatus productieStatus;
@@ -53,39 +56,37 @@ public class Site {
 	}
 
 
-	public void update(String naam, String locatie, Integer capaciteit,
+	public void update(String naam, Locatie locatie, int capaciteit,
 					   OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		validate(naam, locatie, capaciteit, op, prod);
 
 		this.naam = naam;
 		this.locatie = locatie;
-		this.capaciteit = capaciteit; // safe
+		this.capaciteit = capaciteit;
 		this.operationeleStatus = op;
 		this.productieStatus = prod;
 	}
 
-	private static void validate(String naam, String locatie, Integer capaciteit,
+	private static void validate(String naam, Locatie locatie, int capaciteit,
 								 OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
 		Map<String, IllegalArgumentException> errors = new HashMap<>();
 
 		if (naam == null || naam.isBlank())
-			errors.put("naam", new IllegalArgumentException("Naam is verplicht."));
+			errors.put("naam", new IllegalArgumentException("Naam vereist."));
 
-		if (locatie == null || locatie.isBlank())
-			errors.put("locatie", new IllegalArgumentException("Locatie is verplicht."));
+//		if (locatie == null)
+//			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
 
-		if (capaciteit == null)
-			errors.put("capaciteit", new IllegalArgumentException("Capaciteit is verplicht."));
-		else if (capaciteit <= 0)
+		if (capaciteit <= 0)
 			errors.put("capaciteit", new IllegalArgumentException("Capaciteit moet groter zijn dan 0."));
 
 		if (op == null)
-			errors.put("operationeleStatus", new IllegalArgumentException("Operationele status is verplicht."));
+			errors.put("operationeleStatus", new IllegalArgumentException("Operationele status vereist."));
 
 		if (prod == null)
-			errors.put("productieStatus", new IllegalArgumentException("Productiestatus is verplicht."));
+			errors.put("productieStatus", new IllegalArgumentException("Productiestatus vereist."));
 
 		if (op != null && prod != null) {
 			if (op == OperationeleStatus.NON_ACTIEF && prod != ProductieStatus.OFFLINE) {
@@ -102,7 +103,7 @@ public class Site {
 
 	public static class Builder {
 		private String naam;
-		private String locatie;
+		private Locatie locatie;
 		private int capaciteit;
 		private OperationeleStatus operationeleStatus;
 		private ProductieStatus productieStatus;
@@ -112,7 +113,7 @@ public class Site {
 			return this;
 		}
 
-		public Builder locatie(String locatie){
+		public Builder locatie(Locatie locatie){
 			this.locatie = locatie;
 			return this;
 		}
