@@ -8,7 +8,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.taken.TaakFormController"
             fx:id="root"
-            spacing="10">
+            spacing="18">
 
     <styleClass>
         <String fx:value="card"/>
@@ -17,40 +17,42 @@
 
     <Label fx:id="titleLabel" text="Taak aanmaken" styleClass="card-title"/>
 
-    <HBox spacing="18">
+    <HBox spacing="24">
 
         <!-- LINKS: Taaktype, duurtijd -->
-        <VBox spacing="8" prefWidth="280" minWidth="260" maxWidth="320">
+        <VBox spacing="14" prefWidth="380" maxWidth="380">
 
-            <GridPane hgap="4" vgap="4">
-                <columnConstraints>
-                    <ColumnConstraints prefWidth="120" hgrow="NEVER" halignment="LEFT"/>
-                    <ColumnConstraints hgrow="ALWAYS"/>
-                </columnConstraints>
+            <!-- Taaktype -->
+            <VBox spacing="4">
+                <Label text="Taak type" styleClass="form-label"/>
+                <ComboBox fx:id="typeBx"
+                          promptText="KIES TAAKTYPE"
+                          maxWidth="Infinity"
+                          editable="true"
+                          styleClass="form-combo"/>
+                <Label fx:id="typeErrorLbl" styleClass="error-label"/>
+            </VBox>
 
-                <!-- Taak type naam -->
-                <Label text="Taak type" styleClass="form-label"
-                       GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
-                    <ComboBox fx:id="typeBx" promptText="KIES TAAKTYPE" maxWidth="Infinity" editable="true"/>
-                    <Label fx:id="typeErrorLbl" styleClass="error-label"/>
-                </VBox>
+            <!-- Duurtijd -->
+            <VBox spacing="4">
+                <Label text="Duurtijd (minuten)" styleClass="form-label"/>
+                <ComboBox fx:id="duurtijdBx"
+                          promptText="KIES DUURTIJD"
+                          maxWidth="Infinity"
+                          styleClass="form-combo"/>
+            </VBox>
 
-                <!-- Duurtijd -->
-                <Label text="Duurtijd (minuten)" styleClass="form-label" wrapText="true"
-                       GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
-                    <ComboBox fx:id="duurtijdBx" promptText="KIES DUURTIJD" maxWidth="Infinity"/>
-<!--                    <Label fx:id="duurtijdErrorLbl" styleClass="error-label"/>-->
-                </VBox>
-            </GridPane>
         </VBox>
 
         <!-- RECHTS: Omschrijving -->
-        <VBox spacing="6" HBox.hgrow="ALWAYS">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
             <Label text="Omschrijving" styleClass="form-label"/>
             <TextArea fx:id="omschrijvingTxt" promptText="Geef een duidelijke taakomschrijving" wrapText="true"
-                      prefRowCount="6" VBox.vgrow="ALWAYS"/>
+                      prefRowCount="4"
+                      VBox.vgrow="ALWAYS"
+                      minHeight="110"
+                      maxHeight="140"
+                      styleClass="form-textarea"/>
             <Label fx:id="omschrijvingErrorLbl" styleClass="error-label"/>
         </VBox>
 
@@ -58,8 +60,8 @@
 
     <!-- Buttons -->
     <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelBtn" text="Annuleren" onAction="#onCancel" styleClass="btn-ghost"/>
         <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
-        <Button fx:id="cancelBtn" text="✖" onAction="#onCancel" styleClass="btn-ghost"/>
     </HBox>
 
 

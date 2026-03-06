@@ -123,8 +123,8 @@
 
     <!-- Buttons -->
     <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelBtn" text="Annuleren" onAction="#onCancel" styleClass="btn-ghost"/>
         <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
-        <Button fx:id="cancelBtn" text="✖" onAction="#onCancel" styleClass="btn-ghost"/>
     </HBox>
 
 </VBox>

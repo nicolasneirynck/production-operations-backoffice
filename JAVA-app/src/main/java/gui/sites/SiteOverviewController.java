@@ -66,7 +66,9 @@ public class SiteOverviewController implements NavigableController {
         siteTable.setSelectionModel(null);
 
 
-        addBtn.disableProperty().bind(formHost.visibleProperty());
+        //addBtn.disableProperty().bind(formHost.visibleProperty());
+        addBtn.managedProperty().bind(formHost.visibleProperty().not());
+        addBtn.visibleProperty().bind(formHost.visibleProperty().not());
     }
 
     private void configureStatusColumns() {

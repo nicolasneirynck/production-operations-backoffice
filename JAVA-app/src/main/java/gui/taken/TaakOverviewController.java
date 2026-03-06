@@ -56,7 +56,9 @@ public class TaakOverviewController implements NavigableController {
         taakTable.setFixedCellSize(44);
         taakTable.setSelectionModel(null);
 
-        addBtn.disableProperty().bind(formHost.visibleProperty());
+        //addBtn.disableProperty().bind(formHost.visibleProperty());
+        addBtn.managedProperty().bind(formHost.visibleProperty().not());
+        addBtn.visibleProperty().bind(formHost.visibleProperty().not());
     }
 
     public void loadData(){
