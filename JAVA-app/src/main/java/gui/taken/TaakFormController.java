@@ -1,48 +1,48 @@
-package gui;
+package gui.taken;
 
 import dto.TaakDTO;
 import exception.TaakException;
-import gui.navigation.NavigableController;
+import gui.navigation.FormController;
 import gui.navigation.Navigator;
-import gui.navigation.View;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
-import util.TaakType;
 
 import java.util.stream.IntStream;
 
-public class TaakFormController implements NavigableController{
-    @FXML
-    private ComboBox<TaakType> typeBx;
-    @FXML private TextArea omschrijvingTxt;
+public class TaakFormController implements FormController {
+
+    @FXML private VBox root;
+    @FXML private Label titleLabel;
+
+    @FXML private ComboBox<String> typeBx;
     @FXML private ComboBox<Integer> duurtijdBx;
+    @FXML private TextArea omschrijvingTxt;
 
     @FXML private Label typeErrorLbl;
     @FXML private Label omschrijvingErrorLbl;
-    @FXML private Label formErrorLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
 
-    @Setter private Navigator navigator;
-    private AppContext ctx;
+    @Setter private Runnable onClose;
 
+    private AppContext ctx;
     private ObservableTaken observableTaken;
-    private Long editingId = null; // null = nieuw, anders edit
+
+    private Long editingId = null;
 
     public void setContext(AppContext ctx) {
+        this.ctx = ctx;
         this.observableTaken = ctx.getObservableTaken();
-        // ctx niet nodig dus ik zet hem niet expliciet, maar de setter wordt wel aangeroepen
     }
 
     @FXML
     private void initialize() {
-        typeBx.setItems(FXCollections.observableArrayList(TaakType.values()));
         duurtijdBx.setItems(FXCollections.observableArrayList(
                         IntStream.rangeClosed(1, 16)
                                 .map(i -> i * 15)
@@ -50,22 +50,49 @@ public class TaakFormController implements NavigableController{
                                 .toList()));
 
         duurtijdBx.setValue(15);
+
+        typeBx.valueProperty().addListener((o,a,b) -> clearError("taakType"));
+        omschrijvingTxt.textProperty().addListener((o, a, b) -> clearError("omschrijving"));
+
+    }
+
+    public void loadData() {
+        observableTaken.reload();
+
+        typeBx.setItems(FXCollections.observableArrayList(
+                ctx.getTaakController().getAllTaakTypes()
+        ));
+    }
+
+    public void loadForCreate() {
+        editingId = null;
+
+        titleLabel.setText("Taak aanmaken");
+        typeBx.setValue(null);
+        duurtijdBx.setValue(15);
+        omschrijvingTxt.clear();
+
+        clearErrors();
     }
 
     public void loadForEdit(TaakDTO dto) {
         this.editingId = dto.taakId();
+        titleLabel.setText("Taak wijzigen");
 
         typeBx.setValue(dto.taakType());
-        omschrijvingTxt.setText(dto.omschrijving());
         duurtijdBx.setValue(dto.duurtijd());
+        omschrijvingTxt.setText(dto.omschrijving());
+
+        clearErrors();
     }
 
     @FXML
     private void onSave() {
+
         clearErrors();
 
         try {
-            TaakType type = typeBx.getValue();
+            String type = typeBx.isEditable() ? typeBx.getEditor().getText() : typeBx.getValue();
             String omschrijving = omschrijvingTxt.getText();
             Integer duurtijd = duurtijdBx.getValue();
 
@@ -74,11 +101,13 @@ public class TaakFormController implements NavigableController{
             } else {
                 observableTaken.editTaak(editingId, type, omschrijving, duurtijd);
             }
+
+            observableTaken.reload();
             close();
         } catch (TaakException ex) {
             showValidationErrors(ex);
-        } catch (IllegalArgumentException ex) {
-            formErrorLbl.setText(ex.getMessage());
+        } catch (RuntimeException ex) {
+            new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
         }
     }
 
@@ -102,9 +131,9 @@ public class TaakFormController implements NavigableController{
     }
 
     private void close() {
-        Stage stage = (Stage) omschrijvingTxt.getScene().getWindow();
-        stage.close();
+        if (onClose != null) onClose.run();
     }
+
 
     private void showValidationErrors(TaakException ex) {
         clearErrors();
@@ -121,17 +150,27 @@ public class TaakFormController implements NavigableController{
                     omschrijvingErrorLbl.setText(msg);
                     omschrijvingTxt.getStyleClass().add("field-error");
                 }
-                default -> {
-                    if (formErrorLbl != null) formErrorLbl.setText(msg);
-                }
+                default -> {new Alert(Alert.AlertType.ERROR, msg).showAndWait();}
             }
         });
+    }
+
+    private void clearError(String key) {
+        switch (key) {
+            case "taakType" -> {
+                typeErrorLbl.setText("");
+                typeBx.getStyleClass().remove("field-error");
+            }
+            case "omschrijving" -> {
+                omschrijvingErrorLbl.setText("");
+                omschrijvingErrorLbl.getStyleClass().remove("field-error");
+            }
+        }
     }
 
     private void clearErrors() {
         typeErrorLbl.setText("");
         omschrijvingErrorLbl.setText("");
-        if (formErrorLbl != null) formErrorLbl.setText("");
 
         typeBx.getStyleClass().remove("field-error");
         omschrijvingTxt.getStyleClass().remove("field-error");

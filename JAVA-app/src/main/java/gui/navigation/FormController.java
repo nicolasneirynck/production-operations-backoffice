@@ -2,8 +2,8 @@ package gui.navigation;
 
 import main.AppContext;
 
-public interface NavigableController {
-    void setNavigator(Navigator navigator);
+public interface FormController {
     void setContext(AppContext context);
+    void setOnClose(Runnable onClose);
     default void loadData(){};
 }
