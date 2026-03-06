@@ -1,22 +1,24 @@
 package main;
 
-import dto.SiteDTO;
 import exception.SiteException;
-import gui.MainMenuController;
-import gui.ObservableSites;
 import gui.navigation.Navigator;
 import gui.navigation.View;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import util.OperationeleStatus;
-import util.ProductieStatus;
 import main.dev.DevSeeder;
+import security.SecurityContext;
 
 public class BackOfficeApp extends Application {
+
+    private void bindAuthNavigation(Navigator navigator) {
+        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
+            // TODO: in de plaats van goTo(MAIN_MENU): laat een specifiek scherm zien afhankelijk van de role?
+            if (newUser != null) navigator.goTo(View.MAIN_MENU);
+//            else navigator.goTo(View.LOGIN);
+            else navigator.goTo(View.LOGIN);
+        });
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -36,6 +38,9 @@ public class BackOfficeApp extends Application {
         }
 
         navigator.initLayout("/gui/LayoutView.fxml", "BackOffice", 1200, 800, "/css/app.css");
+
+        bindAuthNavigation(navigator);
+        navigator.goTo(View.LOGIN);
     }
 }
 

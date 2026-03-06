@@ -14,6 +14,9 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import main.AppContext;
+import security.Authorizer;
+import security.Permission;
+import security.SecurityContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,6 +66,10 @@ public class LayoutController implements NavigableController {
     }
 
     public void setContent(View view) {
+        if (view == View.SITES_OVERVIEW) {
+            Authorizer.require(Permission.SITES_BEHEREN);
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
 
@@ -125,7 +132,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void onLogout() {
-        System.out.println("Logout clicked");
-        // later: navigator.logout() of context.reset()
+        // TODO: confirmation pop-up
+        SecurityContext.logout();
     }
 }

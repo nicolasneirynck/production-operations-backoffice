@@ -11,6 +11,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
+import security.Authorizer;
+import security.Permission;
 
 import java.util.function.Consumer;
 
@@ -54,6 +56,10 @@ public class Navigator {
     }
 
     public void goTo(View view) {
+        if (view == View.SITES_OVERVIEW) {
+            Authorizer.require(Permission.SITES_BEHEREN);
+        }
+
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
         }
