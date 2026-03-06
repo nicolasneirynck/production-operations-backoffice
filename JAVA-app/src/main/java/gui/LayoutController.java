@@ -32,6 +32,8 @@ public class LayoutController implements NavigableController {
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
    // @FXML private HBox machinesRow;
+    @FXML public HBox takenRow;
+
 
     // content
     @Getter
@@ -42,7 +44,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, teamsRow, sitesRow); // TODO autorisatie? setSideNav()?
+        navRows = List.of(homeRow, teamsRow, sitesRow,takenRow); // TODO autorisatie? setSideNav()?
 
         // logo
         logoImage.setViewport(null);
@@ -121,6 +123,13 @@ public class LayoutController implements NavigableController {
         //setContent("/gui/SitesOverviewContent.fxml"); // TODO
         setContent(View.SITES_OVERVIEW);
         setActive(sitesRow);
+    }
+
+    @FXML
+    private void onTaken() {
+        //setContent("/gui/SitesOverviewContent.fxml"); // TODO
+        setContent(View.TAKEN_OVERVIEW);
+        setActive(takenRow);
     }
 
     @FXML

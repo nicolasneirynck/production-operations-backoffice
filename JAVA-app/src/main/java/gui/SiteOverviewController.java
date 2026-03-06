@@ -1,6 +1,7 @@
 package gui;
 
 import dto.SiteDTO;
+import gui.factories.ActionColumnFactory;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import gui.navigation.View;
@@ -25,33 +26,21 @@ import java.io.IOException;
 
 public class SiteOverviewController implements NavigableController {
 
+    @FXML private VBox formHost;
+    @FXML private Button addBtn;
 
-    @FXML
-    private TableView<SiteDTO> siteTable;
-    @FXML
-    private TableColumn<SiteDTO, String> naamCol;
-    @FXML
-    private TableColumn<SiteDTO, String> locatieCol;
-    @FXML
-    private TableColumn<SiteDTO, Integer> capaciteitCol;
-    @FXML
-    private TableColumn<SiteDTO, OperationeleStatus> operationeleCol;
-    @FXML
-    private TableColumn<SiteDTO, ProductieStatus> productieCol;
-    @FXML
-    private TableColumn<SiteDTO, SiteDTO> actiesCol;
+    @FXML private TableView<SiteDTO> siteTable;
+    @FXML private TableColumn<SiteDTO, String> naamCol;
+    @FXML private TableColumn<SiteDTO, String> locatieCol;
+    @FXML private TableColumn<SiteDTO, Integer> capaciteitCol;
+    @FXML private TableColumn<SiteDTO, OperationeleStatus> operationeleCol;
+    @FXML private TableColumn<SiteDTO, ProductieStatus> productieCol;
+    @FXML private TableColumn<SiteDTO, SiteDTO> actiesCol;
 
-    @FXML
-    private VBox formHost;
-    @FXML
-    private Button addBtn;
-
-    @Setter
-    private Navigator navigator;
     private AppContext context;
+    @Setter private LayoutController layout;
+    @Setter private Navigator navigator;
     private ObservableSites observableSites;
-    @Setter
-    private LayoutController layout;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -68,10 +57,10 @@ public class SiteOverviewController implements NavigableController {
         capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
 
         configureStatusColumns();
-        configureActionColumn();
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteSite);
 
-        naamCol.setStyle("-fx-alignment: CENTER;");
-        locatieCol.setStyle("-fx-alignment: CENTER;");
+        naamCol.setStyle("-fx-alignment: center-left;");
+        locatieCol.setStyle("-fx-alignment: center-left;");
         capaciteitCol.setStyle("-fx-alignment: CENTER;");
         operationeleCol.setStyle("-fx-alignment: CENTER;");
         productieCol.setStyle("-fx-alignment: CENTER;");
@@ -90,7 +79,7 @@ public class SiteOverviewController implements NavigableController {
         //default sortering
         // idCol.setSortType(TableColumn.SortType.ASCENDING);
         //siteTable.getSortOrder().add(idCol);
-        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
+      //  siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);// kolommen vullen automatisch de breedte
 
         addBtn.disableProperty().bind(formHost.visibleProperty());
     }
@@ -161,55 +150,6 @@ public class SiteOverviewController implements NavigableController {
                 }
 
                 setGraphic(label);
-            }
-        });
-    }
-
-    private void configureActionColumn() {
-
-        actiesCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue()));
-
-        actiesCol.setCellFactory(col -> new TableCell<>() {
-
-            private final Button editBtn = new Button("");
-            private final Button deleteBtn = new Button("");
-            private final HBox box = new HBox(8, editBtn, deleteBtn);
-
-            {
-                box.setAlignment(Pos.CENTER);
-
-                ImageView editIcon = new ImageView(new Image("/images/pencil-write.png"));
-                editIcon.setFitHeight(16);
-                editIcon.setFitWidth(16);
-
-                ImageView deleteIcon = new ImageView(new Image("/images/bin.png"));
-                deleteIcon.setFitHeight(16);
-                deleteIcon.setFitWidth(16);
-
-                editBtn.setGraphic(editIcon);
-                deleteBtn.setGraphic(deleteIcon);
-
-                editBtn.setTooltip(new Tooltip("Bewerken"));
-                deleteBtn.setTooltip(new Tooltip("Verwijderen"));
-
-                editBtn.getStyleClass().add("icon-button");
-                deleteBtn.getStyleClass().add("icon-button");
-            }
-
-            @Override
-            protected void updateItem(SiteDTO item, boolean empty) {
-
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setGraphic(null);
-                    return;
-                }
-
-                editBtn.setOnAction(e -> showEditForm(item));
-                deleteBtn.setOnAction(e -> deleteSite(item));
-
-                setGraphic(box);
             }
         });
     }

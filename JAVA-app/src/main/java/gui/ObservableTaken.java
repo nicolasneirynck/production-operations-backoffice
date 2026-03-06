@@ -22,12 +22,12 @@ public class ObservableTaken {
         this.filteredTaakList = new FilteredList<>(observableTaakList,t -> true);
     }
 
-    public void addTaak(TaakType type, String omschrijving, Integer duurtijd) throws TaakException {
+    public void addTaak(String type, String omschrijving, Integer duurtijd) throws TaakException {
         controller.addTaak(type,omschrijving,duurtijd);
         reload();
     }
 
-    public void editTaak(long id,TaakType type, String omschrijving, Integer duurtijd) throws TaakException{
+    public void editTaak(long id,String type, String omschrijving, Integer duurtijd) throws TaakException{
         controller.updateTaak(id, type, omschrijving, duurtijd);
         reload();
        // return updated;

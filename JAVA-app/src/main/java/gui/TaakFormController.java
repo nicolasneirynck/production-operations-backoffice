@@ -55,7 +55,7 @@ public class TaakFormController implements NavigableController{
     public void loadForEdit(TaakDTO dto) {
         this.editingId = dto.taakId();
 
-        typeBx.setValue(dto.taakType());
+       // typeBx.setValue(dto.taakType());
         omschrijvingTxt.setText(dto.omschrijving());
         duurtijdBx.setValue(dto.duurtijd());
     }
@@ -65,14 +65,14 @@ public class TaakFormController implements NavigableController{
         clearErrors();
 
         try {
-            TaakType type = typeBx.getValue();
+           // String type = typeBx.getValue();
             String omschrijving = omschrijvingTxt.getText();
             Integer duurtijd = duurtijdBx.getValue();
 
             if (editingId == null) {
-                observableTaken.addTaak(type, omschrijving, duurtijd);
+                observableTaken.addTaak("TIJDELIJK", omschrijving, duurtijd);
             } else {
-                observableTaken.editTaak(editingId, type, omschrijving, duurtijd);
+                observableTaken.editTaak(editingId, "TIJDELIJK", omschrijving, duurtijd);
             }
             close();
         } catch (TaakException ex) {

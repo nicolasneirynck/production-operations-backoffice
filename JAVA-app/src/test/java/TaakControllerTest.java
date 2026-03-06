@@ -24,7 +24,7 @@ import util.TaakType;
 public class TaakControllerTest {
 
     private final String GELDIGE_OMSCHRIJVING = "Maandelijks onderhoud compressor";
-    private final TaakType GELDIG_TYPE = TaakType.ONDERHOUD;
+    private final String GELDIG_TYPE = "Onderhoud";
     private final int GELDIGE_DUURTIJD = 60; // minuten
 
     @Mock
@@ -48,7 +48,7 @@ public class TaakControllerTest {
 
         assertEquals(1, taken.size());
         assertEquals(GELDIGE_OMSCHRIJVING, taken.getFirst().omschrijving());
-        assertEquals(GELDIG_TYPE, taken.getFirst().taakType());
+        assertEquals(GELDIG_TYPE.toUpperCase(), taken.getFirst().taakType());
         assertEquals(GELDIGE_DUURTIJD, taken.getFirst().duurtijd());
 
         verify(taakRepo).findAll();
@@ -72,21 +72,21 @@ public class TaakControllerTest {
     private static Stream<Arguments> ongeldigeParameters() {
         return Stream.of(
                 Arguments.of(null, "Omschrijving", 60),                    // type null
-                Arguments.of(TaakType.ONDERHOUD, "", 60),                 // omschrijving leeg
-                Arguments.of(TaakType.ONDERHOUD, null, 60),               // omschrijving null
-                Arguments.of(TaakType.ONDERHOUD, "   ", 60),              // omschrijving blank
-                Arguments.of(TaakType.ONDERHOUD, "Test", 0),              // duurtijd 0
-                Arguments.of(TaakType.ONDERHOUD, "Test", -15),            // duurtijd negatief
-                Arguments.of(TaakType.ONDERHOUD, "Test", 14),             // niet deelbaar door 15
-                Arguments.of(TaakType.ONDERHOUD, "Test", 16),             // niet deelbaar door 15
-                Arguments.of(TaakType.ONDERHOUD, "Test", 241)             // > 4 uur
+                Arguments.of("Onderhoud", "", 60),                 // omschrijving leeg
+                Arguments.of("Onderhoud", null, 60),               // omschrijving null
+                Arguments.of("Onderhoud", "   ", 60),              // omschrijving blank
+                Arguments.of("Onderhoud", "Test", 0),              // duurtijd 0
+                Arguments.of("Onderhoud", "Test", -15),            // duurtijd negatief
+                Arguments.of("Onderhoud", "Test", 14),             // niet deelbaar door 15
+                Arguments.of("Onderhoud", "Test", 16),             // niet deelbaar door 15
+                Arguments.of("Onderhoud", "Test", 241)             // > 4 uur
         );
     }
 
     @ParameterizedTest
     @MethodSource("ongeldigeParameters")
     public void addTaak_ongeldigeParameters_gooitException_enRaaktRepoNiet(
-            TaakType type, String omschrijving, int duurtijd) {
+            String type, String omschrijving, int duurtijd) {
 
         assertThrows(TaakException.class, () ->
                 taakController.addTaak(type, omschrijving, duurtijd)
@@ -100,7 +100,7 @@ public class TaakControllerTest {
         long id = 1L;
 
         Taak bestaande = Taak.builder()
-                .type(TaakType.INSPECTIE)
+                .type(GELDIG_TYPE)
                 .omschrijving("OUD")
                 .duurtijd(30)
                 .build();;
@@ -119,7 +119,7 @@ public class TaakControllerTest {
         verify(taakRepo).commitTransaction();
         verify(taakRepo, never()).rollbackTransaction();
 
-        assertEquals(GELDIG_TYPE, bestaande.getTaakType());
+        assertEquals(GELDIG_TYPE.toUpperCase(), bestaande.getTaakType());
         assertEquals(GELDIGE_OMSCHRIJVING, bestaande.getOmschrijving());
         assertEquals(GELDIGE_DUURTIJD, bestaande.getDuurtijd());
     }
@@ -127,12 +127,12 @@ public class TaakControllerTest {
     @ParameterizedTest
     @MethodSource("ongeldigeParameters")
     public void updateTaak_ongeldigeParameters_gooitException_enRollback(
-            TaakType type, String omschrijving, int duurtijd) throws Exception{
+            String type, String omschrijving, int duurtijd) throws Exception{
 
         long id = 1L;
 
         Taak bestaande = Taak.builder()
-                .type(TaakType.INSPECTIE)
+                .type(GELDIG_TYPE)
                 .omschrijving("OUD")
                 .duurtijd(30)
                 .build();

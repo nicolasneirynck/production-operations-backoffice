@@ -2,6 +2,7 @@ package main;
 
 import dto.SiteDTO;
 import exception.SiteException;
+import exception.TaakException;
 import gui.MainMenuController;
 import gui.ObservableSites;
 import gui.navigation.Navigator;
@@ -29,7 +30,7 @@ public class BackOfficeApp extends Application {
 
         try {
             MockdataSeeder.seed(context);
-        } catch (SiteException e) {
+        } catch (SiteException | TaakException e) {
             throw new RuntimeException(e);
         }
 
