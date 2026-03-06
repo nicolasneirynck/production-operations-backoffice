@@ -1,3 +1,4 @@
+import domein.Locatie;
 import domein.Site;
 import exception.SiteException;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,12 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SiteTest {
+
+    private static final String STRAAT = "Meir";
+    private static final String NUMMER = "1";
+    private static final String POSTCODE = "2000";
+    private static final String STAD = "Antwerpen";
+    private static final String LAND = "België";
 
     static Stream<Arguments> geldigeCombinaties() {
         return Stream.of(
@@ -28,14 +35,20 @@ public class SiteTest {
 
         Site site = Site.builder()
                 .naam("Site-A")
-                .locatie("Antwerpen")
+                .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
                 .capaciteit(100)
                 .operationeleStatus(op)
                 .productieStatus(prod)
                 .build();
 
         assertEquals("Site-A", site.getNaam());
-        assertEquals("Antwerpen", site.getLocatie());
+
+        assertEquals(STRAAT, site.getLocatie().getStraat());
+        assertEquals(NUMMER, site.getLocatie().getNummer());
+        assertEquals(POSTCODE, site.getLocatie().getPostcode());
+        assertEquals(STAD, site.getLocatie().getStad());
+        assertEquals(LAND, site.getLocatie().getLand());
+
         assertEquals(100, site.getCapaciteit());
         assertEquals(op, site.getOperationeleStatus());
         assertEquals(prod, site.getProductieStatus());
@@ -51,7 +64,7 @@ public class SiteTest {
         assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("Brugge")
-                        .locatie("België")
+                        .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
                         .capaciteit(100)
                         .operationeleStatus(OperationeleStatus.NON_ACTIEF)
                         .productieStatus(prod)
@@ -65,7 +78,7 @@ public class SiteTest {
         assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("X")
-                        .locatie("Y")
+                        .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
                         .capaciteit(cap)
                         .operationeleStatus(OperationeleStatus.ACTIEF)
                         .productieStatus(ProductieStatus.GEZOND)
@@ -80,7 +93,7 @@ public class SiteTest {
         assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam(naam)
-                        .locatie("Y")
+                        .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
                         .capaciteit(10)
                         .operationeleStatus(OperationeleStatus.ACTIEF)
                         .productieStatus(ProductieStatus.GEZOND)
@@ -88,14 +101,37 @@ public class SiteTest {
         );
     }
 
+    static Stream<Arguments> ongeldigeLocatieVelden() {
+        return Stream.of(
+                Arguments.of(null, NUMMER, POSTCODE, STAD, LAND),
+                Arguments.of("", NUMMER, POSTCODE, STAD, LAND),
+                Arguments.of("   ", NUMMER, POSTCODE, STAD, LAND),
+
+                Arguments.of(STRAAT, null, POSTCODE, STAD, LAND),
+                Arguments.of(STRAAT, "", POSTCODE, STAD, LAND),
+                Arguments.of(STRAAT, "   ", POSTCODE, STAD, LAND),
+
+                Arguments.of(STRAAT, NUMMER, null, STAD, LAND),
+                Arguments.of(STRAAT, NUMMER, "", STAD, LAND),
+                Arguments.of(STRAAT, NUMMER, "   ", STAD, LAND),
+
+                Arguments.of(STRAAT, NUMMER, POSTCODE, null, LAND),
+                Arguments.of(STRAAT, NUMMER, POSTCODE, "", LAND),
+                Arguments.of(STRAAT, NUMMER, POSTCODE, "   ", LAND),
+
+                Arguments.of(STRAAT, NUMMER, POSTCODE, STAD, null),
+                Arguments.of(STRAAT, NUMMER, POSTCODE, STAD, ""),
+                Arguments.of(STRAAT, NUMMER, POSTCODE, STAD, "   ")
+        );
+    }
+
     @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   "})
-    void builder_OngeldigeLocatie_GooitException(String locatie) {
+    @MethodSource("ongeldigeLocatieVelden")
+    void builder_OngeldigeLocatie_GooitException(String straat, String nummer, String postcode, String stad, String land) {
         assertThrows(SiteException.class, () ->
                 Site.builder()
                         .naam("X")
-                        .locatie(locatie)
+                        .locatie(Locatie.builder(straat, nummer, postcode, stad, land))
                         .capaciteit(10)
                         .operationeleStatus(OperationeleStatus.ACTIEF)
                         .productieStatus(ProductieStatus.GEZOND)

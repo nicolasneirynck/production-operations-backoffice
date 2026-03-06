@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 public class Navigator {
@@ -87,97 +88,23 @@ public class Navigator {
         }
     }
 
+    public Parent load(View view) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
+            Parent root = loader.load();
 
+            Object controller = loader.getController();
 
-//    public void goTo(View view) {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-//            loader.setControllerFactory(type -> {
-//                try {
-//                    Object controller = type.getDeclaredConstructor().newInstance();
-//
-//                    if (controller instanceof NavigableController nc) {
-//                        nc.setNavigator(this);
-//                        nc.setContext(context);
-//                    }
-//                    return controller;
-//
-//                } catch (Exception e) {
-//                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
-//                }
-//            });
-//
-//            Parent root = loader.load();
-//
-//            stage.setScene(new Scene(root));
-//            stage.setTitle(view.title);
-//            stage.show();
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("Kan view niet laden: " + view, e);
-//        }
-//    }
+            if (controller instanceof NavigableController nc) {
+                nc.setContext(context);
+                nc.setNavigator(this);
+            }
 
-//    public void tempGoTo(View view, String title) {
-//        try {
-//            // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-//            // controller injecteren
-//            loader.setControllerFactory(type -> {
-//                if (type == GebruikerOverviewController.class) {
-//                    // TODO: gebruik ctx & stage
-//                    return new GebruikerOverviewController(new GebruikerController());
-//                }
-//                try {
-//                    return type.getDeclaredConstructor().newInstance();
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
-//
-//            Parent root = loader.load();
-//            stage.setScene(new Scene(root));
-//            stage.setTitle(title);
-//        }
-//        catch(Exception e){
-//            //errorLbl.setText(e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
+            return root;
 
-//    public <T extends NavigableController> void showDialog(View view, String title, Consumer<T> initController) {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-//
-//            loader.setControllerFactory(type -> {
-//                try {
-//                    Object controller = type.getDeclaredConstructor().newInstance();
-//
-//                    if (controller instanceof NavigableController nc) {
-//                        nc.setNavigator(this);
-//                        nc.setContext(context);
-//                    }
-//                    return controller;
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
-//
-//            Parent root = loader.load();
-//
-//            T controller = loader.getController();
-//            if (initController != null) initController.accept(controller);
-//
-//            Stage dialog = new Stage();
-//            dialog.setTitle(title);
-//            dialog.initOwner(stage);
-//            dialog.initModality(Modality.APPLICATION_MODAL);
-//            dialog.setScene(new Scene(root));
-//            dialog.showAndWait();
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("Dialog openen mislukt: " + view, e);
-//        }
-//    }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
