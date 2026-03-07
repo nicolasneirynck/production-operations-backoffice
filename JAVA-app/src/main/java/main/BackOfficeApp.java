@@ -1,13 +1,17 @@
 package main;
 
 import exception.SiteException;
+import gui.effects.ButtonEffects;
 import gui.navigation.Navigator;
 import gui.navigation.View;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import main.dev.DevSeeder;
 import security.SecurityContext;
+
+import java.awt.*;
 
 public class BackOfficeApp extends Application {
 
@@ -15,9 +19,13 @@ public class BackOfficeApp extends Application {
         SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
             // TODO: in de plaats van goTo(MAIN_MENU): laat een specifiek scherm zien afhankelijk van de role?
             if (newUser != null) navigator.goTo(View.MAIN_MENU);
-//            else navigator.goTo(View.LOGIN);
             else navigator.goTo(View.LOGIN);
         });
+    }
+
+    private void initGuiEffects(Scene scene) {
+        ButtonEffects buttonEffects = new ButtonEffects();
+        buttonEffects.applyEffect(scene);
     }
 
     @Override
@@ -41,6 +49,8 @@ public class BackOfficeApp extends Application {
 
         bindAuthNavigation(navigator);
         navigator.goTo(View.LOGIN);
+
+        initGuiEffects(stage.getScene());
     }
 }
 
