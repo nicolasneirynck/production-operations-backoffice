@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -17,6 +18,7 @@ import main.AppContext;
 import security.Authorizer;
 import security.Permission;
 import security.SecurityContext;
+import security.UserPrincipal;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +30,7 @@ public class LayoutController implements NavigableController {
     @FXML private ImageView logoImage;
     @FXML private Label userNameLbl;
     @FXML private Label userRoleLbl;
+    @FXML private StackPane notif;
 
     // sidebar
     private List<HBox> navRows;
@@ -35,6 +38,7 @@ public class LayoutController implements NavigableController {
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
    // @FXML private HBox machinesRow;
+    @FXML private Button logoutBtn;
 
     // content
     @Getter
@@ -43,9 +47,41 @@ public class LayoutController implements NavigableController {
     @Setter private Navigator navigator;
     @Setter private AppContext context;
 
+    private void changeVisibility(boolean visible) {
+        for (HBox row : navRows) {
+            row.setVisible(visible);
+        }
+        userNameLbl.setVisible(visible);
+        userRoleLbl.setVisible(visible);
+        notif.setVisible(visible);
+        logoutBtn.setVisible(visible);
+
+        // TODO: set visible row here once it's added
+    }
+
+    private void handleAuthorizationChange(UserPrincipal newUser) {
+        if (newUser != null) {
+            changeVisibility(true);
+
+            // TODO:
+//            userNameLbl.setText(newUser.);
+        } else {
+            changeVisibility(false);
+        }
+    }
+
+    private void bindToAuthorization() {
+        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
+            handleAuthorizationChange(newUser);
+        });
+    }
+
     @FXML
     private void initialize() {
         navRows = List.of(homeRow, teamsRow, sitesRow); // TODO autorisatie? setSideNav()?
+
+        bindToAuthorization();
+        handleAuthorizationChange(SecurityContext.userProperty().get());
 
         // logo
         logoImage.setViewport(null);

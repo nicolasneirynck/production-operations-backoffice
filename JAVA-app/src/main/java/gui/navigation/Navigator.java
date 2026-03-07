@@ -56,6 +56,7 @@ public class Navigator {
     }
 
     public void goTo(View view) {
+        // TODO: add de andere
         if (view == View.SITES_OVERVIEW) {
             Authorizer.require(Permission.SITES_BEHEREN);
         }

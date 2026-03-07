@@ -25,7 +25,7 @@ public final class DevSeeder {
             boolean isPresent = gebruikerRepo.findByEmail(email).isPresent();
 
             if (!isPresent) {
-                Gebruiker gebruiker = Gebruiker.builder().email(email).gebruikersnaam("TestUser").wachtwoord("pass123").status(GebruikerStatus.ACTIEF).rol(Rollen.WERKNEMER).build();
+                Gebruiker gebruiker = Gebruiker.builder().email(email).gebruikersnaam("TestUser").wachtwoord("pass123").status(GebruikerStatus.ACTIEF).rol(Rollen.MANAGER).build();
                 gebruikerRepo.insert(gebruiker);
             }
 
