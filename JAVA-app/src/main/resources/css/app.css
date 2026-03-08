@@ -258,6 +258,17 @@
     -fx-cursor: hand;
 }
 
+.btn-primary:hover {
+    -fx-background-color:
+            #5F86F6,
+            white;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 14, 12;
+
+    -fx-text-fill: #5F86F6;
+    -fx-border-color: transparent;
+}
+
 .btn-link {
     -fx-background-color: transparent;
     -fx-text-fill: #5F86F6;

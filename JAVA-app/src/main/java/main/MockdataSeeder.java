@@ -4,11 +4,16 @@ import domein.SiteController;
 import domein.TaakController;
 import exception.SiteException;
 import exception.TaakException;
+import security.Authorizer;
+import security.Permission;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
 public class MockdataSeeder {
     public static void seed(AppContext context) throws SiteException, TaakException {
+        if (!Authorizer.has(Permission.SITES_BEHEREN)) {
+            return;
+        }
 
         SiteController sc = context.getSiteController();
         TaakController tc = context.getTaakController();

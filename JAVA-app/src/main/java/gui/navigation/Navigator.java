@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
+import security.Authorizer;
+import security.Permission;
 import util.View;
 
 import java.io.IOException;
@@ -48,6 +50,11 @@ public class Navigator {
     }
 
     public void goTo(View view) {
+        // TODO: add de andere
+        if (view == View.SITES_OVERVIEW) {
+            Authorizer.require(Permission.SITES_BEHEREN);
+        }
+
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
         }

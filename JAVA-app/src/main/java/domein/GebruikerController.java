@@ -1,6 +1,8 @@
 package domein;
 
 import dto.GebruikerDTO;
+import repository.GebruikerDao;
+import repository.GebruikerDaoJpa;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
 import util.GebruikerStatus;
@@ -9,14 +11,14 @@ import util.Rollen;
 import java.util.List;
 
 public class GebruikerController {
-    private final GenericDao<Gebruiker> gebruikerRepo;
+    private final GebruikerDao gebruikerRepo;
 
     public GebruikerController() {
-        this(new GenericDaoJpa<>(Gebruiker.class));
+        this(new GebruikerDaoJpa());
     }
 
     //TODO tijdelijk voor devFase -> Mockito
-    public GebruikerController(GenericDao<Gebruiker> gebruikerRepo) {
+    public GebruikerController(GebruikerDao gebruikerRepo) {
         this.gebruikerRepo = gebruikerRepo;
     }
 

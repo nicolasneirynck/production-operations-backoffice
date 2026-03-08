@@ -13,6 +13,14 @@ import util.Rollen;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "gebruikerId")
 @Getter
+@NamedQueries({
+        @NamedQuery(name = "Gebruiker.findByEmail",
+                query = """
+                        SELECT g
+                          FROM Gebruiker g
+                          WHERE LOWER(g.email) = LOWER(:email)
+						""")
+})
 public class Gebruiker {
 
     private static final EmailValidator VALIDATOR = EmailValidator.getInstance(false, false);
