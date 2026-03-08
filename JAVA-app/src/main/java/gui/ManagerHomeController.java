@@ -6,6 +6,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import lombok.Setter;
 import main.AppContext;
+import security.Authorizer;
+import security.Permission;
+import security.SecurityContext;
+import security.UserPrincipal;
 
 public class ManagerHomeController implements NavigableController {
 
@@ -19,8 +23,25 @@ public class ManagerHomeController implements NavigableController {
     @Setter
     private LayoutController layout;
 
+    private void changeVisibility(boolean visible) {
+        // TODO: add de andere
+        sitesTile.setVisible(visible & Authorizer.has(Permission.SITES_BEHEREN));
+    }
+
+    private void handleAuthorizationChange(UserPrincipal newUser) {
+        changeVisibility(newUser != null);
+    }
+
+    private void bindToAuthorization() {
+        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
+            handleAuthorizationChange(newUser);
+        });
+    }
+
     @FXML
     private void initialize() {
+        bindToAuthorization();
+        handleAuthorizationChange(SecurityContext.userProperty().get());
         // TODO
     }
 

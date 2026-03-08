@@ -48,11 +48,17 @@ public class LayoutController implements NavigableController {
     @Setter private Navigator navigator;
     @Setter private AppContext context;
 
+    private void setRowVisibility(HBox row, boolean visible) {
+        row.setVisible(visible);
+        row.setManaged(visible);
+    }
+
     private void changeVisibility(boolean visible) {
-        for (HBox row : navRows) {
-            row.setVisible(visible);
-            row.setManaged(visible);
-        }
+        setRowVisibility(sitesRow, visible & Authorizer.has(Permission.SITES_BEHEREN));
+        // TODO: add authorization for this when view is added
+        setRowVisibility(teamsRow, visible);
+        setRowVisibility(homeRow, visible);
+
         userNameLbl.setVisible(visible);
         userRoleLbl.setVisible(visible);
         notif.setVisible(visible);

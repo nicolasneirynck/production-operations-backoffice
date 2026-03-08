@@ -17,8 +17,8 @@ public class BackOfficeApp extends Application {
 
     private void bindAuthNavigation(Navigator navigator) {
         SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
-            // TODO: in de plaats van goTo(MAIN_MENU): laat een specifiek scherm zien afhankelijk van de role?
-            if (newUser != null) navigator.goTo(View.MAIN_MENU);
+            // TODO: in de plaats van goTo(HOME): laat een specifiek scherm zien afhankelijk van de role?
+            if (newUser != null) navigator.goTo(View.HOME);
             else navigator.goTo(View.LOGIN);
         });
     }
