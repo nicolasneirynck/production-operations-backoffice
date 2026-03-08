@@ -37,6 +37,7 @@ public class LayoutController implements NavigableController {
     @FXML private HBox homeRow;
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
+    @FXML private HBox loginRow;
    // @FXML private HBox machinesRow;
     @FXML private Button logoutBtn;
 
@@ -50,13 +51,15 @@ public class LayoutController implements NavigableController {
     private void changeVisibility(boolean visible) {
         for (HBox row : navRows) {
             row.setVisible(visible);
+            row.setManaged(visible);
         }
         userNameLbl.setVisible(visible);
         userRoleLbl.setVisible(visible);
         notif.setVisible(visible);
         logoutBtn.setVisible(visible);
 
-        // TODO: set visible row here once it's added
+        loginRow.setVisible(!visible);
+        loginRow.setManaged(!visible);
     }
 
     private void handleAuthorizationChange(UserPrincipal newUser) {
