@@ -32,10 +32,10 @@ public class SiteControllerTest {
     private final String GELDIGE_STRAAT = "Kortrijksesteenweg";
     private final String GELDIGE_NUMMER = "80";
     private final String GELDIGE_POSTCODE = "9000";
-    private final String GELDIGE_STAD = "Gent";
+    private final String GELDIGE_GEMEENTE = "Gent";
     private final String GELDIGE_LAND = "België";
     private final String GELDIGE_LOCATIE_STRING =
-            "%s %s, %s %s, %s".formatted(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_STAD, GELDIGE_LAND);
+            "%s %s, %s %s, %s".formatted(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, GELDIGE_LAND);
 
     @Mock
     private SiteDao siteRepo;
@@ -48,7 +48,7 @@ public class SiteControllerTest {
 
         Site eenSite = Site.builder()
                 .naam(GELDIGE_NAAM)
-                .locatie(Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_STAD, GELDIGE_LAND))
+                .locatie(Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, GELDIGE_LAND))
                 .capaciteit(100)
                 .operationeleStatus(OperationeleStatus.ACTIEF)
                 .productieStatus(ProductieStatus.GEZOND)
@@ -72,7 +72,7 @@ public class SiteControllerTest {
                 GELDIGE_STRAAT,
                 GELDIGE_NUMMER,
                 GELDIGE_POSTCODE,
-                GELDIGE_STAD,
+                GELDIGE_GEMEENTE,
                 GELDIGE_LAND,
                 100,
                 OperationeleStatus.ACTIEF,
@@ -98,7 +98,7 @@ public class SiteControllerTest {
                 Arguments.of("SITE_A", "Straat", "1", "", "Gent", "België", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),   // postcode
                 Arguments.of("SITE_A", "Straat", "1", null, "Gent", "België", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),
 
-                Arguments.of("SITE_A", "Straat", "1", "9000", "", "België", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),   // stad
+                Arguments.of("SITE_A", "Straat", "1", "9000", "", "België", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),   // gemeente
                 Arguments.of("SITE_A", "Straat", "1", "9000", null, "België", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),
 
                 Arguments.of("SITE_A", "Straat", "1", "9000", "Gent", "", 100, OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),     // land
@@ -120,11 +120,11 @@ public class SiteControllerTest {
     @ParameterizedTest
     @MethodSource("ongeldigeParameters")
     public void addSite_ongeldigeParameters_gooitException_enRaaktRepoNiet(String naam, String straat, String nummer, String postcode,
-                                                                           String stad, String land, int capaciteit,
+                                                                           String gemeente, String land, int capaciteit,
                                                                            OperationeleStatus op, ProductieStatus prod) {
 
         assertThrows(SiteException.class, () ->
-                siteController.addSite(naam, straat, nummer, postcode, stad, land, capaciteit, op, prod)
+                siteController.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 
         verifyNoInteractions(siteRepo);
@@ -149,7 +149,7 @@ public class SiteControllerTest {
                 GELDIGE_STRAAT,
                 GELDIGE_NUMMER,
                 GELDIGE_POSTCODE,
-                GELDIGE_STAD,
+                GELDIGE_GEMEENTE,
                 GELDIGE_LAND,
                 100,
                 OperationeleStatus.ACTIEF,
@@ -165,7 +165,7 @@ public class SiteControllerTest {
         assertEquals(GELDIGE_STRAAT, bestaande.getLocatie().getStraat());
         assertEquals(GELDIGE_NUMMER, bestaande.getLocatie().getNummer());
         assertEquals(GELDIGE_POSTCODE, bestaande.getLocatie().getPostcode());
-        assertEquals(GELDIGE_STAD, bestaande.getLocatie().getStad());
+        assertEquals(GELDIGE_GEMEENTE, bestaande.getLocatie().getGemeente());
         assertEquals(GELDIGE_LAND, bestaande.getLocatie().getLand());
         assertEquals(100, bestaande.getCapaciteit());
         assertEquals(OperationeleStatus.ACTIEF, bestaande.getOperationeleStatus());
@@ -175,7 +175,7 @@ public class SiteControllerTest {
     @ParameterizedTest
     @MethodSource("ongeldigeParameters")
     public void updateSite_ongeldigeParameters_gooitException_enRollback(
-            String naam, String straat, String nummer, String postcode, String stad, String land,
+            String naam, String straat, String nummer, String postcode, String gemeente, String land,
             int capaciteit, OperationeleStatus op, ProductieStatus prod) throws Exception {
 
         long id = 1L;
@@ -191,7 +191,7 @@ public class SiteControllerTest {
         when(siteRepo.get(id)).thenReturn(bestaande);
 
         assertThrows(SiteException.class, () ->
-                siteController.updateSite(id, naam, straat, nummer, postcode, stad, land, capaciteit, op, prod)
+                siteController.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 
         verify(siteRepo).startTransaction();
@@ -206,7 +206,7 @@ public class SiteControllerTest {
 
         Site bestaande = Site.builder()
                 .naam(GELDIGE_NAAM)
-                .locatie(Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_STAD, GELDIGE_LAND))
+                .locatie(Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, GELDIGE_LAND))
                 .capaciteit(100)
                 .operationeleStatus(OperationeleStatus.ACTIEF)
                 .productieStatus(ProductieStatus.GEZOND)

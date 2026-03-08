@@ -42,6 +42,12 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
 
+	@ManyToOne // verantwoordelijke kan in meerdere sites werken?
+	private Gebruiker verantwoordelijke;
+
+	// een team hoort tot 1 site
+	@OneToOne(mappedBy = "site")
+	private Team team;
 
 	private Site(Builder builder){
 		this.naam = builder.naam;

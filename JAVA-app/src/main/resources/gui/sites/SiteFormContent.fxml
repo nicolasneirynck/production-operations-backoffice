@@ -100,12 +100,12 @@
                     <Label fx:id="postcodeErr" styleClass="error-label"/>
                 </VBox>
 
-                <!-- Stad -->
-                <Label text="Stad" styleClass="form-label"
+                <!-- Gemeente -->
+                <Label text="Gemeente" styleClass="form-label"
                        GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.valignment="CENTER"/>
                 <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="3">
-                    <TextField fx:id="stadTf" maxWidth="Infinity"/>
-                    <Label fx:id="stadErr" styleClass="error-label"/>
+                    <TextField fx:id="gemeenteTf" maxWidth="Infinity"/>
+                    <Label fx:id="gemeenteErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Land -->
