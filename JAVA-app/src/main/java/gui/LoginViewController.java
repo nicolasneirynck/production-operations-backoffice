@@ -1,16 +1,12 @@
 package gui;
 
 import domein.AuthenticationController;
-import domein.GebruikerController;
 import dto.GebruikerDTO;
+import exception.LoginException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import lombok.Setter;
 import main.AppContext;
 import security.RolePermissions;
@@ -24,7 +20,9 @@ public class LoginViewController implements NavigableController {
     @FXML private TextField wachtwoordTxt;
     @FXML private Button loginBtn;
     @FXML private Button cancelBtn;
-    @FXML private Label errorLbl;
+    @FXML private Label algemeenErr;
+    @FXML private Label emailErr;
+    @FXML private Label wachtwoordErr;
 
     @Setter
     private Navigator navigator;
@@ -46,12 +44,46 @@ public class LoginViewController implements NavigableController {
 
     @FXML
     private void onLogin() {
-        Optional<GebruikerDTO> gebruikerOptional = ac.login(emailTxt.getText(), wachtwoordTxt.getText());
-        if (gebruikerOptional.isPresent()) {
-            GebruikerDTO gebruiker = gebruikerOptional.get();
+        clearErrors();
+
+        try {
+            GebruikerDTO gebruiker = ac.login(emailTxt.getText(), wachtwoordTxt.getText());
+
             SecurityContext.login(new UserPrincipal(gebruiker.naam(), gebruiker.voornaam(), gebruiker.rol(), RolePermissions.getPermissions(gebruiker.rol())));
-        } else {
-            errorLbl.setText("Ongeldig email of wachtwoord");
+        } catch (LoginException exception) {
+            showLoginErrors(exception);
         }
+    }
+
+    private void showLoginErrors(LoginException exception) {
+        clearErrors();
+
+        exception.getExceptionMap().forEach((field, iae) -> {
+            String msg = iae.getMessage();
+
+            switch (field) {
+                case "email" -> {
+                    emailErr.setText(msg);
+//                    naamTf.getStyleClass().add("field-error");
+                }
+                case "wachtwoord" -> {
+                    wachtwoordErr.setText(msg);
+//                    capaciteitTf.getStyleClass().add("field-error");
+                }
+                case "onbestaand" -> {
+                    algemeenErr.setText(msg);
+//                    capaciteitTf.getStyleClass().add("field-error");
+                }
+                default -> {
+                    new Alert(Alert.AlertType.ERROR, msg).showAndWait();
+                }
+            }
+        });
+    }
+
+    private void clearErrors() {
+        emailErr.setText("");
+        wachtwoordErr.setText("");
+        algemeenErr.setText("");
     }
 }

@@ -1,10 +1,15 @@
 package domein;
 
 import dto.GebruikerDTO;
+import exception.LoginException;
+import exception.SiteException;
+import org.eclipse.persistence.sessions.Login;
 import repository.GebruikerDao;
 import repository.GebruikerDaoJpa;
 import repository.GenericDao;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class AuthenticationController {
@@ -25,25 +30,39 @@ public class AuthenticationController {
     }
 
     // TODO: use encryption for password
-    public Optional<GebruikerDTO> login(String email, String wachtwoord) {
+    public GebruikerDTO login(String email, String wachtwoord) throws LoginException {
         String normalizedEmail = normalizeEmail(email);
 
-        if (normalizedEmail.isBlank() || wachtwoord == null || wachtwoord.isBlank()) {
-            return Optional.empty();
+        Map<String, IllegalArgumentException> errors = new HashMap<>();
+
+        if (normalizedEmail.isBlank()) {
+//            errors.put("email", new IllegalArgumentException("Email mag niet leeg zijn en moet een geldig formaat hebben. Formaat: x@xxx.xx, waarbij x 1 of meer karakters voorstelt."));
+            errors.put("email", new IllegalArgumentException("Email is vereist."));
+        }
+
+        if (wachtwoord == null || wachtwoord.isBlank()) {
+            errors.put("wachtwoord", new IllegalArgumentException("Wachtwoord is vereist."));
+//            errors.put("wachtwoord", new IllegalArgumentException("Wachtwoord mag niet leeg zijn of uit enkel spaties bestaan."));
         }
 
         Optional<Gebruiker> gebruikerOptional = gebruikerRepo.findByEmail(normalizedEmail);
 
         if (gebruikerOptional.isEmpty()) {
-            return Optional.empty();
+            errors.put("onbestaand", new IllegalArgumentException("Ongeldige login."));
+//            errors.put("onbestaand", new IllegalArgumentException("Een gebruiker met deze email en wachtwoord bestaat niet."));
+            throw new LoginException(errors);
         }
 
         Gebruiker gebruiker = gebruikerOptional.get();
         if (!wachtwoord.equals(gebruiker.getWachtwoord())) {
-            return Optional.empty();
+//            errors.put("onbestaand", new IllegalArgumentException("Een gebruiker met deze email en wachtwoord bestaat niet."));
+            errors.put("onbestaand", new IllegalArgumentException("Ongeldige login."));
         }
 
-        return Optional.of(new GebruikerDTO(
+        if (!errors.isEmpty())
+            throw new LoginException(errors);
+
+        return new GebruikerDTO(
                 gebruiker.getGebruikerId(),
                 gebruiker.getPersoneelsnummer(),
                 gebruiker.getNaam(),
@@ -55,6 +74,6 @@ public class AuthenticationController {
                 gebruiker.getRol(),
                 gebruiker.getStatus(),
                 null
-        ));
+        );
     }
 }
