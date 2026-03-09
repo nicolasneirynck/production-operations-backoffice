@@ -113,16 +113,16 @@ public class MockdataSeeder {
     private static void seedGebruikers(AppContext context) {
         GebruikerController gc = context.getGebruikerController();
 
-        gc.addGebruiker("admin@test.com", "admin", "admin", GebruikerStatus.ACTIEF, Rollen.ADMINISTRATOR);
-        gc.addGebruiker("manager@test.com", "manager", "manager", GebruikerStatus.ACTIEF, Rollen.MANAGER);
-        gc.addGebruiker("verantwoordelijke@test.com", "verantwoordelijke", "verantwoordelijke", GebruikerStatus.ACTIEF, Rollen.VERANTWOORDELIJKE);
+        gc.addGebruiker(1, "admin", "admin", "02/10/2000", "België", "admin@test.com", "", Rollen.ADMINISTRATOR, GebruikerStatus.ACTIEF, "admin");
+        gc.addGebruiker(2, "manager", "manager", "02/10/2000", "België", "manager@test.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "manager");
+        gc.addGebruiker(3, "verantwoordelijke", "verantwoordelijke", "02/10/2000", "België", "verantwoordelijke@test.com", "", Rollen.VERANTWOORDELIJKE, GebruikerStatus.ACTIEF, "verantwoordelijke");
     }
 
     public static void seed(AppContext context) throws SiteException, TaakException {
         // prevent seeding inside of production
         if (!Boolean.getBoolean("seed.devUser")) return;
 
-        SecurityContext.login(new UserPrincipal(Rollen.ADMINISTRATOR, EnumSet.allOf(Permission.class)));
+        SecurityContext.login(new UserPrincipal("temp", "temp", Rollen.ADMINISTRATOR, EnumSet.allOf(Permission.class)));
 
         seedSites(context);
         seedTaken(context);
