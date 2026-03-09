@@ -116,6 +116,7 @@ public class MockdataSeeder {
         gc.addGebruiker(1, "admin", "admin", "02/10/2000", "België", "admin@test.com", "", Rollen.ADMINISTRATOR, GebruikerStatus.ACTIEF, "admin");
         gc.addGebruiker(2, "manager", "manager", "02/10/2000", "België", "manager@test.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "manager");
         gc.addGebruiker(3, "verantwoordelijke", "verantwoordelijke", "02/10/2000", "België", "verantwoordelijke@test.com", "", Rollen.VERANTWOORDELIJKE, GebruikerStatus.ACTIEF, "verantwoordelijke");
+        gc.addGebruiker(4, "Bakker", "Jan", "02/10/2000", "België", "jan.bakker@gmail.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "pass123");
     }
 
     public static void seed(AppContext context) throws SiteException, TaakException {
