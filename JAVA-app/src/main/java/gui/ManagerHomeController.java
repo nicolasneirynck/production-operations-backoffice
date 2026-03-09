@@ -27,6 +27,7 @@ public class ManagerHomeController implements NavigableController {
     private void changeVisibility(boolean visible) {
         // TODO: add de andere
         sitesTile.setVisible(visible & Authorizer.has(Permission.SITES_BEHEREN));
+        teamsTile.setVisible(visible & Authorizer.has(Permission.TEAMS_BEHEREN));
     }
 
     private void handleAuthorizationChange(UserPrincipal newUser) {

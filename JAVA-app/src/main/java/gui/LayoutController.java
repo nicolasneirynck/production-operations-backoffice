@@ -54,10 +54,9 @@ public class LayoutController implements NavigableController {
 
     private void changeVisibility(boolean visible) {
         setRowVisibility(sitesRow, visible & Authorizer.has(Permission.SITES_BEHEREN));
-        // TODO: add authorization for this when view is added
-        setRowVisibility(teamsRow, visible);
-        setRowVisibility(homeRow, visible);
+        setRowVisibility(teamsRow, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
         setRowVisibility(takenRow, visible & Authorizer.has(Permission.TAKEN_BEHEREN));
+        setRowVisibility(homeRow, visible);
 
         userNameLbl.setVisible(visible);
         userRoleLbl.setVisible(visible);
