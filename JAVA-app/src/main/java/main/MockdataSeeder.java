@@ -1,17 +1,25 @@
 package main;
 
+import domein.AuthenticationController;
+import domein.GebruikerController;
 import domein.SiteController;
 import domein.TaakController;
 import exception.SiteException;
 import exception.TaakException;
+import security.Authorizer;
+import security.Permission;
+import security.SecurityContext;
+import security.UserPrincipal;
+import util.GebruikerStatus;
 import util.OperationeleStatus;
 import util.ProductieStatus;
+import util.Rollen;
+
+import java.util.EnumSet;
 
 public class MockdataSeeder {
-    public static void seed(AppContext context) throws SiteException, TaakException {
-
+    private static void seedSites(AppContext context) throws SiteException {
         SiteController sc = context.getSiteController();
-        TaakController tc = context.getTaakController();
 
         sc.addSite(
                 "Gent Plant",
@@ -48,6 +56,10 @@ public class MockdataSeeder {
                 OperationeleStatus.NON_ACTIEF,
                 ProductieStatus.OFFLINE
         );
+    }
+
+    private static void seedTaken(AppContext context) throws TaakException {
+        TaakController tc = context.getTaakController();
 
         tc.addTaak(
                 "Onderhoud",
@@ -96,5 +108,26 @@ public class MockdataSeeder {
                 "Controle van afgewerkte fietsen",
                 15
         );
+    }
+
+    private static void seedGebruikers(AppContext context) {
+        GebruikerController gc = context.getGebruikerController();
+
+        gc.addGebruiker(1, "admin", "admin", "02/10/2000", "België", "admin@test.com", "", Rollen.ADMINISTRATOR, GebruikerStatus.ACTIEF, "admin");
+        gc.addGebruiker(2, "manager", "manager", "02/10/2000", "België", "manager@test.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "manager");
+        gc.addGebruiker(3, "verantwoordelijke", "verantwoordelijke", "02/10/2000", "België", "verantwoordelijke@test.com", "", Rollen.VERANTWOORDELIJKE, GebruikerStatus.ACTIEF, "verantwoordelijke");
+    }
+
+    public static void seed(AppContext context) throws SiteException, TaakException {
+        // prevent seeding inside of production
+        if (!Boolean.getBoolean("seed.devUser")) return;
+
+        SecurityContext.login(new UserPrincipal("temp", "temp", Rollen.ADMINISTRATOR, EnumSet.allOf(Permission.class)));
+
+        seedSites(context);
+        seedTaken(context);
+        seedGebruikers(context);
+
+        SecurityContext.logout();
     }
 }

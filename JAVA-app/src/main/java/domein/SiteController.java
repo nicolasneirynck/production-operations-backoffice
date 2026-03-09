@@ -5,6 +5,8 @@ import dto.SiteDTO;
 import exception.SiteException;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
+import security.Authorizer;
+import security.Permission;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
@@ -26,7 +28,13 @@ public class SiteController {
     }
 
 
+    private void authorize() {
+        Authorizer.require(Permission.SITES_BEHEREN);
+    }
+
     public List<SiteDTO> getAllSites(){
+        authorize();
+
         return siteRepo.findAll().stream()
                 .map(this::createDto)
                 .toList();
@@ -35,6 +43,7 @@ public class SiteController {
     public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
                         int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
+        authorize();
 
         Map<String, IllegalArgumentException> errors = new HashMap<>(); // tijdelijk TODO anders geeft hij enkel locatie fouten
 
@@ -81,6 +90,7 @@ public class SiteController {
 
     public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        authorize();
 
         siteRepo.startTransaction();
         try {
@@ -121,6 +131,8 @@ public class SiteController {
     }
 
     public void deleteSite(long id) {
+        authorize();
+
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);

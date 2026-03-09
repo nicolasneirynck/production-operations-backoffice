@@ -21,7 +21,7 @@ public class ObservableSites {
     public ObservableSites(SiteController controller) {
         this.controller = controller;
         this.observableSiteList = FXCollections.observableArrayList();
-        this.observableSiteList.addAll(controller.getAllSites());
+//        this.observableSiteList.addAll(controller.getAllSites());
         this.filteredSiteList = new FilteredList<>(observableSiteList, s -> true);
     }
 
