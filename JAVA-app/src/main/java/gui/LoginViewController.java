@@ -49,14 +49,9 @@ public class LoginViewController implements NavigableController {
         Optional<GebruikerDTO> gebruikerOptional = ac.login(emailTxt.getText(), wachtwoordTxt.getText());
         if (gebruikerOptional.isPresent()) {
             GebruikerDTO gebruiker = gebruikerOptional.get();
-            SecurityContext.login(new UserPrincipal(gebruiker.rol(), RolePermissions.getPermissions(gebruiker.rol())));
+            SecurityContext.login(new UserPrincipal(gebruiker.naam(), gebruiker.voornaam(), gebruiker.rol(), RolePermissions.getPermissions(gebruiker.rol())));
         } else {
             errorLbl.setText("Ongeldig email of wachtwoord");
         }
-    }
-
-    @FXML
-    private void onCancel() {
-        // TODO: sluit applicatie hier
     }
 }

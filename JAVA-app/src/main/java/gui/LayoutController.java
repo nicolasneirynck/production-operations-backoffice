@@ -72,8 +72,8 @@ public class LayoutController implements NavigableController {
         if (newUser != null) {
             changeVisibility(true);
 
-            // TODO:
-//            userNameLbl.setText(newUser.);
+            userNameLbl.setText(newUser.voornaam() + " " + newUser.naam());
+            userRoleLbl.setText(newUser.rol().toString());
         } else {
             changeVisibility(false);
         }
@@ -87,7 +87,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, teamsRow, sitesRow,takenRow); // TODO autorisatie? setSideNav()?
+        navRows = List.of(homeRow, teamsRow, sitesRow,takenRow);
 
         bindToAuthorization();
         handleAuthorizationChange(SecurityContext.userProperty().get());

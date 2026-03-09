@@ -43,14 +43,18 @@ public class AuthenticationController {
             return Optional.empty();
         }
 
-        // TODO: dont return password/status/something else?
         return Optional.of(new GebruikerDTO(
                 gebruiker.getGebruikerId(),
+                gebruiker.getPersoneelsnummer(),
+                gebruiker.getNaam(),
+                gebruiker.getVoornaam(),
+                gebruiker.getGeboortedatum(),
+                gebruiker.getAdres(),
                 gebruiker.getEmail(),
-                gebruiker.getGebruikersnaam(),
-                gebruiker.getWachtwoord(),
+                gebruiker.getGsm(),
+                gebruiker.getRol(),
                 gebruiker.getStatus(),
-                gebruiker.getRol()
+                null
         ));
     }
 }
