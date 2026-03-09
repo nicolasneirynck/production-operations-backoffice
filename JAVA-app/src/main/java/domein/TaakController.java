@@ -1,5 +1,6 @@
 package domein;
 
+import dto.DTOMapper;
 import dto.TaakDTO;
 import exception.TaakException;
 import repository.GenericDao;
@@ -25,7 +26,7 @@ public class TaakController {
 
     public List<TaakDTO> getAllTaken() {
         return taakRepo.findAll().stream()
-                .map(this::createDto)
+                .map(DTOMapper::toTaakDTO)
                 .toList();
     }
 
@@ -80,14 +81,6 @@ public class TaakController {
             taakRepo.rollbackTransaction();
             throw ex;
         }
-    }
-
-    private TaakDTO createDto(Taak taak){
-        return new TaakDTO(taak.getTaakId(),
-                taak.getTaakType(),
-                taak.getOmschrijving(),
-                taak.getDuurtijd()
-        );
     }
 
     public List<String> getAllTaakTypes() {

@@ -1,5 +1,6 @@
 package domein;
 
+import dto.DTOMapper;
 import dto.LocatieDTO;
 import dto.SiteDTO;
 import exception.SiteException;
@@ -16,20 +17,18 @@ public class SiteController {
 
     private final SiteDao siteRepo;
 
+    //TODO tijdelijk voor devFase -> Mockito
     public SiteController(SiteDao siteRepo) {
         this.siteRepo = siteRepo;
     }
 
-    //TODO tijdelijk voor devFase -> Mockito
     public SiteController() {
         siteRepo = new SiteDaoJpa();
     }
 
 
     public List<SiteDTO> getAllSites(){
-        return siteRepo.findAll().stream()
-                .map(this::createDto)
-                .toList();
+        return DTOMapper.toSiteDTOList(siteRepo.findAll());
     }
 
     public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
@@ -136,25 +135,25 @@ public class SiteController {
         }
     }
 
-    private SiteDTO createDto(Site site){
-
-        Locatie loc = site.getLocatie();
-
-        LocatieDTO locatieDTO = new LocatieDTO(
-                loc.getStraat(),
-                loc.getNummer(),
-                loc.getPostcode(),
-                loc.getGemeente(),
-                loc.getLand()
-        );
-
-        return new SiteDTO(
-                site.getSiteId(),
-                site.getNaam(),
-                locatieDTO,
-                site.getCapaciteit(),
-                site.getOperationeleStatus(),
-                site.getProductieStatus()
-        );
-    }
+//    private SiteDTO createDto(Site site){
+//
+//        Locatie loc = site.getLocatie();
+//
+//        LocatieDTO locatieDTO = new LocatieDTO(
+//                loc.getStraat(),
+//                loc.getNummer(),
+//                loc.getPostcode(),
+//                loc.getGemeente(),
+//                loc.getLand()
+//        );
+//
+//        return new SiteDTO(
+//                site.getSiteId(),
+//                site.getNaam(),
+//                locatieDTO,
+//                site.getCapaciteit(),
+//                site.getOperationeleStatus(),
+//                site.getProductieStatus()
+//        );
+//    }
 }
