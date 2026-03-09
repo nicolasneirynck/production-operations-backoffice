@@ -78,41 +78,67 @@
 
                 <!-- Straat -->
                 <Label text="Straat" styleClass="form-label"
-                       GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                       GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+
+                <VBox spacing="3" GridPane.rowIndex="0" GridPane.columnIndex="1">
                     <TextField fx:id="straatTf" maxWidth="Infinity"/>
                     <Label fx:id="straatErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Nummer -->
                 <Label text="Nr" styleClass="form-label"
-                       GridPane.rowIndex="0" GridPane.columnIndex="2" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="0" GridPane.columnIndex="3">
-                    <TextField fx:id="nummerTf" maxWidth="Infinity"/>
+                       GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+
+                <VBox spacing="3" GridPane.rowIndex="0" GridPane.columnIndex="3">
+                    <TextField fx:id="nummerTf"/>
                     <Label fx:id="nummerErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Postcode -->
                 <Label text="Postcode" styleClass="form-label"
-                       GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
-                    <TextField fx:id="postcodeTf" promptText="bv. 9000" maxWidth="Infinity"/>
+                       GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
+                    <TextField fx:id="postcodeTf"
+                               promptText="bv. 9000"
+                               maxWidth="180"/>
+
                     <Label fx:id="postcodeErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Gemeente -->
                 <Label text="Gemeente" styleClass="form-label"
-                       GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="3">
-                    <TextField fx:id="gemeenteTf" maxWidth="Infinity"/>
+                       GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="2"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
+                    <TextField fx:id="gemeenteTf"
+                               maxWidth="Infinity"/>
+
                     <Label fx:id="gemeenteErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Land -->
                 <Label text="Land" styleClass="form-label"
-                       GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS">
+                       GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="3"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
                     <ComboBox fx:id="landCb" maxWidth="Infinity"/>
+
                     <Label fx:id="landErr" styleClass="error-label"/>
                 </VBox>
 
