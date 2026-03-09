@@ -5,7 +5,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="792.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LoginViewController">
    <children>
       <Pane layoutX="248.0" layoutY="76.0" prefHeight="475.0" prefWidth="296.0" styleClass="card">
@@ -16,6 +15,9 @@
             <Label layoutX="33.0" layoutY="207.0" text="Wachtwoord:" />
             <TextField fx:id="wachtwoordTxt" layoutX="30.0" layoutY="238.0" prefHeight="36.0" prefWidth="237.0" />
             <Button fx:id="loginBtn" layoutX="100.0" layoutY="334.0" mnemonicParsing="false" onAction="#onLogin" prefHeight="37.0" prefWidth="97.0" styleClass="btn-primary" text="Login" />
+            <Label fx:id="algemeenErr" layoutX="33.0" layoutY="382.0" maxHeight="77.0" prefHeight="77.0" prefWidth="237.0" styleClass="error-label" />
+            <Label fx:id="emailErr" layoutX="33.0" layoutY="174.0" maxHeight="32.0" prefHeight="32.0" prefWidth="237.0" styleClass="error-label" />
+            <Label fx:id="wachtwoordErr" layoutX="33.0" layoutY="279.0" maxHeight="45.0" prefHeight="45.0" prefWidth="237.0" styleClass="error-label" />
          </children>
       </Pane>
    </children>
