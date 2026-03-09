@@ -1,39 +1,77 @@
 package domein;
 
+import dto.LocatieDTO;
 import dto.SiteDTO;
+import exception.SiteException;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
+import security.Authorizer;
+import security.Permission;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SiteController {
 
     private final SiteDao siteRepo;
 
-    public SiteController() {
-        siteRepo = new SiteDaoJpa();
-    }
-
-    //TODO tijdelijk voor devFase -> Mockito
     public SiteController(SiteDao siteRepo) {
         this.siteRepo = siteRepo;
     }
 
+    //TODO tijdelijk voor devFase -> Mockito
+    public SiteController() {
+        siteRepo = new SiteDaoJpa();
+    }
+
+
+    private void authorize() {
+        Authorizer.require(Permission.SITES_BEHEREN);
+    }
+
     public List<SiteDTO> getAllSites(){
+        authorize();
+
         return siteRepo.findAll().stream()
                 .map(this::createDto)
                 .toList();
     }
 
-    public SiteDTO addSite(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod)
+    public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
+                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
-        Site nieuweSite = Site.builder()
-                    .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
-                    .build();
+        authorize();
 
-        if (siteRepo.existsByName(naam,null)) {
+        Map<String, IllegalArgumentException> errors = new HashMap<>(); // tijdelijk TODO anders geeft hij enkel locatie fouten
+
+        Locatie locatie = null;
+        try {
+            locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
+        } catch (SiteException ex) {
+            errors.putAll(ex.getExceptionMap());
+        }
+
+        Site nieuweSite = null;
+        try {
+            nieuweSite = Site.builder()
+                    .naam(naam)
+                    .locatie(locatie)
+                    .capaciteit(capaciteit)
+                    .operationeleStatus(op)
+                    .productieStatus(prod)
+                    .build();
+        } catch (SiteException ex) {
+            errors.putAll(ex.getExceptionMap());
+        }
+
+        if (!errors.isEmpty()) {
+            throw new SiteException(errors);
+        }
+
+        if (siteRepo.existsByName(naam, null)) {
             throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
         }
 
@@ -47,34 +85,54 @@ public class SiteController {
             throw ex;
         }
 
-        return createDto(nieuweSite);
+        //return createDto(nieuweSite);
     }
 
-    public SiteDTO updateSite(long id, String naam, String locatie, int capaciteit,
-                           OperationeleStatus op, ProductieStatus prod) {
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
+                           int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+        authorize();
 
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
+
             if (site == null)
                 throw new IllegalArgumentException("Site niet gevonden.");
 
-            site.update(naam, locatie, capaciteit, op, prod);
-
-            if (siteRepo.existsByName(naam,id)) {
+            if (siteRepo.existsByName(naam, id)) {
                 throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
             }
 
-            siteRepo.commitTransaction();
+            Map<String, IllegalArgumentException> errors = new HashMap<>();
 
-            return createDto(site);
-        } catch (RuntimeException ex) {
+            Locatie locatie = null;
+            try {
+                locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
+            } catch (SiteException ex) {
+                errors.putAll(ex.getExceptionMap());
+            }
+
+            try {
+                // update() valideert ook business rules (capaciteit>0, statuses, naam, ...)
+                site.update(naam, locatie, capaciteit, op, prod);
+            } catch (SiteException ex) {
+                errors.putAll(ex.getExceptionMap());
+            }
+
+            if (!errors.isEmpty()) {
+                throw new SiteException(errors);
+            }
+
+            siteRepo.commitTransaction();
+        } catch (RuntimeException | SiteException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
         }
     }
 
     public void deleteSite(long id) {
+        authorize();
+
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
@@ -91,10 +149,21 @@ public class SiteController {
     }
 
     private SiteDTO createDto(Site site){
+
+        Locatie loc = site.getLocatie();
+
+        LocatieDTO locatieDTO = new LocatieDTO(
+                loc.getStraat(),
+                loc.getNummer(),
+                loc.getPostcode(),
+                loc.getGemeente(),
+                loc.getLand()
+        );
+
         return new SiteDTO(
                 site.getSiteId(),
                 site.getNaam(),
-                site.getLocatie(),
+                locatieDTO,
                 site.getCapaciteit(),
                 site.getOperationeleStatus(),
                 site.getProductieStatus()

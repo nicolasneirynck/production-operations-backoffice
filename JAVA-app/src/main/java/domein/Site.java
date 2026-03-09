@@ -1,5 +1,6 @@
 package domein;
 
+import exception.SiteException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -31,12 +32,22 @@ public class Site {
 	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	@Column(unique = true)
 	private String naam;
-	private String locatie;
+
+	@Embedded
+	private Locatie locatie;
+
 	private int capaciteit;
 	@Enumerated(EnumType.STRING)
 	private ProductieStatus productieStatus;
 	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
+
+	@ManyToOne // verantwoordelijke kan in meerdere sites werken?
+	private Gebruiker verantwoordelijke;
+
+	// een team hoort tot 1 site
+	@OneToOne(mappedBy = "site")
+	private Team team;
 
 	private Site(Builder builder){
 		this.naam = builder.naam;
@@ -50,21 +61,11 @@ public class Site {
 		return new Builder();
 	}
 
-	private static void validate(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod) {
 
-		if (naam == null || naam.isBlank()) throw new IllegalArgumentException("Naam is verplicht.");
-		if (locatie == null || locatie.isBlank()) throw new IllegalArgumentException("Locatie is verplicht.");
-		if (capaciteit <= 0) throw new IllegalArgumentException("Capaciteit moet groter zijn dan 0.");
-		if (op == null) throw new IllegalArgumentException("Operationele status is verplicht.");
-		if (prod == null) throw new IllegalArgumentException("Productiestatus is verplicht.");
+	public void update(String naam, Locatie locatie, int capaciteit,
+					   OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
-		if (op == OperationeleStatus.NON_ACTIEF && prod != ProductieStatus.OFFLINE) {
-			throw new IllegalArgumentException("Wanneer een site non-actief is, moet productie OFFLINE zijn.");
-		}
-	}
-
-	public void update(String naam, String locatie, int capaciteit, OperationeleStatus op, ProductieStatus prod){
-		validate(naam,locatie,capaciteit,op,prod);
+		validate(naam, locatie, capaciteit, op, prod);
 
 		this.naam = naam;
 		this.locatie = locatie;
@@ -73,10 +74,42 @@ public class Site {
 		this.productieStatus = prod;
 	}
 
+	private static void validate(String naam, Locatie locatie, int capaciteit,
+								 OperationeleStatus op, ProductieStatus prod) throws SiteException {
+
+		Map<String, IllegalArgumentException> errors = new HashMap<>();
+
+		if (naam == null || naam.isBlank())
+			errors.put("naam", new IllegalArgumentException("Naam vereist."));
+
+//		if (locatie == null)
+//			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
+
+		if (capaciteit <= 0)
+			errors.put("capaciteit", new IllegalArgumentException("Capaciteit moet groter zijn dan 0."));
+
+		if (op == null)
+			errors.put("operationeleStatus", new IllegalArgumentException("Operationele status vereist."));
+
+		if (prod == null)
+			errors.put("productieStatus", new IllegalArgumentException("Productiestatus vereist."));
+
+		if (op != null && prod != null) {
+			if (op == OperationeleStatus.NON_ACTIEF && prod != ProductieStatus.OFFLINE) {
+				errors.put("productieStatus", new IllegalArgumentException(
+						"Wanneer een site non-actief is, moet productie OFFLINE zijn."
+				));
+			}
+		}
+
+		if (!errors.isEmpty())
+			throw new SiteException(errors);
+	}
+
 
 	public static class Builder {
 		private String naam;
-		private String locatie;
+		private Locatie locatie;
 		private int capaciteit;
 		private OperationeleStatus operationeleStatus;
 		private ProductieStatus productieStatus;
@@ -86,7 +119,7 @@ public class Site {
 			return this;
 		}
 
-		public Builder locatie(String locatie){
+		public Builder locatie(Locatie locatie){
 			this.locatie = locatie;
 			return this;
 		}
@@ -110,8 +143,8 @@ public class Site {
 			return this;
 		}
 
-		public Site build(){
-			validate(naam,locatie,capaciteit,operationeleStatus,productieStatus);
+		public Site build() throws SiteException {
+			validate(naam, locatie, capaciteit, operationeleStatus, productieStatus);
 			return new Site(this);
 		}
 

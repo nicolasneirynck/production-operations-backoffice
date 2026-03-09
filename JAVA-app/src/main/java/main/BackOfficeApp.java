@@ -1,37 +1,53 @@
 package main;
 
-import gui.MainMenuController;
+import exception.SiteException;
+import exception.TaakException;
+import gui.effects.ButtonEffects;
+import gui.navigation.Navigator;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import security.SecurityContext;
+import util.View;
 
 public class BackOfficeApp extends Application {
 
-    @Override
-    public void start(Stage stage) throws Exception {
-
-        AppContext ctx = new AppContext();
-
-        // FXML Loader -> leest FXML (layout), JavaFX nodes maken (Tableview, Buttons,..), @FXML velden/methodes koppelen
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainMenuView.fxml"));
-        // controller injecteren
-        loader.setControllerFactory(type -> {
-            if (type == MainMenuController.class)
-                return new MainMenuController(ctx,stage);
-            try {
-                return type.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    private void bindAuthNavigation(Navigator navigator) {
+        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
+            // TODO: in de plaats van goTo(HOME): laat een specifiek scherm zien afhankelijk van de role?
+            if (newUser != null) navigator.goTo(View.HOME);
+            else navigator.goTo(View.LOGIN);
         });
+    }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Hoofdmenu");
-        stage.show();
+    private void initGuiEffects(Scene scene) {
+        ButtonEffects buttonEffects = new ButtonEffects();
+        buttonEffects.applyEffect(scene);
+    }
+
+    @Override
+    public void start(Stage stage) {
+
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-Regular.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-Bold.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource("/fonts/NunitoSans-SemiBold.ttf").toExternalForm(), 10);
+
+        AppContext context = new AppContext();
+        Navigator navigator = new Navigator(stage, context);
+
+        try {
+            MockdataSeeder.seed(context);
+        } catch (SiteException | TaakException e) {
+            throw new RuntimeException(e);
+        }
+
+        navigator.initLayout("/gui/LayoutView.fxml", "BackOffice", 1200, 800, "/css/app.css");
+
+        bindAuthNavigation(navigator);
+        navigator.goTo(View.LOGIN);
+
+        initGuiEffects(stage.getScene());
     }
 }
 
