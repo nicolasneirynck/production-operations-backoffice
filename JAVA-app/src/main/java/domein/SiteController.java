@@ -45,9 +45,6 @@ public class SiteController {
     {
         authorize();
 
-        Site nieuweSite = Site.builder()
-                    .naam(naam).locatie(locatie).capaciteit(capaciteit).operationeleStatus(op).productieStatus(prod)
-
         Map<String, IllegalArgumentException> errors = new HashMap<>(); // tijdelijk TODO anders geeft hij enkel locatie fouten
 
         Locatie locatie = null;

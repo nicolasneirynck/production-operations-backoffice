@@ -37,7 +37,10 @@ public class LoginViewController implements NavigableController {
     }
 
     @FXML
-    private void initialize() {
+    private void initialize() {}
+
+    @Override
+    public void loadData() {
         this.ac = ctx.getAuthenticationController();
     }
 
