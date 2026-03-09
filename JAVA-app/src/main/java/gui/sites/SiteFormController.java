@@ -29,7 +29,7 @@ public class SiteFormController implements FormController {
     @FXML private TextField straatTf;
     @FXML private TextField nummerTf;
     @FXML private TextField postcodeTf;
-    @FXML private TextField stadTf;
+    @FXML private TextField gemeenteTf;
    // @FXML private TextField landTf;
    @FXML private ComboBox<String> landCb;
 
@@ -40,7 +40,7 @@ public class SiteFormController implements FormController {
     @FXML private Label straatErr;
     @FXML private Label nummerErr;
     @FXML private Label postcodeErr;
-    @FXML private Label stadErr;
+    @FXML private Label gemeenteErr;
     @FXML private Label landErr;
 
     @FXML private Button saveBtn;
@@ -93,7 +93,7 @@ public class SiteFormController implements FormController {
         straatTf.textProperty().addListener((o, a, b) -> clearError("locatie.straat"));
         nummerTf.textProperty().addListener((o, a, b) -> clearError("locatie.nummer"));
         postcodeTf.textProperty().addListener((o, a, b) -> clearError("locatie.postcode"));
-        stadTf.textProperty().addListener((o, a, b) -> clearError("locatie.stad"));
+        gemeenteTf.textProperty().addListener((o, a, b) -> clearError("locatie.gemeente"));
         //landTf.textProperty().addListener((o, a, b) -> clearError("locatie.land"));
 
         List<String> landen = Arrays.stream(Locale.getISOCountries())
@@ -128,7 +128,7 @@ public class SiteFormController implements FormController {
         straatTf.clear();
         nummerTf.clear();
         postcodeTf.clear();
-        stadTf.clear();
+        gemeenteTf.clear();
         landCb.setValue(null);
 
         operationeelCb.getSelectionModel().select(OperationeleStatus.ACTIEF);
@@ -149,7 +149,7 @@ public class SiteFormController implements FormController {
         straatTf.setText(loc.straat());
         nummerTf.setText(loc.nummer());
         postcodeTf.setText(loc.postcode());
-        stadTf.setText(loc.stad());
+        gemeenteTf.setText(loc.gemeente());
         landCb.setValue(loc.land());
 
         operationeelCb.getSelectionModel().select(site.operationeleStatus());
@@ -175,16 +175,16 @@ public class SiteFormController implements FormController {
             String straat = straatTf.getText();
             String nummer = nummerTf.getText();
             String postcode = postcodeTf.getText();
-            String stad = stadTf.getText();
+            String gemeente = gemeenteTf.getText();
             String land = landCb.getValue();
 
             OperationeleStatus op = operationeelCb.getValue();
             ProductieStatus prod = productieCb.getValue();
 
             if (editingSiteId == null) {
-                observableSites.addSite(naam, straat, nummer, postcode, stad, land, capaciteit, op, prod);
+                observableSites.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
             } else {
-                observableSites.updateSite(editingSiteId, naam, straat, nummer, postcode, stad, land, capaciteit, op, prod);
+                observableSites.updateSite(editingSiteId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
             }
 
             observableSites.reload();
@@ -262,9 +262,9 @@ public class SiteFormController implements FormController {
                     postcodeErr.setText(msg);
                     postcodeTf.getStyleClass().add("field-error");
                 }
-                case "locatie.stad" -> {
-                    stadErr.setText(msg);
-                    stadTf.getStyleClass().add("field-error");
+                case "locatie.gemeente" -> {
+                    gemeenteErr.setText(msg);
+                    gemeenteTf.getStyleClass().add("field-error");
                 }
                 case "locatie.land" -> {
                     landErr.setText(msg);
@@ -322,9 +322,9 @@ public class SiteFormController implements FormController {
                 postcodeErr.setText("");
                 postcodeTf.getStyleClass().remove("field-error");
             }
-            case "locatie.stad" -> {
-                stadErr.setText("");
-                stadTf.getStyleClass().remove("field-error");
+            case "locatie.gemeente" -> {
+                gemeenteErr.setText("");
+                gemeenteTf.getStyleClass().remove("field-error");
             }
             case "locatie.land" -> {
                 landErr.setText("");
@@ -342,7 +342,7 @@ public class SiteFormController implements FormController {
         straatErr.setText("");
         nummerErr.setText("");
         postcodeErr.setText("");
-        stadErr.setText("");
+        gemeenteErr.setText("");
         landErr.setText("");
 
         naamTf.getStyleClass().remove("field-error");
@@ -352,7 +352,7 @@ public class SiteFormController implements FormController {
         straatTf.getStyleClass().remove("field-error");
         nummerTf.getStyleClass().remove("field-error");
         postcodeTf.getStyleClass().remove("field-error");
-        stadTf.getStyleClass().remove("field-error");
+        gemeenteTf.getStyleClass().remove("field-error");
         landCb.getStyleClass().remove("field-error"); // nog nodig?
     }
 

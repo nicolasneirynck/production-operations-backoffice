@@ -40,7 +40,7 @@ public class SiteController {
                 .toList();
     }
 
-    public void addSite(String naam, String straat, String nummer, String postcode, String stad, String land,
+    public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
                         int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
     {
         authorize();
@@ -49,7 +49,7 @@ public class SiteController {
 
         Locatie locatie = null;
         try {
-            locatie = Locatie.builder(straat, nummer, postcode, stad, land);
+            locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
         } catch (SiteException ex) {
             errors.putAll(ex.getExceptionMap());
         }
@@ -88,7 +88,7 @@ public class SiteController {
         //return createDto(nieuweSite);
     }
 
-    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String stad, String land,
+    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
         authorize();
 
@@ -107,7 +107,7 @@ public class SiteController {
 
             Locatie locatie = null;
             try {
-                locatie = Locatie.builder(straat, nummer, postcode, stad, land);
+                locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
             } catch (SiteException ex) {
                 errors.putAll(ex.getExceptionMap());
             }
@@ -156,7 +156,7 @@ public class SiteController {
                 loc.getStraat(),
                 loc.getNummer(),
                 loc.getPostcode(),
-                loc.getStad(),
+                loc.getGemeente(),
                 loc.getLand()
         );
 

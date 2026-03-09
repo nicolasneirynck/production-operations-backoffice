@@ -19,28 +19,28 @@ public class Locatie {
     private String straat;
     private String nummer;
     private String postcode;
-    private String stad;
+    private String gemeente;
     private String land;
 
-    private Locatie(String straat, String nummer, String postcode, String stad, String land) {
+    private Locatie(String straat, String nummer, String postcode, String gemeente, String land) {
         this.straat = straat;
         this.nummer = nummer;
         this.postcode = postcode;
-        this.stad = stad;
+        this.gemeente = gemeente;
         this.land = land;
     }
 
-    public static Locatie builder(String straat, String nummer, String postcode, String stad, String land) throws SiteException {
-        validate(straat, nummer, postcode, stad, land);
-        return new Locatie(straat, nummer, postcode, stad, land);
+    public static Locatie builder(String straat, String nummer, String postcode, String gemeente, String land) throws SiteException {
+        validate(straat, nummer, postcode, gemeente, land);
+        return new Locatie(straat, nummer, postcode, gemeente, land);
     }
 
     @Override
     public String toString() {
-        return "%s %s, %s %s, %s".formatted(straat, nummer, postcode, stad, land);
+        return "%s %s, %s %s, %s".formatted(straat, nummer, postcode, gemeente, land);
     }
 
-    private static void validate(String straat, String nummer, String postcode, String stad, String land) throws SiteException {
+    private static void validate(String straat, String nummer, String postcode, String gemeente, String land) throws SiteException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (straat == null || straat.isBlank())
@@ -52,8 +52,8 @@ public class Locatie {
         if (postcode == null || postcode.isBlank())
             errors.put("locatie.postcode", new IllegalArgumentException("Postcode vereist."));
 
-        if (stad == null || stad.isBlank())
-            errors.put("locatie.stad", new IllegalArgumentException("Stad vereist."));
+        if (gemeente == null || gemeente.isBlank())
+            errors.put("locatie.gemeente", new IllegalArgumentException("Gemeente vereist."));
 
         if (land == null || land.isBlank())
             errors.put("locatie.land", new IllegalArgumentException("Land vereist."));
