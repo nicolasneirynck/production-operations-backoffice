@@ -14,8 +14,7 @@ public class AppContext {
     private final SiteController siteController = new SiteController();
     private final AuthenticationController authenticationController = new AuthenticationController();
 
-    private final GebruikerDao gebruikerRepo = new GebruikerDaoJpa();
-    private final GebruikerController gebruikerController = new GebruikerController(gebruikerRepo);
+    private final GebruikerController gebruikerController = new GebruikerController();
 
     private final ObservableSites observableSites = new ObservableSites(siteController);
     private final ObservableTaken observableTaken = new ObservableTaken(taakController);
@@ -25,7 +24,6 @@ public class AppContext {
     public SiteController getSiteController() { return siteController; }
     public AuthenticationController getAuthenticationController() { return authenticationController; }
 
-    public GebruikerDao getGebruikerRepo() { return gebruikerRepo; }
     public GebruikerController getGebruikerController() { return gebruikerController; }
 
     public ObservableSites getObservableSites() { return observableSites; }

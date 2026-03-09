@@ -8,10 +8,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import main.dev.DevSeeder;
 import security.SecurityContext;
-
-import java.awt.*;
+import util.View;
 
 public class BackOfficeApp extends Application {
 
@@ -39,7 +37,6 @@ public class BackOfficeApp extends Application {
         Navigator navigator = new Navigator(stage, context);
 
         try {
-            new DevSeeder(context.getGebruikerRepo()).seed();
             MockdataSeeder.seed(context);
         } catch (SiteException | TaakException e) {
             throw new RuntimeException(e);
