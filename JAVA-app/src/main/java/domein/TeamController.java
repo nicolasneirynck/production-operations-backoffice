@@ -54,7 +54,7 @@ public class TeamController {
         }
     }
 
-    public void updateTeam(long teamCode, long verantwoordelijkeId, List<Long> werknemerIds) throws TeamException {
+    public void updateTeam(long teamCode, List<Long> werknemerIds) throws TeamException {
         teamRepo.startTransaction();
         try {
             Team team = teamRepo.get(teamCode);
@@ -68,6 +68,7 @@ public class TeamController {
 
 
             team.updateLeden(werknemers);
+            teamRepo.commitTransaction();
             } catch (RuntimeException | TeamException ex) {
                 teamRepo.rollbackTransaction();
                 throw ex;

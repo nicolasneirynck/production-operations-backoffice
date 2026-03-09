@@ -38,6 +38,12 @@ public class Gebruiker {
 //    @ManyToMany
 //    private Team medewerkerTeam;
 
+    // enkel voor testing
+    public Gebruiker(long id, Rollen rol) {
+        this.gebruikerId = id;
+        this.rol = rol;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

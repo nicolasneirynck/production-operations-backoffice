@@ -28,6 +28,18 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TeamLid> leden = new ArrayList<>();
 
+    // ENKEL VOOR TESTING
+    public Team(Long code, Site site, List<Gebruiker> leden) throws TeamException {
+        validate(site, leden);
+
+        this.code = code;
+        this.site = site;
+
+        for (Gebruiker gebruiker : leden) {
+            this.leden.add(new TeamLid(this, gebruiker));
+        }
+    }
+
     public Team(Site site, List<Gebruiker> leden) throws TeamException {
 
         validate(site, leden);
