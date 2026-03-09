@@ -51,8 +51,12 @@ public class Navigator {
 
     public void goTo(View view) {
         // TODO: add de andere
-        if (view == View.SITES_OVERVIEW) {
+        if (view == View.SITES_OVERVIEW || view == View.SITES_FORM) {
             Authorizer.require(Permission.SITES_BEHEREN);
+        } else if (view == View.TAKEN_OVERVIEW || view == View.TAKEN_FORM) {
+            Authorizer.require(Permission.TAKEN_BEHEREN);
+        } else if (view == View.GEBRUIKER_OVERVIEW || view == View.GEBRUIKER_FORM) {
+            Authorizer.require(Permission.GEBRUIKERS_BEHEREN);
         }
 
         if (layoutController == null) {
