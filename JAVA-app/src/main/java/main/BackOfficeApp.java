@@ -2,6 +2,7 @@ package main;
 
 import exception.SiteException;
 import exception.TaakException;
+import exception.TeamException;
 import gui.navigation.Navigator;
 import javafx.application.Application;
 import javafx.scene.text.Font;
@@ -21,7 +22,7 @@ public class BackOfficeApp extends Application {
 
         try {
             MockdataSeeder.seed(context);
-        } catch (SiteException | TaakException e) {
+        } catch (SiteException | TaakException | TeamException e) {
             throw new RuntimeException(e);
         }
 

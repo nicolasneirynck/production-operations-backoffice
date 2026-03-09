@@ -32,7 +32,8 @@ public class DTOMapper {
                 toLocatieDTO(site.getLocatie()),
                 site.getCapaciteit(),
                 site.getOperationeleStatus(),
-                site.getProductieStatus()
+                site.getProductieStatus(),
+                toGebruikerDTO(site.getVerantwoordelijke())
         );
     }
 
