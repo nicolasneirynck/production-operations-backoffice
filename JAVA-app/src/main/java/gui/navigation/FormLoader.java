@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public class FormLoader {
-        public static <T extends FormController> void showForm(VBox formHost, AppContext context,
+        public static <T extends FormController> T showForm(VBox formHost, AppContext context,
                                                                String fxmlPath, Consumer<T> initializer) {
         try {
             FXMLLoader loader = new FXMLLoader(FormLoader.class.getResource(fxmlPath));
@@ -17,7 +17,7 @@ public class FormLoader {
 
             T controller = loader.getController();
             controller.setContext(context);
-            controller.setOnClose(() -> hideForm(formHost));
+            //controller.setOnClose(() -> hideForm(formHost));
             controller.loadData();
 
             if (initializer != null) {
@@ -27,6 +27,8 @@ public class FormLoader {
             formHost.getChildren().setAll(form);
             formHost.setManaged(true);
             formHost.setVisible(true);
+
+            return controller;
 
         } catch (IOException e) {
             throw new RuntimeException("Kon formulier niet laden: " + fxmlPath, e);

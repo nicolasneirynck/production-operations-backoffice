@@ -83,7 +83,7 @@ public class TaakController {
     }
 
     private TaakDTO createDto(Taak taak){
-        return new TaakDTO(taak.getTaakId(),
+        return new TaakDTO(taak.getId(),
                 taak.getTaakType(),
                 taak.getOmschrijving(),
                 taak.getDuurtijd()

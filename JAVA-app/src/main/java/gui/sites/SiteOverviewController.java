@@ -3,9 +3,7 @@ package gui.sites;
 import dto.SiteDTO;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
-import gui.navigation.FormLoader;
-import gui.navigation.NavigableController;
-import gui.navigation.Navigator;
+import gui.navigation.*;
 import util.View;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,13 +17,14 @@ import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
-public class SiteOverviewController implements NavigableController {
+public class SiteOverviewController implements NavigableController, NavigationGuard {
 
     @FXML private VBox formHost;
     @FXML private Button addBtn;
 
     @FXML private TableView<SiteDTO> siteTable;
     @FXML private TableColumn<SiteDTO, String> naamCol;
+    @FXML private TableColumn<SiteDTO, String> verantwoordelijkeCol;
     @FXML private TableColumn<SiteDTO, String> locatieCol;
     @FXML private TableColumn<SiteDTO, Integer> capaciteitCol;
     @FXML private TableColumn<SiteDTO, OperationeleStatus> operationeleCol;
@@ -39,6 +38,8 @@ public class SiteOverviewController implements NavigableController {
 
     private SortedList<SiteDTO> sortedList;
 
+    private ClosableFormGuard activeFormGuard;
+
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
@@ -50,12 +51,18 @@ public class SiteOverviewController implements NavigableController {
     private void initialize() {
         naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
         locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie().volledigeLocatie()));
-        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
+        // TODO later elegantere oplossing zoeken
+        verantwoordelijkeCol.setCellValueFactory(c -> {
+            var verantwoordelijke = c.getValue().verantwoordelijke();
+            String naam = verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam();
+            return new SimpleStringProperty(naam);
+        });        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
 
         configureStatusColumns();
         ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteSite);
 
         naamCol.setStyle("-fx-alignment: center-left;");
+        verantwoordelijkeCol.setStyle("-fx-alignment: center-left;");
         locatieCol.setStyle("-fx-alignment: center-left;");
         capaciteitCol.setStyle("-fx-alignment: CENTER;");
         operationeleCol.setStyle("-fx-alignment: CENTER;");
@@ -147,28 +154,55 @@ public class SiteOverviewController implements NavigableController {
 
         if (sortedList == null) {
             sortedList = new SortedList<>(observableSites.getFilteredSiteList());
+            // binding voor kolomsortering
             sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
             siteTable.setItems(sortedList);
-        }
+
+            // default sortering
+            naamCol.setSortType(TableColumn.SortType.ASCENDING);
+            //siteTable.getSortOrder().setAll(naamCol);
+            siteTable.getSortOrder().add(naamCol);
+
+            locatieCol.setSortable(false);
+            operationeleCol.setSortable(false);
+            productieCol.setSortable(false);
+            actiesCol.setSortable(false);
+
+            }
     }
 
     @FXML
     private void onAdd() {
-        FormLoader.showForm(
+        SiteFormController controller = FormLoader.showForm(
                 formHost,
                 context,
                 View.SITES_FORM.fxml,
                 SiteFormController::loadForCreate
         );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
     private void showEditForm(SiteDTO site) {
-        FormLoader.showForm(
+        SiteFormController controller = FormLoader.showForm(
                 formHost,
                 context,
                 View.SITES_FORM.fxml,
-                (SiteFormController controller) -> controller.loadForEdit(site)
+                c -> c.loadForEdit(site)
         );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
+    }
+
+    private void closeForm() {
+        FormLoader.hideForm(formHost);
+        activeFormGuard = null;
+    }
+
+    public boolean canCloseOpenForm() {
+        return activeFormGuard == null || activeFormGuard.canClose();
     }
 
     private void deleteSite(SiteDTO site) {
@@ -196,5 +230,9 @@ public class SiteOverviewController implements NavigableController {
 
     }
 
+    @Override
+    public boolean canNavigateAway() {
+        return activeFormGuard == null || activeFormGuard.canClose();
+    }
 }
 

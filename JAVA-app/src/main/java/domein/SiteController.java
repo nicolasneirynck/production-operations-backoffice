@@ -1,5 +1,6 @@
 package domein;
 
+import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
 import exception.SiteException;
@@ -152,7 +153,7 @@ public class SiteController {
 
         Locatie loc = site.getLocatie();
 
-        LocatieDTO locatieDTO = new LocatieDTO(
+        LocatieDTO locatie = new LocatieDTO(
                 loc.getStraat(),
                 loc.getNummer(),
                 loc.getPostcode(),
@@ -160,10 +161,30 @@ public class SiteController {
                 loc.getLand()
         );
 
+        Gebruiker g = site.getVerantwoordelijke();
+        GebruikerDTO verantwoordelijke = null;
+
+        if (g != null) {
+            verantwoordelijke = new GebruikerDTO(
+                    g.getGebruikerId(),
+                    g.getPersoneelsnummer(),
+                    g.getNaam(),
+                    g.getVoornaam(),
+                    g.getGeboortedatum(),
+                    g.getAdres(),
+                    g.getEmail(),
+                    g.getGsm(),
+                    g.getRol(),
+                    g.getStatus(),
+                    g.getWachtwoord()
+            );
+        }
+
         return new SiteDTO(
-                site.getSiteId(),
+                site.getId(),
                 site.getNaam(),
-                locatieDTO,
+                verantwoordelijke,
+                locatie,
                 site.getCapaciteit(),
                 site.getOperationeleStatus(),
                 site.getProductieStatus()

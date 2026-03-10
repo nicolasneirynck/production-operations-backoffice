@@ -18,18 +18,18 @@ import java.util.*;
 								SELECT COUNT(s)
 								FROM Site s
 								WHERE LOWER(s.naam) = LOWER(:naam)
-								AND (:id IS NULL OR s.siteId <> :id)
+								AND (:id IS NULL OR s.id <> :id)
 								""")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode(exclude = "id")
 public class Site {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long siteId;
+	private long id;
 
-	//private Collection<Machine> machines; // TODO later -> als machines klasse bestaat
 	@Column(unique = true)
 	private String naam;
 
@@ -42,7 +42,7 @@ public class Site {
 	@Enumerated(EnumType.STRING)
 	private OperationeleStatus operationeleStatus;
 
-	@ManyToOne // verantwoordelijke kan in meerdere sites werken?
+	@ManyToOne
 	private Gebruiker verantwoordelijke;
 
 	// een team hoort tot 1 site

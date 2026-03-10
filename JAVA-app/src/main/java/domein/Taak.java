@@ -17,11 +17,12 @@ import java.util.Map;
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode(exclude = "id")
 public class Taak {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long taakId;
+    private long id;
     @Setter(AccessLevel.PROTECTED)
     private String taakType;
     @Setter(AccessLevel.PROTECTED)

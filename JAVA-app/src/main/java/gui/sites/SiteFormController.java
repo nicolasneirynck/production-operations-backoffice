@@ -3,6 +3,7 @@ package gui.sites;
 import dto.LocatieDTO;
 import dto.SiteDTO;
 import exception.SiteException;
+import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
 import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class SiteFormController implements FormController {
+public class SiteFormController implements FormController, ClosableFormGuard {
 
     @FXML private VBox root;
     @FXML private Label titleLabel;
@@ -354,6 +355,23 @@ public class SiteFormController implements FormController {
         postcodeTf.getStyleClass().remove("field-error");
         gemeenteTf.getStyleClass().remove("field-error");
         landCb.getStyleClass().remove("field-error"); // nog nodig?
+    }
+
+    @Override
+    public boolean canClose() {
+
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Formulier sluiten");
+        alert.setHeaderText("Niet-opgeslagen wijzigingen");
+        alert.setContentText("Mogelijke wijzigen werden niet opgeslaan. Wil je de pagina verlaten?");
+
+        ButtonType ja = new ButtonType("Ja");
+        ButtonType nee = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(ja, nee);
+
+        return alert.showAndWait().orElse(nee) == ja;
     }
 
 }

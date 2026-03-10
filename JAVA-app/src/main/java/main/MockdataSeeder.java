@@ -121,7 +121,7 @@ public class MockdataSeeder {
 
     public static void seed(AppContext context) throws SiteException, TaakException {
         // prevent seeding inside of production
-        if (!Boolean.getBoolean("seed.devUser")) return;
+       // if (!Boolean.getBoolean("seed.devUser")) return;
 
         SecurityContext.login(new UserPrincipal("temp", "temp", Rollen.ADMINISTRATOR, EnumSet.allOf(Permission.class)));
 

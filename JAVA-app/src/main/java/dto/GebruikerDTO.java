@@ -15,4 +15,10 @@ public record GebruikerDTO(
         Rollen rol,
         GebruikerStatus status,
         String wachtwoord
-) {}
+) {
+
+    public String volledigeNaam() {
+        return voornaam + " " + naam;
+    }
+
+}

@@ -20,6 +20,7 @@ public class Navigator {
     private final Stage stage;
     private final AppContext context;
 
+    private NavigableController currentController;
     private LayoutController layoutController;
 
     public Navigator(Stage stage, AppContext context) {
@@ -63,6 +64,12 @@ public class Navigator {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
         }
 
+        if (currentController instanceof NavigationGuard guard) {
+            if (!guard.canNavigateAway()) {
+                return;
+            }
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
 //            loader.setControllerFactory(type -> {
@@ -74,7 +81,15 @@ public class Navigator {
 //            });
 
             Parent content = loader.load(); // FXML injecteren + initialize() oproepen
-            initializeController(loader.getController());
+
+            Object controller = loader.getController();
+            initializeController(controller);
+
+            if (controller instanceof NavigableController nc) {
+                currentController = nc;
+            } else {
+                currentController = null;
+            }
 
             layoutController.showContent(content);
             stage.setTitle(view.title);

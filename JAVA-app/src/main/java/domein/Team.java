@@ -2,10 +2,7 @@ package domein;
 
 import exception.TeamException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import util.Rollen;
 
 import java.util.*;
@@ -15,11 +12,12 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 //@Setter(AccessLevel.PROTECTED)
+@EqualsAndHashCode(exclude = "id")
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long code;
+    private Long id;
 
     // team hoort tot 1 site
     @OneToOne
