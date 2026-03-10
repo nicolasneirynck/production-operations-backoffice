@@ -1,4 +1,4 @@
-import domein.Locatie;
+import domein.entiteiten.Locatie;
 import exception.SiteException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,4 +1,4 @@
-import domein.Gebruiker;
+import domein.entiteiten.Gebruiker;
 import domein.GebruikerController;
 import dto.GebruikerDTO;
 import org.junit.jupiter.api.BeforeEach;

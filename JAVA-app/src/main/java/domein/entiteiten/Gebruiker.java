@@ -1,4 +1,4 @@
-package domein;
+package domein.entiteiten;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import util.GebruikerStatus;
 import util.Rollen;
-
-import java.util.Optional;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

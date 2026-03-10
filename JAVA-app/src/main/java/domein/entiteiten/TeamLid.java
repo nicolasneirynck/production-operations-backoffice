@@ -1,4 +1,4 @@
-package domein;
+package domein.entiteiten;
 
 import jakarta.persistence.*;
 import lombok.*;

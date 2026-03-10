@@ -1,10 +1,9 @@
 package domein;
 
+import domein.entiteiten.Gebruiker;
 import dto.GebruikerDTO;
 import repository.GebruikerDao;
 import repository.GebruikerDaoJpa;
-import repository.GenericDao;
-import repository.GenericDaoJpa;
 import util.GebruikerStatus;
 import util.Rollen;
 

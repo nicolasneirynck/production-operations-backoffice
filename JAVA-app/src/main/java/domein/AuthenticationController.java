@@ -1,12 +1,10 @@
 package domein;
 
+import domein.entiteiten.Gebruiker;
 import dto.GebruikerDTO;
 import exception.LoginException;
-import exception.SiteException;
-import org.eclipse.persistence.sessions.Login;
 import repository.GebruikerDao;
 import repository.GebruikerDaoJpa;
-import repository.GenericDao;
 
 import java.util.HashMap;
 import java.util.Map;

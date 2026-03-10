@@ -1,6 +1,6 @@
 package gui.taken;
 
-import domein.TaakController;
+import domein.controllers.TaakController;
 import dto.TaakDTO;
 import exception.TaakException;
 import javafx.collections.FXCollections;

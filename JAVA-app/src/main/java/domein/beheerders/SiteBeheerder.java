@@ -1,13 +1,10 @@
-package domein;
+package domein.beheerders;
 
-import dto.GebruikerDTO;
-import dto.LocatieDTO;
-import dto.SiteDTO;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
 import exception.SiteException;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
-import security.Authorizer;
-import security.Permission;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 
@@ -15,38 +12,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SiteController {
+public class SiteBeheerder {
 
     private final SiteDao siteRepo;
 
-    public SiteController(SiteDao siteRepo) {
+    // tijdelijk voor devfase
+    public SiteBeheerder(SiteDao siteRepo) {
         this.siteRepo = siteRepo;
     }
 
-    //TODO tijdelijk voor devFase -> Mockito
-    public SiteController() {
-        siteRepo = new SiteDaoJpa();
+    public SiteBeheerder() {
+        this(new SiteDaoJpa());
     }
 
-
-    private void authorize() {
-        Authorizer.require(Permission.SITES_BEHEREN);
-    }
-
-    public List<SiteDTO> getAllSites(){
-        authorize();
-
-        return siteRepo.findAll().stream()
-                .map(this::createDto)
-                .toList();
+    public List<Site> getAllSites() {
+        return siteRepo.findAll();
     }
 
     public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
-                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException
-    {
-        authorize();
+                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
 
-        Map<String, IllegalArgumentException> errors = new HashMap<>(); // tijdelijk TODO anders geeft hij enkel locatie fouten
+        Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         Locatie locatie = null;
         try {
@@ -80,25 +66,22 @@ public class SiteController {
         try {
             siteRepo.insert(nieuweSite);
             siteRepo.commitTransaction();
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
         }
-
-        //return createDto(nieuweSite);
     }
 
     public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
-        authorize();
 
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
 
-            if (site == null)
+            if (site == null) {
                 throw new IllegalArgumentException("Site niet gevonden.");
+            }
 
             if (siteRepo.existsByName(naam, id)) {
                 throw new IllegalArgumentException("Er bestaat al een site met deze naam.");
@@ -114,7 +97,6 @@ public class SiteController {
             }
 
             try {
-                // update() valideert ook business rules (capaciteit>0, statuses, naam, ...)
                 site.update(naam, locatie, capaciteit, op, prod);
             } catch (SiteException ex) {
                 errors.putAll(ex.getExceptionMap());
@@ -132,14 +114,13 @@ public class SiteController {
     }
 
     public void deleteSite(long id) {
-        authorize();
-
         siteRepo.startTransaction();
         try {
             Site site = siteRepo.get(id);
 
-            if (site == null)
+            if (site == null) {
                 throw new IllegalArgumentException("Site niet gevonden.");
+            }
 
             siteRepo.delete(site);
             siteRepo.commitTransaction();
@@ -147,47 +128,5 @@ public class SiteController {
             siteRepo.rollbackTransaction();
             throw ex;
         }
-    }
-
-    private SiteDTO createDto(Site site){
-
-        Locatie loc = site.getLocatie();
-
-        LocatieDTO locatie = new LocatieDTO(
-                loc.getStraat(),
-                loc.getNummer(),
-                loc.getPostcode(),
-                loc.getGemeente(),
-                loc.getLand()
-        );
-
-        Gebruiker g = site.getVerantwoordelijke();
-        GebruikerDTO verantwoordelijke = null;
-
-        if (g != null) {
-            verantwoordelijke = new GebruikerDTO(
-                    g.getGebruikerId(),
-                    g.getPersoneelsnummer(),
-                    g.getNaam(),
-                    g.getVoornaam(),
-                    g.getGeboortedatum(),
-                    g.getAdres(),
-                    g.getEmail(),
-                    g.getGsm(),
-                    g.getRol(),
-                    g.getStatus(),
-                    g.getWachtwoord()
-            );
-        }
-
-        return new SiteDTO(
-                site.getId(),
-                site.getNaam(),
-                verantwoordelijke,
-                locatie,
-                site.getCapaciteit(),
-                site.getOperationeleStatus(),
-                site.getProductieStatus()
-        );
     }
 }

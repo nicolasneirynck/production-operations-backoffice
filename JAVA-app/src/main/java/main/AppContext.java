@@ -2,12 +2,10 @@ package main;
 
 import domein.AuthenticationController;
 import domein.GebruikerController;
-import domein.SiteController;
-import domein.TaakController;
+import domein.controllers.SiteController;
+import domein.controllers.TaakController;
 import gui.sites.ObservableSites;
 import gui.taken.ObservableTaken;
-import repository.GebruikerDao;
-import repository.GebruikerDaoJpa;
 
 public class AppContext {
     private final TaakController taakController = new TaakController();

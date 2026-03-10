@@ -1,6 +1,6 @@
 package repository;
 
-import domein.Site;
+import domein.entiteiten.Site;
 
 public interface SiteDao extends GenericDao<Site> {
 

@@ -1,11 +1,8 @@
-package domein;
+package domein.entiteiten;
 
 import exception.TaakException;
 import jakarta.persistence.*;
 import lombok.*;
-import util.OperationeleStatus;
-import util.ProductieStatus;
-import util.TaakType;
 
 import java.util.HashMap;
 import java.util.Map;

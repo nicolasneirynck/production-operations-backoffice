@@ -1,8 +1,7 @@
-import domein.Taak;
+import domein.entiteiten.Taak;
 import exception.TaakException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import util.TaakType;
 
 import java.util.stream.Stream;
 

@@ -1,12 +1,10 @@
 package main;
 
-import domein.AuthenticationController;
 import domein.GebruikerController;
-import domein.SiteController;
-import domein.TaakController;
+import domein.controllers.SiteController;
+import domein.controllers.TaakController;
 import exception.SiteException;
 import exception.TaakException;
-import security.Authorizer;
 import security.Permission;
 import security.SecurityContext;
 import security.UserPrincipal;

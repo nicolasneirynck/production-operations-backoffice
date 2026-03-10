@@ -1,6 +1,6 @@
 package repository;
 
-import domein.Gebruiker;
+import domein.entiteiten.Gebruiker;
 import jakarta.persistence.TypedQuery;
 
 import java.util.Optional;

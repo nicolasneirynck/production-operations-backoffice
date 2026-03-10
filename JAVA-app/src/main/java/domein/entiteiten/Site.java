@@ -1,4 +1,4 @@
-package domein;
+package domein.entiteiten;
 
 import exception.SiteException;
 import jakarta.persistence.*;

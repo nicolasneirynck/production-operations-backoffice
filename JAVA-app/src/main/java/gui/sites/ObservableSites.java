@@ -1,6 +1,6 @@
 package gui.sites;
 
-import domein.SiteController;
+import domein.controllers.SiteController;
 import dto.SiteDTO;
 import exception.SiteException;
 import javafx.collections.FXCollections;

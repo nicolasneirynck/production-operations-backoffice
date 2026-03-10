@@ -1,8 +1,6 @@
-import domein.Locatie;
-import domein.Site;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
 import exception.SiteException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import util.OperationeleStatus;
