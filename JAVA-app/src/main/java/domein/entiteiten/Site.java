@@ -1,6 +1,6 @@
 package domein.entiteiten;
 
-import exception.SiteException;
+import exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -63,7 +63,7 @@ public class Site {
 
 
 	public void update(String naam, Locatie locatie, int capaciteit,
-					   OperationeleStatus op, ProductieStatus prod) throws SiteException {
+					   OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
 		validate(naam, locatie, capaciteit, op, prod);
 
@@ -75,7 +75,7 @@ public class Site {
 	}
 
 	private static void validate(String naam, Locatie locatie, int capaciteit,
-								 OperationeleStatus op, ProductieStatus prod) throws SiteException {
+								 OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
 		Map<String, IllegalArgumentException> errors = new HashMap<>();
 
@@ -103,7 +103,7 @@ public class Site {
 		}
 
 		if (!errors.isEmpty())
-			throw new SiteException(errors);
+			throw new ValidationException(errors);
 	}
 
 
@@ -143,7 +143,7 @@ public class Site {
 			return this;
 		}
 
-		public Site build() throws SiteException {
+		public Site build() throws ValidationException {
 			validate(naam, locatie, capaciteit, operationeleStatus, productieStatus);
 			return new Site(this);
 		}

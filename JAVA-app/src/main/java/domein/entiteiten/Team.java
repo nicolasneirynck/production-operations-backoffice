@@ -1,6 +1,6 @@
 package domein.entiteiten;
 
-import exception.TeamException;
+import exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.*;
 import util.Rollen;
@@ -26,7 +26,7 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TeamLid> leden = new ArrayList<>();
 
-    public Team(Site site, List<Gebruiker> leden) throws TeamException {
+    public Team(Site site, List<Gebruiker> leden) throws ValidationException {
 
         validate(site, leden);
 
@@ -37,7 +37,7 @@ public class Team {
         }
     }
 
-    public void updateLeden(List<Gebruiker> nieuweGebruikers) throws TeamException {
+    public void updateLeden(List<Gebruiker> nieuweGebruikers) throws ValidationException {
         validate(this.site, nieuweGebruikers);
 
         Set<Long> nieuweIds = nieuweGebruikers.stream()
@@ -58,7 +58,7 @@ public class Team {
         }
     }
 
-    private static void validate(Site site, List<Gebruiker> leden) throws TeamException {
+    private static void validate(Site site, List<Gebruiker> leden) throws ValidationException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (site == null) {
@@ -91,7 +91,7 @@ public class Team {
         }
 
         if (!errors.isEmpty()) {
-            throw new TeamException(errors);
+            throw new ValidationException(errors);
         }
     }
 

@@ -9,7 +9,7 @@ import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;
 import domein.controllers.SiteController;
 import dto.SiteDTO;
-import exception.SiteException;
+import exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -121,7 +121,7 @@ public class SiteControllerTest {
                                                                            String gemeente, String land, int capaciteit,
                                                                            OperationeleStatus op, ProductieStatus prod) {
 
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 siteController.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 
@@ -188,7 +188,7 @@ public class SiteControllerTest {
 
         when(siteRepo.get(id)).thenReturn(bestaande);
 
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 siteController.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 

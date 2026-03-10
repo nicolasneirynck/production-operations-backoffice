@@ -1,6 +1,6 @@
 package domein.entiteiten;
 
-import exception.SiteException;
+import exception.ValidationException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -30,7 +30,7 @@ public class Locatie {
         this.land = land;
     }
 
-    public static Locatie builder(String straat, String nummer, String postcode, String gemeente, String land) throws SiteException {
+    public static Locatie builder(String straat, String nummer, String postcode, String gemeente, String land) throws ValidationException {
         validate(straat, nummer, postcode, gemeente, land);
         return new Locatie(straat, nummer, postcode, gemeente, land);
     }
@@ -40,7 +40,7 @@ public class Locatie {
         return "%s %s, %s %s, %s".formatted(straat, nummer, postcode, gemeente, land);
     }
 
-    private static void validate(String straat, String nummer, String postcode, String gemeente, String land) throws SiteException {
+    private static void validate(String straat, String nummer, String postcode, String gemeente, String land) throws ValidationException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (straat == null || straat.isBlank())
@@ -59,6 +59,6 @@ public class Locatie {
             errors.put("locatie.land", new IllegalArgumentException("Land vereist."));
 
         if (!errors.isEmpty())
-            throw new SiteException(errors);
+            throw new ValidationException(errors);
     }
 }

@@ -2,7 +2,7 @@ package gui;
 
 import domein.AuthenticationController;
 import dto.GebruikerDTO;
-import exception.LoginException;
+import exception.ValidationException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.fxml.FXML;
@@ -12,8 +12,6 @@ import main.AppContext;
 import security.RolePermissions;
 import security.SecurityContext;
 import security.UserPrincipal;
-
-import java.util.Optional;
 
 public class LoginViewController implements NavigableController {
     @FXML private TextField emailTxt;
@@ -50,12 +48,12 @@ public class LoginViewController implements NavigableController {
             GebruikerDTO gebruiker = ac.login(emailTxt.getText(), wachtwoordTxt.getText());
 
             SecurityContext.login(new UserPrincipal(gebruiker.naam(), gebruiker.voornaam(), gebruiker.rol(), RolePermissions.getPermissions(gebruiker.rol())));
-        } catch (LoginException exception) {
+        } catch (ValidationException exception) {
             showLoginErrors(exception);
         }
     }
 
-    private void showLoginErrors(LoginException exception) {
+    private void showLoginErrors(ValidationException exception) {
         clearErrors();
 
         exception.getExceptionMap().forEach((field, iae) -> {

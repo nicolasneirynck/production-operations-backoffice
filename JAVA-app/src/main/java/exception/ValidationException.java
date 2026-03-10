@@ -3,15 +3,12 @@ package exception;
 import java.util.Collections;
 import java.util.Map;
 
-public class LoginException extends Exception {
-
-    private static final String MESSAGE =
-            "Ongeldige gegevens, inloggen is niet mogelijk met deze gegevens.";
+public class ValidationException extends Exception {
 
     private Map<String,IllegalArgumentException> exceptionMap;
 
-    public LoginException(Map<String,IllegalArgumentException> exceptionMap){
-        super(MESSAGE);
+    public ValidationException(Map<String,IllegalArgumentException> exceptionMap){
+        super();
         this.exceptionMap = exceptionMap;
     }
 

@@ -2,10 +2,9 @@ package gui.sites;
 
 import dto.LocatieDTO;
 import dto.SiteDTO;
-import exception.SiteException;
+import exception.ValidationException;
 import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
-import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -191,7 +190,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
             observableSites.reload();
             close();
 
-        } catch (SiteException ex) {
+        } catch (ValidationException ex) {
             showValidationErrors(ex);
 //        } catch (IllegalArgumentException ex) {
 //            naamErr.setText(ex.getMessage());
@@ -227,7 +226,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     }
 
 
-    private void showValidationErrors(SiteException ex) {
+    private void showValidationErrors(ValidationException ex) {
         clearErrors();
 
         ex.getExceptionMap().forEach((field, iae) -> {

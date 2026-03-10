@@ -1,7 +1,6 @@
 package main;
 
-import exception.SiteException;
-import exception.TaakException;
+import exception.ValidationException;
 import gui.effects.ButtonEffects;
 import gui.navigation.Navigator;
 import javafx.application.Application;
@@ -38,7 +37,7 @@ public class BackOfficeApp extends Application {
 
         try {
             MockdataSeeder.seed(context);
-        } catch (SiteException | TaakException e) {
+        } catch (ValidationException e) {
             throw new RuntimeException(e);
         }
 

@@ -2,7 +2,7 @@ package domein;
 
 import domein.entiteiten.Gebruiker;
 import dto.GebruikerDTO;
-import exception.LoginException;
+import exception.ValidationException;
 import repository.GebruikerDao;
 import repository.GebruikerDaoJpa;
 
@@ -28,7 +28,7 @@ public class AuthenticationController {
     }
 
     // TODO: use encryption for password
-    public GebruikerDTO login(String email, String wachtwoord) throws LoginException {
+    public GebruikerDTO login(String email, String wachtwoord) throws ValidationException {
         String normalizedEmail = normalizeEmail(email);
 
         Map<String, IllegalArgumentException> errors = new HashMap<>();
@@ -48,7 +48,7 @@ public class AuthenticationController {
         if (gebruikerOptional.isEmpty()) {
             errors.put("onbestaand", new IllegalArgumentException("Ongeldige login."));
 //            errors.put("onbestaand", new IllegalArgumentException("Een gebruiker met deze email en wachtwoord bestaat niet."));
-            throw new LoginException(errors);
+            throw new ValidationException(errors);
         }
 
         Gebruiker gebruiker = gebruikerOptional.get();
@@ -58,7 +58,7 @@ public class AuthenticationController {
         }
 
         if (!errors.isEmpty())
-            throw new LoginException(errors);
+            throw new ValidationException(errors);
 
         return new GebruikerDTO(
                 gebruiker.getGebruikerId(),

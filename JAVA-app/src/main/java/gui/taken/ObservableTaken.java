@@ -2,7 +2,7 @@ package gui.taken;
 
 import domein.controllers.TaakController;
 import dto.TaakDTO;
-import exception.TaakException;
+import exception.ValidationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -21,12 +21,12 @@ public class ObservableTaken {
         this.filteredTaakList = new FilteredList<>(observableTaakList,t -> true);
     }
 
-    public void addTaak(String type, String omschrijving, Integer duurtijd) throws TaakException {
+    public void addTaak(String type, String omschrijving, Integer duurtijd) throws ValidationException {
         controller.addTaak(type,omschrijving,duurtijd);
         reload();
     }
 
-    public void editTaak(long id,String type, String omschrijving, Integer duurtijd) throws TaakException{
+    public void editTaak(long id,String type, String omschrijving, Integer duurtijd) throws ValidationException{
         controller.updateTaak(id, type, omschrijving, duurtijd);
         reload();
        // return updated;

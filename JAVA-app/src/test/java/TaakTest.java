@@ -1,5 +1,4 @@
 import domein.entiteiten.Taak;
-import exception.TaakException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 

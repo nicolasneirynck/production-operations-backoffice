@@ -2,7 +2,7 @@ package domein.beheerders;
 
 import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;
-import exception.SiteException;
+import exception.ValidationException;
 import repository.SiteDao;
 import repository.SiteDaoJpa;
 import util.OperationeleStatus;
@@ -30,14 +30,14 @@ public class SiteBeheerder {
     }
 
     public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
-                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         Locatie locatie = null;
         try {
             locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
-        } catch (SiteException ex) {
+        } catch (ValidationException ex) {
             errors.putAll(ex.getExceptionMap());
         }
 
@@ -50,12 +50,12 @@ public class SiteBeheerder {
                     .operationeleStatus(op)
                     .productieStatus(prod)
                     .build();
-        } catch (SiteException ex) {
+        } catch (ValidationException ex) {
             errors.putAll(ex.getExceptionMap());
         }
 
         if (!errors.isEmpty()) {
-            throw new SiteException(errors);
+            throw new ValidationException(errors);
         }
 
         if (siteRepo.existsByName(naam, null)) {
@@ -73,7 +73,7 @@ public class SiteBeheerder {
     }
 
     public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
-                           int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+                           int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
         siteRepo.startTransaction();
         try {
@@ -92,22 +92,22 @@ public class SiteBeheerder {
             Locatie locatie = null;
             try {
                 locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
-            } catch (SiteException ex) {
+            } catch (ValidationException ex) {
                 errors.putAll(ex.getExceptionMap());
             }
 
             try {
                 site.update(naam, locatie, capaciteit, op, prod);
-            } catch (SiteException ex) {
+            } catch (ValidationException ex) {
                 errors.putAll(ex.getExceptionMap());
             }
 
             if (!errors.isEmpty()) {
-                throw new SiteException(errors);
+                throw new ValidationException(errors);
             }
 
             siteRepo.commitTransaction();
-        } catch (RuntimeException | SiteException ex) {
+        } catch (RuntimeException | ValidationException ex) {
             siteRepo.rollbackTransaction();
             throw ex;
         }

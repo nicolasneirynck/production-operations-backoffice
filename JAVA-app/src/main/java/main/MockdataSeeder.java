@@ -3,8 +3,7 @@ package main;
 import domein.GebruikerController;
 import domein.controllers.SiteController;
 import domein.controllers.TaakController;
-import exception.SiteException;
-import exception.TaakException;
+import exception.ValidationException;
 import security.Permission;
 import security.SecurityContext;
 import security.UserPrincipal;
@@ -16,7 +15,7 @@ import util.Rollen;
 import java.util.EnumSet;
 
 public class MockdataSeeder {
-    private static void seedSites(AppContext context) throws SiteException {
+    private static void seedSites(AppContext context) throws ValidationException {
         SiteController sc = context.getSiteController();
 
         sc.addSite(
@@ -56,7 +55,7 @@ public class MockdataSeeder {
         );
     }
 
-    private static void seedTaken(AppContext context) throws TaakException {
+    private static void seedTaken(AppContext context) throws ValidationException {
         TaakController tc = context.getTaakController();
 
         tc.addTaak(
@@ -117,7 +116,7 @@ public class MockdataSeeder {
         gc.addGebruiker(4, "Bakker", "Jan", "02/10/2000", "België", "jan.bakker@gmail.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "pass123");
     }
 
-    public static void seed(AppContext context) throws SiteException, TaakException {
+    public static void seed(AppContext context) throws ValidationException {
         // prevent seeding inside of production
        // if (!Boolean.getBoolean("seed.devUser")) return;
 

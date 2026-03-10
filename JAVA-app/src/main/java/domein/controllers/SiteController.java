@@ -7,7 +7,7 @@ import domein.entiteiten.Site;
 import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
-import exception.SiteException;
+import exception.ValidationException;
 import security.Authorizer;
 import security.Permission;
 import util.OperationeleStatus;
@@ -41,13 +41,13 @@ public class SiteController {
     }
 
     public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
-                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+                        int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
         siteBeheerder.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }
 
     public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
-                           int capaciteit, OperationeleStatus op, ProductieStatus prod) throws SiteException {
+                           int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
         siteBeheerder.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }

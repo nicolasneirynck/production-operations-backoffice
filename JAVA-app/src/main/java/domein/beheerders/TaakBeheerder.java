@@ -1,7 +1,7 @@
 package domein.beheerders;
 
 import domein.entiteiten.Taak;
-import exception.TaakException;
+import exception.ValidationException;
 import repository.TaakDao;
 import repository.TaakDaoJpa;
 
@@ -24,7 +24,7 @@ public class TaakBeheerder {
         return taakRepo.findAll();
     }
 
-    public void addTaak(String type, String omschrijving, int duurtijd) throws TaakException {
+    public void addTaak(String type, String omschrijving, int duurtijd) throws ValidationException {
         Taak nieuweTaak = Taak.builder()
                 .type(type)
                 .omschrijving(omschrijving)
@@ -41,7 +41,7 @@ public class TaakBeheerder {
         }
     }
 
-    public void updateTaak(long id, String type, String omschrijving, int duurtijd) throws TaakException {
+    public void updateTaak(long id, String type, String omschrijving, int duurtijd) throws ValidationException {
         taakRepo.startTransaction();
         try {
             Taak taak = taakRepo.get(id);
@@ -52,7 +52,7 @@ public class TaakBeheerder {
 
             taak.update(type, omschrijving, duurtijd);
             taakRepo.commitTransaction();
-        } catch (TaakException | RuntimeException ex) {
+        } catch (ValidationException | RuntimeException ex) {
             taakRepo.rollbackTransaction();
             throw ex;
         }

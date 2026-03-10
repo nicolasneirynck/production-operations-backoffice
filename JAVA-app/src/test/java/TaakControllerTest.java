@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import domein.entiteiten.Taak;
 import domein.controllers.TaakController;
 import dto.TaakDTO;
-import exception.TaakException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

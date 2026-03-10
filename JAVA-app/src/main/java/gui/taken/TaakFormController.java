@@ -1,10 +1,9 @@
 package gui.taken;
 
 import dto.TaakDTO;
-import exception.TaakException;
+import exception.ValidationException;
 import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
-import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -105,7 +104,7 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
             observableTaken.reload();
             close();
-        } catch (TaakException ex) {
+        } catch (ValidationException ex) {
             showValidationErrors(ex);
         } catch (RuntimeException ex) {
             new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
@@ -136,7 +135,7 @@ public class TaakFormController implements FormController, ClosableFormGuard {
     }
 
 
-    private void showValidationErrors(TaakException ex) {
+    private void showValidationErrors(ValidationException ex) {
         clearErrors();
 
         ex.getExceptionMap().forEach((field, iae) -> {
