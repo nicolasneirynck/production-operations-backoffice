@@ -1,11 +1,8 @@
-package domein;
+package domein.entiteiten;
 
-import exception.TeamException;
+import exception.ValidationException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import util.Rollen;
 
 import java.util.*;
@@ -15,11 +12,12 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 //@Setter(AccessLevel.PROTECTED)
+@EqualsAndHashCode(exclude = "id")
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long code;
+    private Long id;
 
     // team hoort tot 1 site
     @OneToOne
@@ -28,19 +26,7 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TeamLid> leden = new ArrayList<>();
 
-    // ENKEL VOOR TESTING
-    public Team(Long code, Site site, List<Gebruiker> leden) throws TeamException {
-        validate(site, leden);
-
-        this.code = code;
-        this.site = site;
-
-        for (Gebruiker gebruiker : leden) {
-            this.leden.add(new TeamLid(this, gebruiker));
-        }
-    }
-
-    public Team(Site site, List<Gebruiker> leden) throws TeamException {
+    public Team(Site site, List<Gebruiker> leden) throws ValidationException {
 
         validate(site, leden);
 
@@ -51,7 +37,7 @@ public class Team {
         }
     }
 
-    public void updateLeden(List<Gebruiker> nieuweGebruikers) throws TeamException {
+    public void updateLeden(List<Gebruiker> nieuweGebruikers) throws ValidationException {
         validate(this.site, nieuweGebruikers);
 
         Set<Long> nieuweIds = nieuweGebruikers.stream()
@@ -72,7 +58,7 @@ public class Team {
         }
     }
 
-    private static void validate(Site site, List<Gebruiker> leden) throws TeamException {
+    private static void validate(Site site, List<Gebruiker> leden) throws ValidationException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (site == null) {
@@ -105,7 +91,7 @@ public class Team {
         }
 
         if (!errors.isEmpty()) {
-            throw new TeamException(errors);
+            throw new ValidationException(errors);
         }
     }
 

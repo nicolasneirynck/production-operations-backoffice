@@ -30,7 +30,7 @@
             <TableColumn fx:id="typeCol" text="Taak Type" prefWidth="150"/>
             <TableColumn fx:id="omschrijvingCol" text="Omschrijving" prefWidth="300"/>
             <TableColumn fx:id="duurtijdCol" text="Duurtijd (minuten)" prefWidth="140"/>
-            <TableColumn fx:id="actiesCol" text="Acties" prefWidth="180"/>
+            <TableColumn fx:id="actiesCol" text="Acties" prefWidth="100"/>
         </columns>
     </TableView>
 

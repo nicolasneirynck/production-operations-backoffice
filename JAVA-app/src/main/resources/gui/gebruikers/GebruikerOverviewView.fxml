@@ -11,12 +11,11 @@
    <center>
       <TableView fx:id="gebruikerTable" prefHeight="233.0" prefWidth="600.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="idCol" prefWidth="99.0" text="GebruikerId" />
-          <TableColumn fx:id="emailCol" prefWidth="64.0" text="Email" />
-            <TableColumn fx:id="gebruikersnaamCol" prefWidth="123.0" text="Gebruikersnaam" />
-            <TableColumn fx:id="wachtwoordCol" prefWidth="103.0" text="Wachtwoord" />
-            <TableColumn fx:id="statusCol" prefWidth="125.0" text="Gebruiker Status" />
-            <TableColumn fx:id="rolCol" prefWidth="85.0" text="Rol" />
+          <TableColumn fx:id="idCol" prefWidth="108.0" text="Id" />
+          <TableColumn fx:id="naamCol" prefWidth="111.0" text="Naam" />
+            <TableColumn fx:id="voornaamCol" prefWidth="118.0" text="Voornaam" />
+            <TableColumn fx:id="rolCol" prefWidth="127.0" text="Rol" />
+            <TableColumn fx:id="statusCol" prefWidth="135.0" text="Status" />
         </columns>
       </TableView>
    </center>

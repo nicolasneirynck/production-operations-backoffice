@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
 import main.AppContext;
+import security.Authorizer;
+import security.Permission;
 import util.View;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ public class Navigator {
     private final Stage stage;
     private final AppContext context;
 
+    private NavigableController currentController;
     private LayoutController layoutController;
 
     public Navigator(Stage stage, AppContext context) {
@@ -48,8 +51,23 @@ public class Navigator {
     }
 
     public void goTo(View view) {
+        // TODO: add de andere
+        if (view == View.SITES_OVERVIEW || view == View.SITES_FORM) {
+            Authorizer.require(Permission.SITES_BEHEREN);
+        } else if (view == View.TAKEN_OVERVIEW || view == View.TAKEN_FORM) {
+            Authorizer.require(Permission.TAKEN_BEHEREN);
+        } else if (view == View.GEBRUIKER_OVERVIEW || view == View.GEBRUIKER_FORM) {
+            Authorizer.require(Permission.GEBRUIKERS_BEHEREN);
+        }
+
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
+        }
+
+        if (currentController instanceof NavigationGuard guard) {
+            if (!guard.canNavigateAway()) {
+                return;
+            }
         }
 
         try {
@@ -63,7 +81,15 @@ public class Navigator {
 //            });
 
             Parent content = loader.load(); // FXML injecteren + initialize() oproepen
-            initializeController(loader.getController());
+
+            Object controller = loader.getController();
+            initializeController(controller);
+
+            if (controller instanceof NavigableController nc) {
+                currentController = nc;
+            } else {
+                currentController = null;
+            }
 
             layoutController.showContent(content);
             stage.setTitle(view.title);

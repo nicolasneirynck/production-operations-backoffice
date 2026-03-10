@@ -1,6 +1,6 @@
 package repository;
 
-import domein.Taak;
+import domein.entiteiten.Taak;
 
 import java.util.List;
 

@@ -3,14 +3,12 @@ package exception;
 import java.util.Collections;
 import java.util.Map;
 
-public class TeamException extends Exception {
-    private static final String MESSAGE =
-            "Team kan niet worden aangemaakt, gelieve de nodige gegevens aan te passen.";
+public class ValidationException extends Exception {
 
     private Map<String,IllegalArgumentException> exceptionMap;
 
-    public TeamException(Map<String,IllegalArgumentException> exceptionMap){
-        super(MESSAGE);
+    public ValidationException(Map<String,IllegalArgumentException> exceptionMap){
+        super();
         this.exceptionMap = exceptionMap;
     }
 
@@ -18,6 +16,3 @@ public class TeamException extends Exception {
         return Collections.unmodifiableMap(exceptionMap);
     }
 }
-
-
-

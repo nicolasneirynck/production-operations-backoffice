@@ -1,8 +1,6 @@
-import domein.Locatie;
-import domein.Site;
-import exception.SiteException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
+import exception.ValidationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import util.OperationeleStatus;
@@ -61,7 +59,7 @@ public class SiteTest {
             mode = EnumSource.Mode.EXCLUDE
     )
     void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod){
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Site.builder()
                         .naam("Brugge")
                         .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
@@ -75,7 +73,7 @@ public class SiteTest {
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -10})
     void builder_OngeldigeCapaciteit_GooitException(int cap) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Site.builder()
                         .naam("X")
                         .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
@@ -90,7 +88,7 @@ public class SiteTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigeNaam_GooitException(String naam) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Site.builder()
                         .naam(naam)
                         .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
@@ -128,7 +126,7 @@ public class SiteTest {
     @ParameterizedTest
     @MethodSource("ongeldigeLocatieVelden")
     void builder_OngeldigeLocatie_GooitException(String straat, String nummer, String postcode, String stad, String land) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Site.builder()
                         .naam("X")
                         .locatie(Locatie.builder(straat, nummer, postcode, stad, land))

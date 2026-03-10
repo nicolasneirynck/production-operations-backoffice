@@ -1,4 +1,4 @@
-import domein.Gebruiker;
+import domein.entiteiten.Gebruiker;
 import domein.GebruikerController;
 import dto.GebruikerDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,16 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+// TODO: add more tests for personeelsnummer, naam, voornaam, geboortedatum, adres, gsm AFTER adding in proper validation in Gebruiker.java
 @ExtendWith(MockitoExtension.class)
 public class GebruikerControllerTest {
     private Gebruiker.Builder gebruikerBuilder;
 
     private final static long GELDIG_ID = 1L;
+    private final static int GELDIG_PERSONEELSNUMMER = 1;
+    private final static String GELDIGE_NAAM = "naam";
+    private final static String GELDIGE_VOORNAAM = "voornaam";
+    private final static String GELDIGE_GEBOORTEDATUM = "02/24/2000";
+    private final static String GELDIG_ADRES = "Straat 5; Stad; Land";
     private final static String GELDIGE_EMAIL = "geldigeEmail@gmail.com";
-    private final static String GELDIGE_GEBRUIKERSNAAM = "geldigeNaam";
-    private final static String GELDIG_WACHTWOORD = "geldigWachtwoord123";
-    private final static GebruikerStatus GELDIGE_STATUS = GebruikerStatus.ACTIEF;
+    private final static String GELDIGE_GSM = "+32 2 152 45 62";
     private final static Rollen GELDIGE_ROL = Rollen.WERKNEMER;
+    private final static GebruikerStatus GELDIGE_STATUS = GebruikerStatus.ACTIEF;
+    private final static String GELDIG_WACHTWOORD = "geldigWachtwoord123";
 
     @Mock
     private GenericDao<Gebruiker> gebruikerRepo;
@@ -42,17 +48,22 @@ public class GebruikerControllerTest {
     @BeforeEach
     void setUp() {
         gebruikerBuilder = Gebruiker.builder()
+                .personeelsnummer(GELDIG_PERSONEELSNUMMER)
+                .naam(GELDIGE_NAAM)
+                .voornaam(GELDIGE_VOORNAAM)
+                .geboortedatum(GELDIGE_GEBOORTEDATUM)
+                .adres(GELDIG_ADRES)
                 .email(GELDIGE_EMAIL)
-                .gebruikersnaam(GELDIGE_GEBRUIKERSNAAM)
-                .wachtwoord(GELDIG_WACHTWOORD)
+                .gsm(GELDIGE_GSM)
+                .rol(GELDIGE_ROL)
                 .status(GELDIGE_STATUS)
-                .rol(GELDIGE_ROL);
+                .wachtwoord(GELDIG_WACHTWOORD);
     }
 
     @Test
     public void getAllGebruikers_geeftAlleGebruikersTerug() {
-        Gebruiker gebruiker1 = gebruikerBuilder.email("email1@gmail.com").gebruikersnaam("naam1").build();
-        Gebruiker gebruiker2 = gebruikerBuilder.email("email2@gmail.com").gebruikersnaam("naam2").build();
+        Gebruiker gebruiker1 = gebruikerBuilder.email("email1@gmail.com").personeelsnummer(2).build();
+        Gebruiker gebruiker2 = gebruikerBuilder.email("email2@gmail.com").personeelsnummer(3).build();
 
         when(gebruikerRepo.findAll()).thenReturn(Arrays.asList(gebruiker1, gebruiker2));
 
@@ -62,7 +73,6 @@ public class GebruikerControllerTest {
         assertEquals(2, gebruikers.size());
         assertEquals(gebruiker1.getGebruikerId(), dto1.gebruikerId());
         assertEquals(gebruiker1.getEmail(), dto1.email());
-        assertEquals(gebruiker1.getGebruikersnaam(), dto1.gebruikersnaam());
         assertEquals(gebruiker1.getWachtwoord(), dto1.wachtwoord());
         assertEquals(gebruiker1.getStatus(), dto1.status());
         assertEquals(gebruiker1.getRol(), dto1.rol());
@@ -72,11 +82,16 @@ public class GebruikerControllerTest {
     @Test
     public void addGebruiker_GeldigeCombinatie_maaktGebruikerAan() {
         gebruikerController.addGebruiker(
+                GELDIG_PERSONEELSNUMMER,
+                GELDIGE_NAAM,
+                GELDIGE_VOORNAAM,
+                GELDIGE_GEBOORTEDATUM,
+                GELDIG_ADRES,
                 GELDIGE_EMAIL,
-                GELDIGE_GEBRUIKERSNAAM,
-                GELDIG_WACHTWOORD,
+                GELDIGE_GSM,
+                GELDIGE_ROL,
                 GELDIGE_STATUS,
-                GELDIGE_ROL
+                GELDIG_WACHTWOORD
         );
 
         verify(gebruikerRepo).startTransaction();
@@ -98,19 +113,6 @@ public class GebruikerControllerTest {
         verifyNoInteractions(gebruikerRepo);
     }
 
-    private static Stream<String> ongeldigeGebruikersnaam() {
-        return Stream.of(null, "", " ", "   ");
-    }
-
-    @ParameterizedTest
-    @MethodSource("ongeldigeGebruikersnaam")
-    void addGebruiker_OngeldigeGebruikersnaam_GooitException(String gebruikersnaam) {
-        assertThrows(IllegalArgumentException.class, () -> gebruikerBuilder.gebruikersnaam(gebruikersnaam).build()
-        );
-
-        verifyNoInteractions(gebruikerRepo);
-    }
-
     private static Stream<String> ongeldigWachtwoord() {
         return Stream.of(null, "", " ", "   ");
     }
@@ -126,7 +128,7 @@ public class GebruikerControllerTest {
 
     @Test
     void addGebruiker_OngeldigeStatus_GooitException() {
-        assertThrows(IllegalArgumentException.class, () -> gebruikerBuilder.status(GebruikerStatus.VERWIJDERD).build()
+        assertThrows(IllegalArgumentException.class, () -> gebruikerBuilder.status(GebruikerStatus.INACTIEF).build()
         );
 
         verifyNoInteractions(gebruikerRepo);
@@ -140,18 +142,28 @@ public class GebruikerControllerTest {
 
         when(gebruikerRepo.get(id)).thenReturn(gebruiker);
 
+        int nieuwePersoneelsnummer = 20;
+        String nieuweNaam = "test";
+        String nieuweVoornaam = "voornaamTest";
+        String nieuweGeboortedatum = "02/15/1995";
+        String nieuwAdres = "Straat 1; nieuweStad; nieuwLand";
         String nieuweEmail = "nieuweEmail@gmail.com";
-        String nieuweGebruikersnaam = "naam";
-        String nieuwWachtwoord = "@Wachtwoord123";
+        String nieuweGsm = "+32 5 293 45 62";
         Rollen nieuweRol = Rollen.ADMINISTRATOR;
+        String nieuwWachtwoord = "@Wachtwoord123";
 
         gebruikerController.updateGebruiker(
                 id,
+                nieuwePersoneelsnummer,
+                nieuweNaam,
+                nieuweVoornaam,
+                nieuweGeboortedatum,
+                nieuwAdres,
                 nieuweEmail,
-                nieuweGebruikersnaam,
-                nieuwWachtwoord,
+                nieuweGsm,
+                nieuweRol,
                 GELDIGE_STATUS,
-                nieuweRol
+                nieuwWachtwoord
         );
 
         verify(gebruikerRepo).startTransaction();
@@ -159,11 +171,16 @@ public class GebruikerControllerTest {
         verify(gebruikerRepo).commitTransaction();
         verify(gebruikerRepo, never()).rollbackTransaction();
 
+        assertEquals(nieuwePersoneelsnummer, gebruiker.getPersoneelsnummer());
+        assertEquals(nieuweNaam, gebruiker.getNaam());
+        assertEquals(nieuweVoornaam, gebruiker.getVoornaam());
+        assertEquals(nieuweGeboortedatum, gebruiker.getGeboortedatum());
+        assertEquals(nieuwAdres, gebruiker.getAdres());
         assertEquals(nieuweEmail, gebruiker.getEmail());
-        assertEquals(nieuweGebruikersnaam, gebruiker.getGebruikersnaam());
-        assertEquals(nieuwWachtwoord, gebruiker.getWachtwoord());
-        assertEquals(GELDIGE_STATUS, gebruiker.getStatus());
+        assertEquals(nieuweGsm, gebruiker.getGsm());
         assertEquals(nieuweRol, gebruiker.getRol());
+        assertEquals(GELDIGE_STATUS, gebruiker.getStatus());
+        assertEquals(nieuwWachtwoord, gebruiker.getWachtwoord());
     }
 
     private void verifyGebruikerRepoAfterUpdate() {
@@ -180,21 +197,22 @@ public class GebruikerControllerTest {
 
         when(gebruikerRepo.get(GELDIG_ID)).thenReturn(gebruiker);
 
-        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(GELDIG_ID, email, GELDIGE_GEBRUIKERSNAAM, GELDIG_WACHTWOORD, GELDIGE_STATUS, GELDIGE_ROL)
+        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(
+                        GELDIG_ID,
+                        GELDIG_PERSONEELSNUMMER,
+                        GELDIGE_NAAM,
+                        GELDIGE_VOORNAAM,
+                        GELDIGE_GEBOORTEDATUM,
+                        GELDIG_ADRES,
+                        email,
+                        GELDIGE_GSM,
+                        GELDIGE_ROL,
+                        GELDIGE_STATUS,
+                        GELDIG_WACHTWOORD
+                )
         );
 
-        verifyGebruikerRepoAfterUpdate();
-    }
 
-    @ParameterizedTest
-    @MethodSource("ongeldigeGebruikersnaam")
-    void updateGebruiker_OngeldigeGebruikersnaam_GooitException(String gebruikersnaam) {
-        Gebruiker gebruiker = gebruikerBuilder.build();
-
-        when(gebruikerRepo.get(GELDIG_ID)).thenReturn(gebruiker);
-
-        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(GELDIG_ID, GELDIGE_EMAIL, gebruikersnaam, GELDIG_WACHTWOORD, GELDIGE_STATUS, GELDIGE_ROL)
-        );
 
         verifyGebruikerRepoAfterUpdate();
     }
@@ -206,16 +224,44 @@ public class GebruikerControllerTest {
 
         when(gebruikerRepo.get(GELDIG_ID)).thenReturn(gebruiker);
 
-        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(GELDIG_ID, GELDIGE_EMAIL, GELDIGE_GEBRUIKERSNAAM, wachtwoord, GELDIGE_STATUS, GELDIGE_ROL)
+        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(
+                        GELDIG_ID,
+                        GELDIG_PERSONEELSNUMMER,
+                        GELDIGE_NAAM,
+                        GELDIGE_VOORNAAM,
+                        GELDIGE_GEBOORTEDATUM,
+                        GELDIG_ADRES,
+                        GELDIGE_EMAIL,
+                        GELDIGE_GSM,
+                        GELDIGE_ROL,
+                        GELDIGE_STATUS,
+                        wachtwoord
+                )
         );
+
+
 
         verifyGebruikerRepoAfterUpdate();
     }
 
     @Test
     void updateGebruiker_OnbestaandeGebruiker_GooitException() {
-        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(GELDIG_ID, GELDIGE_EMAIL, GELDIGE_GEBRUIKERSNAAM, GELDIG_WACHTWOORD, GELDIGE_STATUS, GELDIGE_ROL)
+        assertThrows(IllegalArgumentException.class, () -> gebruikerController.updateGebruiker(
+                        GELDIG_ID,
+                        GELDIG_PERSONEELSNUMMER,
+                        GELDIGE_NAAM,
+                        GELDIGE_VOORNAAM,
+                        GELDIGE_GEBOORTEDATUM,
+                        GELDIG_ADRES,
+                        GELDIGE_EMAIL,
+                        GELDIGE_GSM,
+                        GELDIGE_ROL,
+                        GELDIGE_STATUS,
+                        GELDIG_WACHTWOORD
+                )
         );
+
+
 
         verifyGebruikerRepoAfterUpdate();
     }
@@ -229,11 +275,16 @@ public class GebruikerControllerTest {
         // Status mag niet beginnen als verwijderd dus we moeten updaten
         gebruikerController.updateGebruiker(
                 GELDIG_ID,
+                GELDIG_PERSONEELSNUMMER,
+                GELDIGE_NAAM,
+                GELDIGE_VOORNAAM,
+                GELDIGE_GEBOORTEDATUM,
+                GELDIG_ADRES,
                 GELDIGE_EMAIL,
-                GELDIGE_GEBRUIKERSNAAM,
-                GELDIG_WACHTWOORD,
-                GebruikerStatus.VERWIJDERD,
-                GELDIGE_ROL
+                GELDIGE_GSM,
+                GELDIGE_ROL,
+                GebruikerStatus.INACTIEF,
+                GELDIG_WACHTWOORD
         );
 
         verify(gebruikerRepo).commitTransaction();

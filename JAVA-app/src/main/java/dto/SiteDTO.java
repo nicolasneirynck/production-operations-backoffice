@@ -7,6 +7,7 @@ import util.ProductieStatus;
 public record SiteDTO(
         long siteId,
         String naam,
+        GebruikerDTO verantwoordelijke,
         LocatieDTO locatie,
         int capaciteit,
         OperationeleStatus operationeleStatus,

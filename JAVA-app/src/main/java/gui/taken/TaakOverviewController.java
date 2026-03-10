@@ -1,11 +1,9 @@
 package gui.taken;
 
 import dto.TaakDTO;
-import gui.navigation.FormLoader;
+import gui.navigation.*;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
-import gui.navigation.NavigableController;
-import gui.navigation.Navigator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.SortedList;
@@ -16,7 +14,7 @@ import lombok.Setter;
 import main.AppContext;
 import util.View;
 
-public class TaakOverviewController implements NavigableController {
+public class TaakOverviewController implements NavigableController, NavigationGuard {
     @FXML private VBox formHost;
     @FXML private Button addBtn;
 
@@ -32,6 +30,8 @@ public class TaakOverviewController implements NavigableController {
     private ObservableTaken observableTaken;
 
     private SortedList<TaakDTO> sortedList;
+
+    private ClosableFormGuard activeFormGuard;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -69,18 +69,44 @@ public class TaakOverviewController implements NavigableController {
             sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
             taakTable.setItems(sortedList);
         }
+
+        // default sortering
+        typeCol.setSortType(TableColumn.SortType.ASCENDING);
+        //siteTable.getSortOrder().setAll(naamCol);
+        taakTable.getSortOrder().add(typeCol);
+
+        omschrijvingCol.setSortable(false);
+        actiesCol.setSortable(false);
     }
 
     @FXML
     private void onAdd() {
-        FormLoader.showForm(formHost, context, View.TAKEN_FORM.fxml,
-                TaakFormController::loadForCreate);
+        TaakFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.TAKEN_FORM.fxml,
+                TaakFormController::loadForCreate
+        );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
     private void edit(TaakDTO taak) {
-        FormLoader.showForm(formHost, context, View.TAKEN_FORM.fxml,
-                (TaakFormController controller) -> controller.loadForEdit(taak)
+        TaakFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.TAKEN_FORM.fxml,
+                c -> c.loadForEdit(taak)
         );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
+    }
+
+    private void closeForm() {
+        FormLoader.hideForm(formHost);
+        activeFormGuard = null;
     }
 
     private void deleteTaak(TaakDTO taak) {
@@ -107,4 +133,8 @@ public class TaakOverviewController implements NavigableController {
         });
     }
 
+    @Override
+    public boolean canNavigateAway() {
+        return activeFormGuard == null || activeFormGuard.canClose();
+    }
 }

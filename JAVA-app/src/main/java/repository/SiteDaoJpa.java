@@ -1,6 +1,6 @@
 package repository;
 
-import domein.Site;
+import domein.entiteiten.Site;
 
 public class SiteDaoJpa extends GenericDaoJpa<Site> implements SiteDao {
 

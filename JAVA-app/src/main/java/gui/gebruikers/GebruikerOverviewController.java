@@ -21,11 +21,10 @@ public class GebruikerOverviewController {
     @FXML private TableView<GebruikerDTO> gebruikerTable;
 
     @FXML private TableColumn<GebruikerDTO, Long> idCol;
-    @FXML private TableColumn<GebruikerDTO, String> emailCol;
-    @FXML private TableColumn<GebruikerDTO, String> gebruikersnaamCol;
-    @FXML private TableColumn<GebruikerDTO, String> wachtwoordCol;
-    @FXML private TableColumn<GebruikerDTO, GebruikerStatus> statusCol;
+    @FXML private TableColumn<GebruikerDTO, String> naamCol;
+    @FXML private TableColumn<GebruikerDTO, String> voornaamCol;
     @FXML private TableColumn<GebruikerDTO, Rollen> rolCol;
+    @FXML private TableColumn<GebruikerDTO, GebruikerStatus> statusCol;
 
     @FXML private Button addBtn;
     @FXML private Button editBtn;
@@ -43,11 +42,10 @@ public class GebruikerOverviewController {
     @FXML
     private void initialize() {
         idCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().gebruikerId()));
-        emailCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().email()));
-        gebruikersnaamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().gebruikersnaam()));
-        wachtwoordCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().wachtwoord()));
-        statusCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().status()));
+        naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
+        voornaamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().voornaam()));
         rolCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().rol()));
+        statusCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().status()));
 
         // gebruikers ophalen uit DB
         gebruikers.addAll(gc.getAllGebruikers());
@@ -125,7 +123,7 @@ public class GebruikerOverviewController {
     private void onDelete() {
         GebruikerDTO selected = gebruikerTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
-        if(selected.status() == GebruikerStatus.VERWIJDERD) {
+        if(selected.status() == GebruikerStatus.INACTIEF) {
             new Alert(Alert.AlertType.WARNING, "Gebruiker is al verwijderd.").showAndWait();
             return;
         }
@@ -133,7 +131,7 @@ public class GebruikerOverviewController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Gebruiker verwijderen");
         alert.setHeaderText("Ben je zeker dat je deze gebruiker wil verwijderen?");
-        alert.setContentText(selected.gebruikersnaam() + " (" + selected.email() + ")");
+        alert.setContentText(selected.naam() + ", " + selected.voornaam() + " (" + selected.email() + ")");
 
         ButtonType deleteBtn = new ButtonType("Verwijderen");
         ButtonType cancelBtn = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);

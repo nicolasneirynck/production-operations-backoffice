@@ -1,9 +1,9 @@
 package gui.taken;
 
 import dto.TaakDTO;
-import exception.TaakException;
+import exception.ValidationException;
+import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
-import gui.navigation.Navigator;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,7 +14,7 @@ import main.AppContext;
 
 import java.util.stream.IntStream;
 
-public class TaakFormController implements FormController {
+public class TaakFormController implements FormController, ClosableFormGuard {
 
     @FXML private VBox root;
     @FXML private Label titleLabel;
@@ -104,7 +104,7 @@ public class TaakFormController implements FormController {
 
             observableTaken.reload();
             close();
-        } catch (TaakException ex) {
+        } catch (ValidationException ex) {
             showValidationErrors(ex);
         } catch (RuntimeException ex) {
             new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
@@ -135,7 +135,7 @@ public class TaakFormController implements FormController {
     }
 
 
-    private void showValidationErrors(TaakException ex) {
+    private void showValidationErrors(ValidationException ex) {
         clearErrors();
 
         ex.getExceptionMap().forEach((field, iae) -> {
@@ -176,5 +176,22 @@ public class TaakFormController implements FormController {
         omschrijvingTxt.getStyleClass().remove("field-error");
         duurtijdBx.getStyleClass().remove("field-error");
 
+    }
+
+    @Override
+    public boolean canClose() {
+
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Formulier sluiten");
+        alert.setHeaderText("Niet-opgeslagen wijzigingen");
+        alert.setContentText("Mogelijke wijzigen werden niet opgeslaan. Wil je de pagina verlaten?");
+
+        ButtonType ja = new ButtonType("Ja");
+        ButtonType nee = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(ja, nee);
+
+        return alert.showAndWait().orElse(nee) == ja;
     }
 }

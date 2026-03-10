@@ -1,11 +1,8 @@
-package domein;
+package domein.entiteiten;
 
-import exception.TaakException;
+import exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.*;
-import util.OperationeleStatus;
-import util.ProductieStatus;
-import util.TaakType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +14,12 @@ import java.util.Map;
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode(exclude = "id")
 public class Taak {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long taakId;
+    private long id;
     @Setter(AccessLevel.PROTECTED)
     private String taakType;
     @Setter(AccessLevel.PROTECTED)
@@ -39,7 +37,7 @@ public class Taak {
         return new Builder();
     }
 
-    public void update(String type, String omschrijving, int duurtijd) throws TaakException {
+    public void update(String type, String omschrijving, int duurtijd) throws ValidationException {
         validate(type, omschrijving, duurtijd);
 
         this.taakType = type.trim().toUpperCase();
@@ -47,7 +45,7 @@ public class Taak {
         this.duurtijd = duurtijd;
     }
 
-    private static void validate(String type, String omschrijving, int duurtijd) throws TaakException {
+    private static void validate(String type, String omschrijving, int duurtijd) throws ValidationException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (type == null || type.isBlank()) errors.put("taakType", new IllegalArgumentException("Type is vereist"));
@@ -65,7 +63,7 @@ public class Taak {
         }
 
         if (!errors.isEmpty())
-            throw new TaakException(errors);
+            throw new ValidationException(errors);
     }
 
     public static class Builder {
@@ -88,7 +86,7 @@ public class Taak {
             return this;
         }
 
-        public Taak build() throws TaakException {
+        public Taak build() throws ValidationException {
 //            Map<String,IllegalArgumentException> errors = new HashMap<>();
 //
 //            if (type == null)
@@ -108,7 +106,7 @@ public class Taak {
 //            }
 //
 //            if (!errors.isEmpty())
-//                throw new TaakException(errors);
+//                throw new ValidationExceptionception(errors);
 
             validate(type,omschrijving,duurtijd);
 

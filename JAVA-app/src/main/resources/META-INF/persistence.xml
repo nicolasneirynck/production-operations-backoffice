@@ -8,11 +8,11 @@
 
     <persistence-unit name="SDP" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>domein.Gebruiker</class>
-        <class>domein.Site</class>
-        <class>domein.Taak</class>
-        <class>domein.Team</class>
-        <class>domein.TeamLid</class>
+        <class>domein.entiteiten.Gebruiker</class>
+        <class>domein.entiteiten.Site</class>
+        <class>domein.entiteiten.Taak</class>
+        <class>domein.entiteiten.Team</class>
+        <class>domein.entiteiten.TeamLid</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://vichogent.be:41219/SDP2_2526_DB_T01?serverTimezone=UTC"/>
             <property name="jakarta.persistence.jdbc.user" value="SDP2-2526-T01"/>

@@ -5,10 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import domein.Taak;
-import domein.TaakController;
+import domein.entiteiten.Taak;
+import domein.controllers.TaakController;
 import dto.TaakDTO;
-import exception.TaakException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repository.GenericDao;
-import util.TaakType;
 
 @ExtendWith(MockitoExtension.class)
 public class TaakControllerTest {

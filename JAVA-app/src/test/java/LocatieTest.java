@@ -1,5 +1,5 @@
-import domein.Locatie;
-import exception.SiteException;
+import domein.entiteiten.Locatie;
+import exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -32,7 +32,7 @@ public class LocatieTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigeStraat_GooitException(String straat) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Locatie.builder(straat, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, GELDIGE_LAND)
         );
     }
@@ -41,7 +41,7 @@ public class LocatieTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigNummer_GooitException(String nummer) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Locatie.builder(GELDIGE_STRAAT, nummer, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, GELDIGE_LAND)
         );
     }
@@ -50,7 +50,7 @@ public class LocatieTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigePostcode_GooitException(String postcode) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, postcode, GELDIGE_GEMEENTE, GELDIGE_LAND)
         );
     }
@@ -59,7 +59,7 @@ public class LocatieTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigeGemeente_GooitException(String gemeente) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, gemeente, GELDIGE_LAND)
         );
     }
@@ -68,7 +68,7 @@ public class LocatieTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void builder_OngeldigLand_GooitException(String land) {
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 Locatie.builder(GELDIGE_STRAAT, GELDIGE_NUMMER, GELDIGE_POSTCODE, GELDIGE_GEMEENTE, land)
         );
     }
@@ -86,6 +86,6 @@ public class LocatieTest {
     @ParameterizedTest
     @MethodSource("ongeldigeVelden")
     void builder_OngeldigeVelden_GooitException(String straat, String nummer, String postcode, String gemeente, String land) {
-        assertThrows(SiteException.class, () -> Locatie.builder(straat, nummer, postcode, gemeente, land));
+        assertThrows(ValidationException.class, () -> Locatie.builder(straat, nummer, postcode, gemeente, land));
     }
 }

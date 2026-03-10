@@ -1,6 +1,14 @@
 package main;
 
 import domein.GebruikerController;
+import domein.controllers.SiteController;
+import domein.controllers.TaakController;
+import exception.ValidationException;
+import security.Permission;
+import security.SecurityContext;
+import security.UserPrincipal;
+import util.GebruikerStatus;
+import domein.GebruikerController;
 import domein.SiteController;
 import domein.TaakController;
 import domein.TeamController;
@@ -12,11 +20,12 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.util.EnumSet;
+
 import java.util.List;
 
 public class MockdataSeeder {
-    public static void seed(AppContext context) throws SiteException, TaakException, TeamException {
-
+    private static void seedSites(AppContext context) throws ValidationException {
         SiteController sc = context.getSiteController();
         TaakController tc = context.getTaakController();
         TeamController teamController = context.getTeamController();
@@ -58,6 +67,10 @@ public class MockdataSeeder {
                 OperationeleStatus.NON_ACTIEF,
                 ProductieStatus.OFFLINE
         );
+    }
+
+    private static void seedTaken(AppContext context) throws ValidationException {
+        TaakController tc = context.getTaakController();
 
         gebruikerController.addGebruiker(
                 "jan.jaap@koga.com",
@@ -217,5 +230,27 @@ public class MockdataSeeder {
         teamController.addTeam(1L, List.of(1L, 2L, 3L, 4L, 5L));
         teamController.addTeam(2L, List.of(6L, 7L, 8L, 9L));
         teamController.addTeam(3L, List.of(10L, 11L, 12L, 13L));
+    }
+
+    private static void seedGebruikers(AppContext context) {
+        GebruikerController gc = context.getGebruikerController();
+
+        gc.addGebruiker(1, "admin", "admin", "02/10/2000", "België", "admin@test.com", "", Rollen.ADMINISTRATOR, GebruikerStatus.ACTIEF, "admin");
+        gc.addGebruiker(2, "manager", "manager", "02/10/2000", "België", "manager@test.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "manager");
+        gc.addGebruiker(3, "verantwoordelijke", "verantwoordelijke", "02/10/2000", "België", "verantwoordelijke@test.com", "", Rollen.VERANTWOORDELIJKE, GebruikerStatus.ACTIEF, "verantwoordelijke");
+        gc.addGebruiker(4, "Bakker", "Jan", "02/10/2000", "België", "jan.bakker@gmail.com", "", Rollen.MANAGER, GebruikerStatus.ACTIEF, "pass123");
+    }
+
+    public static void seed(AppContext context) throws ValidationException {
+        // prevent seeding inside of production
+       // if (!Boolean.getBoolean("seed.devUser")) return;
+
+        SecurityContext.login(new UserPrincipal("temp", "temp", Rollen.ADMINISTRATOR, EnumSet.allOf(Permission.class)));
+
+        seedSites(context);
+        seedTaken(context);
+        seedGebruikers(context);
+
+        SecurityContext.logout();
     }
 }

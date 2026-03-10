@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import domein.Locatie;
-import domein.Site;
-import domein.SiteController;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
+import domein.controllers.SiteController;
 import dto.SiteDTO;
-import exception.SiteException;
-import exception.TaakException;
+import exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +18,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import repository.GenericDao;
 import repository.SiteDao;
 import util.OperationeleStatus;
 import util.ProductieStatus;
@@ -123,7 +121,7 @@ public class SiteControllerTest {
                                                                            String gemeente, String land, int capaciteit,
                                                                            OperationeleStatus op, ProductieStatus prod) {
 
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 siteController.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 
@@ -190,7 +188,7 @@ public class SiteControllerTest {
 
         when(siteRepo.get(id)).thenReturn(bestaande);
 
-        assertThrows(SiteException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 siteController.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod)
         );
 
