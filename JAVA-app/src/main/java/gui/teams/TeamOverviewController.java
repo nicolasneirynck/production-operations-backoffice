@@ -4,25 +4,21 @@ import dto.GebruikerDTO;
 import dto.SiteDTO;
 import dto.TeamDTO;
 import gui.LayoutController;
-import gui.navigation.NavigableController;
-import gui.navigation.Navigator;
+import gui.factories.ActionColumnFactory;
+import gui.navigation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 
-public class TeamOverviewController implements NavigableController {
+public class TeamOverviewController implements NavigableController, NavigationGuard {
 
     @FXML private VBox formHost;
     @FXML private Button addBtn;
@@ -40,6 +36,9 @@ public class TeamOverviewController implements NavigableController {
 
     private SortedList<TeamDTO> sortedList;
 
+    private ClosableFormGuard activeFormGuard;
+
+
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
@@ -56,68 +55,72 @@ public class TeamOverviewController implements NavigableController {
                     verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
             );
         });
-        medewerkersCol.setCellValueFactory(cellData -> Bindings.createObjectBinding(cellData::getValue));
-        actiesCol.setCellValueFactory(cellData -> Bindings.createObjectBinding(cellData::getValue));
 
+        medewerkersCol.setCellValueFactory(cellData -> Bindings.createObjectBinding(cellData::getValue));
         medewerkersCol.setCellFactory(col -> new TableCell<>() {
-            private final FlowPane chipsPane = new FlowPane();
+            private final FlowPane badgesPane = new FlowPane();
+
             {
-                chipsPane.setHgap(8);
-                chipsPane.setVgap(8);
+                badgesPane.setHgap(8);
+                badgesPane.setVgap(8);
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             }
 
             @Override
             protected void updateItem(TeamDTO team, boolean empty) {
                 super.updateItem(team, empty);
 
-                if (empty || team == null) {
+                if (empty || team == null || team.teamleden() == null || team.teamleden().isEmpty()) {
                     setGraphic(null);
                     return;
                 }
 
-                chipsPane.getChildren().clear();
+                badgesPane.getChildren().clear();
 
-                for (GebruikerDTO medewerker : team.teamleden()) {
-                    javafx.scene.control.Label chip = new javafx.scene.control.Label(medewerker.volledigeNaam());
-                    chip.getStyleClass().add("chip");
-                    chipsPane.getChildren().add(chip);
+                badgesPane.setPrefWrapLength(getTableColumn().getWidth() - 30);
+
+                var leden = team.teamleden();
+
+                int maxVisible = 6;
+
+                int visible = Math.min(maxVisible, leden.size());
+
+                for (int i = 0; i < visible; i++) {
+                    GebruikerDTO medewerker = leden.get(i);
+
+                    Label badge = new Label(medewerker.volledigeNaam());
+                    badge.getStyleClass().add("employee-badge");
+
+                    badgesPane.getChildren().add(badge);
                 }
 
-                setGraphic(chipsPane);
+                if (leden.size() > maxVisible) {
+                    int remaining = leden.size() - maxVisible;
+
+                    Label moreBadge = new Label("+" + remaining);
+                    moreBadge.getStyleClass().add("employee-badge");
+                    moreBadge.getStyleClass().add("employee-badge-more");
+
+                    badgesPane.getChildren().add(moreBadge);
+                }
+
+                setGraphic(badgesPane);
             }
         });
 
-        actiesCol.setCellFactory(col -> new TableCell<>() {
-            private final Button editBtn = new Button("✎");
-            private final Button deleteBtn = new Button("🗑");
-            private final HBox box = new HBox(8, editBtn, deleteBtn);
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::delete);
 
-            {
-                editBtn.getStyleClass().add("icon-button");
-                deleteBtn.getStyleClass().addAll("icon-button", "danger-button");
+        siteCol.setStyle("-fx-alignment: CENTER-LEFT;");
+        verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
+        medewerkersCol.setStyle("-fx-alignment: CENTER-LEFT;");
+        actiesCol.setStyle("-fx-alignment: CENTER;");
 
-                editBtn.setOnAction(e -> {
-                    TeamDTO team = getTableRow().getItem();
-                    if (team != null) {
-                        onEdit(team);
-                    }
-                });
+        medewerkersCol.setSortable(false);
+        actiesCol.setSortable(false);
 
-                deleteBtn.setOnAction(e -> {
-                    TeamDTO team = getTableRow().getItem();
-                    if (team != null) {
-                        onDelete(team);
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(TeamDTO team, boolean empty) {
-                super.updateItem(team, empty);
-                setGraphic(empty || team == null ? null : box);
-            }
-        });
-    }
+        teamTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        teamTable.setFixedCellSize(84);    }
 
     @Override
     public void loadData() {
@@ -137,11 +140,21 @@ public class TeamOverviewController implements NavigableController {
     }
 
 
-    private void onEdit(TeamDTO team) {
+    private void edit(TeamDTO team) {
         System.out.println("Team bewerken: " + team.teamCode());
     }
 
-    private void onDelete(TeamDTO team) {
+    private void closeForm() {
+        FormLoader.hideForm(formHost);
+        activeFormGuard = null;
+    }
+
+    private void delete(TeamDTO team) {
         System.out.println("Team verwijderen: " + team.teamCode());
+    }
+
+    @Override
+    public boolean canNavigateAway() {
+        return activeFormGuard == null || activeFormGuard.canClose();
     }
 }

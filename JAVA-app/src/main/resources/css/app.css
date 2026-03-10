@@ -183,9 +183,9 @@
     -fx-background-radius:10;
 }
 
-.table-row-cell{
-    -fx-cell-size:45px;
-}
+/*.table-row-cell{*/
+/*    -fx-cell-size:45px;*/
+/*}*/
 
 .table .virtual-flow {
     -fx-background-color: transparent;
@@ -509,4 +509,19 @@
 
 .table-view .column-header .label {
     -fx-padding: 0 12 0 12;
+}
+
+.employee-badge {
+    -fx-background-color: #EEF2F6;
+    -fx-text-fill: #445166;
+    -fx-background-radius: 999;
+    -fx-padding: 5 12 5 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.employee-badge-more {
+    -fx-background-color: #dbe2ea;
+    -fx-text-fill: #334155;
+    -fx-font-weight: 700;
 }

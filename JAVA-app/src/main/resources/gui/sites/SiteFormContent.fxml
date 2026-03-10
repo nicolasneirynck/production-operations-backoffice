@@ -37,26 +37,34 @@
                     <Label fx:id="naamErr" styleClass="error-label"/>
                 </VBox>
 
-                <!-- Capaciteit -->
-                <Label text="Capaciteit" styleClass="form-label"
+                <!-- Verantwoordelijke -->
+                <Label text="Verantwoordelijke" styleClass="form-label"
                        GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
                 <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <ComboBox fx:id="verantwoordelijkeCb" maxWidth="Infinity"/>
+                    <Label fx:id="verantwoordelijkeErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Capaciteit -->
+                <Label text="Capaciteit" styleClass="form-label"
+                       GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
+                <VBox spacing="2" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                     <TextField fx:id="capaciteitTf" promptText="bv. 120" maxWidth="Infinity"/>
                     <Label fx:id="capaciteitErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Operationele status -->
                 <Label text="Operationele status" styleClass="form-label"
-                       GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                       GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
+                <VBox spacing="2" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                     <ComboBox fx:id="operationeelCb" maxWidth="Infinity"/>
                     <Label fx:id="operationeelErr" styleClass="error-label"/>
                 </VBox>
 
                 <!-- Productie status -->
                 <Label text="Productie status" styleClass="form-label"
-                       GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
-                <VBox spacing="2" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                       GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
+                <VBox spacing="2" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                     <ComboBox fx:id="productieCb" maxWidth="Infinity"/>
                     <Label fx:id="productieErr" styleClass="error-label"/>
                 </VBox>

@@ -1,5 +1,6 @@
 package gui.sites;
 
+import dto.GebruikerDTO;
 import dto.SiteDTO;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
@@ -53,16 +54,18 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie().volledigeLocatie()));
         // TODO later elegantere oplossing zoeken
         verantwoordelijkeCol.setCellValueFactory(c -> {
-            var verantwoordelijke = c.getValue().verantwoordelijke();
-            String naam = verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam();
-            return new SimpleStringProperty(naam);
-        });        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
+            GebruikerDTO v = c.getValue().verantwoordelijke();
+            return new SimpleStringProperty(
+                    v == null ? "-" : v.volledigeNaam()
+            );
+        });
+        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
 
         configureStatusColumns();
         ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteSite);
 
         naamCol.setStyle("-fx-alignment: center-left;");
-        verantwoordelijkeCol.setStyle("-fx-alignment: center-left;");
+        verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
         locatieCol.setStyle("-fx-alignment: center-left;");
         capaciteitCol.setStyle("-fx-alignment: CENTER;");
         operationeleCol.setStyle("-fx-alignment: CENTER;");

@@ -26,6 +26,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Gent Plant",
+                3L,   // verantwoordelijke
                 "Kortrijksesteenweg",
                 "80",
                 "9000",
@@ -38,6 +39,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Antwerp Hub",
+                null,   // geen verantwoordelijke
                 "Noorderlaan",
                 "101",
                 "2030",
@@ -50,6 +52,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Brussels Factory",
+                3L,   // zelfde verantwoordelijke kan meerdere sites hebben
                 "Industrielaan",
                 "12",
                 "1000",
@@ -305,9 +308,9 @@ public class MockdataSeeder {
         );
 
         try {
+            seedGebruikers(context);
             seedSites(context);
             seedTaken(context);
-            seedGebruikers(context);
             seedTeams(context);
         } finally {
             SecurityContext.logout();

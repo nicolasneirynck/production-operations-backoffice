@@ -1,5 +1,6 @@
 package gui.sites;
 
+import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
 import exception.ValidationException;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import main.AppContext;
 import util.OperationeleStatus;
 import util.ProductieStatus;
+import util.Rollen;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +25,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @FXML private VBox root;
     @FXML private Label titleLabel;
     @FXML private TextField naamTf;
+    @FXML private ComboBox<GebruikerDTO> verantwoordelijkeCb;
     @FXML private TextField capaciteitTf;
     @FXML private ComboBox<OperationeleStatus> operationeelCb;
     @FXML private ComboBox<ProductieStatus> productieCb;
@@ -34,6 +37,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
    @FXML private ComboBox<String> landCb;
 
     @FXML private Label naamErr;
+    @FXML private Label verantwoordelijkeErr;
     @FXML private Label capaciteitErr;
     @FXML private Label operationeelErr;
     @FXML private Label productieErr;
@@ -62,6 +66,24 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
     @FXML
     private void initialize() {
+        verantwoordelijkeCb.setCellFactory(cb -> new ListCell<>() {
+            @Override
+            protected void updateItem(GebruikerDTO item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.voornaam() + " " + item.naam());
+            }
+        });
+
+        verantwoordelijkeCb.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(GebruikerDTO item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.voornaam() + " " + item.naam());
+            }
+        });
+
+        verantwoordelijkeCb.valueProperty().addListener((o, a, b) -> clearError("verantwoordelijke"));
+
         operationeelCb.setItems(FXCollections.observableArrayList(OperationeleStatus.values()));
         productieCb.setItems(FXCollections.observableArrayList(ProductieStatus.values()));
 
@@ -117,6 +139,18 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @Override
     public void loadData() {
         observableSites.reload();
+
+        List<GebruikerDTO> verantwoordelijken = context.getGebruikerController()
+                .getAllGebruikers()
+                .stream()
+                .filter(g -> g.rol() == Rollen.VERANTWOORDELIJKE)
+                .sorted((g1, g2) -> {
+                    int result = g1.naam().compareToIgnoreCase(g2.naam());
+                    return result != 0 ? result : g1.voornaam().compareToIgnoreCase(g2.voornaam());
+                }) // -> TODO als we niet meer met DTO werken maar met gebruiker kunnen we hier wel .sorted() doen
+                .toList();
+
+        verantwoordelijkeCb.setItems(FXCollections.observableArrayList(verantwoordelijken));
     }
 
     public void loadForCreate() {
@@ -124,6 +158,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         titleLabel.setText("Site aanmaken");
 
         naamTf.clear();
+        verantwoordelijkeCb.setValue(null);
         capaciteitTf.clear();
         straatTf.clear();
         nummerTf.clear();
@@ -142,10 +177,10 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         titleLabel.setText("Site wijzigen");
 
         naamTf.setText(site.naam());
+        verantwoordelijkeCb.setValue(site.verantwoordelijke());
         capaciteitTf.setText(String.valueOf(site.capaciteit()));
 
         LocatieDTO loc = site.locatie();
-
         straatTf.setText(loc.straat());
         nummerTf.setText(loc.nummer());
         postcodeTf.setText(loc.postcode());
@@ -178,13 +213,16 @@ public class SiteFormController implements FormController, ClosableFormGuard {
             String gemeente = gemeenteTf.getText();
             String land = landCb.getValue();
 
+            GebruikerDTO verantwoordelijke = verantwoordelijkeCb.getValue();
+            Long verantwoordelijkeId = verantwoordelijke != null ? verantwoordelijke.gebruikerId() : null;
+
             OperationeleStatus op = operationeelCb.getValue();
             ProductieStatus prod = productieCb.getValue();
 
             if (editingSiteId == null) {
-                observableSites.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+                observableSites.addSite(naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
             } else {
-                observableSites.updateSite(editingSiteId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+                observableSites.updateSite(editingSiteId, verantwoordelijkeId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
             }
 
             observableSites.reload();
@@ -236,6 +274,10 @@ public class SiteFormController implements FormController, ClosableFormGuard {
                 case "naam" -> {
                     naamErr.setText(msg);
                     naamTf.getStyleClass().add("field-error");
+                }
+                case "verantwoordelijke" -> {
+                    verantwoordelijkeErr.setText(msg);
+                    verantwoordelijkeCb.getStyleClass().add("field-error");
                 }
                 case "capaciteit" -> {
                     capaciteitErr.setText(msg);
@@ -297,6 +339,10 @@ public class SiteFormController implements FormController, ClosableFormGuard {
                 naamErr.setText("");
                 naamTf.getStyleClass().remove("field-error");
             }
+            case "verantwoordelijke" -> {
+                verantwoordelijkeErr.setText("");
+                verantwoordelijkeCb.getStyleClass().remove("field-error");
+            }
             case "capaciteit" -> {
                 capaciteitErr.setText("");
                 capaciteitTf.getStyleClass().remove("field-error");
@@ -336,6 +382,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
     private void clearErrors() {
         naamErr.setText("");
+        verantwoordelijkeErr.setText("");
         capaciteitErr.setText("");
         operationeelErr.setText("");
         productieErr.setText("");
@@ -346,6 +393,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         landErr.setText("");
 
         naamTf.getStyleClass().remove("field-error");
+        verantwoordelijkeCb.getStyleClass().remove("field-error");
         capaciteitTf.getStyleClass().remove("field-error");
         operationeelCb.getStyleClass().remove("field-error");
         productieCb.getStyleClass().remove("field-error");

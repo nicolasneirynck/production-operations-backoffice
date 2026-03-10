@@ -40,16 +40,16 @@ public class SiteController {
                 .toList();
     }
 
-    public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
+    public void addSite(String naam, Long verantwoordelijkeId, String straat, String nummer, String postcode, String gemeente, String land,
                         int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
-        siteBeheerder.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+        siteBeheerder.addSite(naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }
 
-    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
+    public void updateSite(long id, Long verantwoordelijkeId, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
-        siteBeheerder.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+        siteBeheerder.updateSite(id, naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }
 
     public void deleteSite(long id) {
