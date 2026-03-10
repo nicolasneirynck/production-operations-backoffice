@@ -9,6 +9,8 @@ import org.apache.commons.validator.routines.EmailValidator;
 import util.GebruikerStatus;
 import util.Rollen;
 
+import java.util.Comparator;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "gebruikerId")
@@ -21,7 +23,7 @@ import util.Rollen;
                           WHERE LOWER(g.email) = LOWER(:email)
 						""")
 })
-public class Gebruiker {
+public class Gebruiker extends Comparable<Gebruiker>{
 
     private static final EmailValidator VALIDATOR = EmailValidator.getInstance(false, false);
 
@@ -101,6 +103,13 @@ public class Gebruiker {
         this.rol = builder.rol;
         this.status = builder.status;
         this.wachtwoord = builder.wachtwoord;
+    }
+
+    @Override
+    public int compareTo(Gebruiker o) {
+
+        int result = naam.compareToIgnoreCase(o.naam);
+        return result != 0 ? result : voornaam.compareToIgnoreCase(o.voornaam);
     }
 
     public static class Builder {
