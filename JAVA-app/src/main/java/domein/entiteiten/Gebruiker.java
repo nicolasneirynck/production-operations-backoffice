@@ -23,7 +23,7 @@ import java.util.Comparator;
                           WHERE LOWER(g.email) = LOWER(:email)
 						""")
 })
-public class Gebruiker extends Comparable<Gebruiker>{
+public class Gebruiker implements Comparable<Gebruiker> {
 
     private static final EmailValidator VALIDATOR = EmailValidator.getInstance(false, false);
 

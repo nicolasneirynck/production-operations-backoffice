@@ -1,6 +1,7 @@
 package dto;
 
 import domein.*;
+import domein.entiteiten.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,15 +27,18 @@ public class DTOMapper {
             return null;
         }
 
+        Gebruiker verantwoordelijke = site.getVerantwoordelijke();
+        GebruikerDTO verantwoordelijkeDTO =
+                verantwoordelijke != null ? toGebruikerDTO(verantwoordelijke) : null;
+
         return new SiteDTO(
-                site.getSiteId(),
+                site.getId(),
                 site.getNaam(),
+                verantwoordelijkeDTO,
                 toLocatieDTO(site.getLocatie()),
                 site.getCapaciteit(),
                 site.getOperationeleStatus(),
-                site.getProductieStatus(),
-                toGebruikerDTO(site.getVerantwoordelijke())
-        );
+                site.getProductieStatus());
     }
 
     public static List<SiteDTO> toSiteDTOList(List<Site> sites) {
@@ -53,7 +57,7 @@ public class DTOMapper {
         }
 
         return new TaakDTO(
-                taak.getTaakId(),
+                taak.getId(),
                 taak.getTaakType(),
                 taak.getOmschrijving(),
                 taak.getDuurtijd()
@@ -77,12 +81,16 @@ public class DTOMapper {
 
         return new GebruikerDTO(
                 gebruiker.getGebruikerId(),
+                gebruiker.getPersoneelsnummer(),
+                gebruiker.getNaam(),
+                gebruiker.getVoornaam(),
+                gebruiker.getGeboortedatum(),
+                gebruiker.getAdres(),
                 gebruiker.getEmail(),
-                gebruiker.getGebruikersnaam(),
-                gebruiker.getWachtwoord(), // TODO -> liever niet meegeven in DTO
+                gebruiker.getGsm(),
+                gebruiker.getRol(),
                 gebruiker.getStatus(),
-                gebruiker.getRol()
-        );
+                gebruiker.getWachtwoord());
     }
 
     public static GebruikerDTO teamLidToGebruikerDTO(TeamLid teamLid) {
@@ -120,7 +128,7 @@ public class DTOMapper {
         }
 
         return new TeamDTO(
-                team.getCode() == null ? 0L : team.getCode(),
+                team.getId() == null ? 0L : team.getId(),
                 toSiteDTO(team.getSite()),
                 team.getSite() == null ? null : toGebruikerDTO(team.getSite().getVerantwoordelijke()),
                 teamLedenToGebruikerDTOList(team.getLeden())

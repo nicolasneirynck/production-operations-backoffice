@@ -1,7 +1,10 @@
 package domein;
 
+import domein.entiteiten.Gebruiker;
+import domein.entiteiten.Site;
+import domein.entiteiten.Team;
 import dto.*;
-import exception.TeamException;
+import exception.ValidationException;
 import repository.GenericDao;
 import repository.GenericDaoJpa;
 
@@ -31,7 +34,7 @@ public class TeamController {
                 .toList();
     }
 
-    public void addTeam(long siteId, List<Long> werknemerIds) throws TeamException{
+    public void addTeam(long siteId, List<Long> werknemerIds) throws ValidationException {
 
         teamRepo.startTransaction();
 
@@ -48,13 +51,13 @@ public class TeamController {
             Team nieuwTeam = new Team(site, werknemers);
             teamRepo.insert(nieuwTeam);
             teamRepo.commitTransaction();
-        } catch (RuntimeException | TeamException ex) {
+        } catch (RuntimeException | ValidationException ex) {
             teamRepo.rollbackTransaction();
             throw ex;
         }
     }
 
-    public void updateTeam(long teamCode, List<Long> werknemerIds) throws TeamException {
+    public void updateTeam(long teamCode, List<Long> werknemerIds) throws ValidationException {
         teamRepo.startTransaction();
         try {
             Team team = teamRepo.get(teamCode);
@@ -69,7 +72,7 @@ public class TeamController {
 
             team.updateLeden(werknemers);
             teamRepo.commitTransaction();
-            } catch (RuntimeException | TeamException ex) {
+            } catch (RuntimeException | ValidationException ex) {
                 teamRepo.rollbackTransaction();
                 throw ex;
             }

@@ -53,7 +53,7 @@ public class TeamOverviewController implements NavigableController {
             var site = cellData.getValue().site();
             var verantwoordelijke = site == null ? null : site.verantwoordelijke();
             return new SimpleStringProperty(
-                    verantwoordelijke == null ? "-" : verantwoordelijke.gebruikersnaam()
+                    verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
             );
         });
         medewerkersCol.setCellValueFactory(cellData -> Bindings.createObjectBinding(cellData::getValue));
@@ -78,7 +78,7 @@ public class TeamOverviewController implements NavigableController {
                 chipsPane.getChildren().clear();
 
                 for (GebruikerDTO medewerker : team.teamleden()) {
-                    javafx.scene.control.Label chip = new javafx.scene.control.Label(medewerker.gebruikersnaam());
+                    javafx.scene.control.Label chip = new javafx.scene.control.Label(medewerker.volledigeNaam());
                     chip.getStyleClass().add("chip");
                     chipsPane.getChildren().add(chip);
                 }

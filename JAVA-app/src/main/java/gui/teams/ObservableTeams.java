@@ -2,7 +2,7 @@ package gui.teams;
 
 import domein.TeamController;
 import dto.TeamDTO;
-import exception.TeamException;
+import exception.ValidationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -25,12 +25,12 @@ public class ObservableTeams {
         this.filteredTeamList = new FilteredList<>(observableTeamList, t -> true);
     }
 
-    public void addTeam(long siteId, List<Long> werknemerIds) throws TeamException {
+    public void addTeam(long siteId, List<Long> werknemerIds) throws ValidationException {
         controller.addTeam(siteId, werknemerIds);
         reload();
     }
 
-    public void editTeam(long teamCode, List<Long> werknemerIds) throws TeamException {
+    public void editTeam(long teamCode, List<Long> werknemerIds) throws ValidationException {
         controller.updateTeam(teamCode, werknemerIds);
         reload();
     }
