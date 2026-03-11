@@ -48,13 +48,18 @@ public class SiteBeheerder {
         }
 
         Gebruiker verantwoordelijke = null;
-        if (verantwoordelijkeId != null) {
+        if (verantwoordelijkeId == null) {
+            errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke is verplicht."));
+        } else {
             verantwoordelijke = gebruikerRepo.get(verantwoordelijkeId);
 
             if (verantwoordelijke == null) {
                 errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke niet gevonden."));
             } else if (verantwoordelijke.getRol() != Rollen.VERANTWOORDELIJKE) {
                 errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
+            } else if (siteRepo.verantwoordelijkeHeeftAndereSite(verantwoordelijkeId, null)) {
+                errors.put("verantwoordelijke",
+                        new IllegalArgumentException("Deze verantwoordelijke is al aan een andere site gekoppeld."));
             }
         }
 
@@ -90,7 +95,8 @@ public class SiteBeheerder {
         }
     }
 
-    public void updateSite(long id, String naam, Long verantwoordelijkeId,String straat, String nummer, String postcode, String gemeente, String land,
+    public void updateSite(long id, String naam, Long verantwoordelijkeId, String straat, String nummer,
+                           String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
         siteRepo.startTransaction();
@@ -115,13 +121,18 @@ public class SiteBeheerder {
             }
 
             Gebruiker verantwoordelijke = null;
-            if (verantwoordelijkeId != null) {
+            if (verantwoordelijkeId == null) {
+                errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke is verplicht."));
+            } else {
                 verantwoordelijke = gebruikerRepo.get(verantwoordelijkeId);
 
                 if (verantwoordelijke == null) {
                     errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke niet gevonden."));
                 } else if (verantwoordelijke.getRol() != Rollen.VERANTWOORDELIJKE) {
                     errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
+                } else if (siteRepo.verantwoordelijkeHeeftAndereSite(verantwoordelijkeId, null)) {
+                    errors.put("verantwoordelijke",
+                            new IllegalArgumentException("Deze verantwoordelijke is al aan een andere site gekoppeld."));
                 }
             }
 
@@ -161,5 +172,9 @@ public class SiteBeheerder {
 
     public List<Site> getSitesZonderVerantwoordelijke() {
         return siteRepo.findSitesZonderVerantwoordelijke();
+    }
+
+    public List<Site> getSitesZonderTeam() {
+        return siteRepo.findSitesZonderTeam();
     }
 }

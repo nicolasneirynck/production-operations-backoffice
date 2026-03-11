@@ -16,6 +16,7 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -139,16 +140,39 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @Override
     public void loadData() {
         observableSites.reload();
+    }
 
+    private void loadVerantwoordelijkenVoorCreate() {
         List<GebruikerDTO> verantwoordelijken = context.getGebruikerController()
-                .getAllGebruikers()
+                .getVerantwoordelijkenZonderSite()
                 .stream()
-                .filter(g -> g.rol() == Rollen.VERANTWOORDELIJKE)
                 .sorted((g1, g2) -> {
                     int result = g1.naam().compareToIgnoreCase(g2.naam());
                     return result != 0 ? result : g1.voornaam().compareToIgnoreCase(g2.voornaam());
-                }) // -> TODO als we niet meer met DTO werken maar met gebruiker kunnen we hier wel .sorted() doen
+                })
                 .toList();
+
+        verantwoordelijkeCb.setItems(FXCollections.observableArrayList(verantwoordelijken));
+    }
+
+    private void loadVerantwoordelijkenVoorEdit(GebruikerDTO huidigeVerantwoordelijke) {
+        List<GebruikerDTO> verantwoordelijken = new ArrayList<>(
+                context.getGebruikerController().getVerantwoordelijkenZonderSite()
+        );
+
+        if (huidigeVerantwoordelijke != null) {
+            boolean alAanwezig = verantwoordelijken.stream()
+                    .anyMatch(g -> g.gebruikerId() == huidigeVerantwoordelijke.gebruikerId());
+
+            if (!alAanwezig) {
+                verantwoordelijken.add(huidigeVerantwoordelijke);
+            }
+        }
+
+        verantwoordelijken.sort((g1, g2) -> {
+            int result = g1.naam().compareToIgnoreCase(g2.naam());
+            return result != 0 ? result : g1.voornaam().compareToIgnoreCase(g2.voornaam());
+        });
 
         verantwoordelijkeCb.setItems(FXCollections.observableArrayList(verantwoordelijken));
     }
@@ -156,6 +180,8 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     public void loadForCreate() {
         editingSiteId = null;
         titleLabel.setText("Site aanmaken");
+
+        loadVerantwoordelijkenVoorCreate();
 
         naamTf.clear();
         verantwoordelijkeCb.setValue(null);
@@ -170,11 +196,21 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         productieCb.getSelectionModel().select(ProductieStatus.GEZOND);
 
         clearErrors();
+
+        boolean geenBeschikbareVerantwoordelijken = verantwoordelijkeCb.getItems().isEmpty();
+        verantwoordelijkeCb.setDisable(geenBeschikbareVerantwoordelijken);
+        saveBtn.setDisable(geenBeschikbareVerantwoordelijken);
+
     }
 
     public void loadForEdit(SiteDTO site) {
         editingSiteId = site.siteId();
         titleLabel.setText("Site wijzigen");
+
+        loadVerantwoordelijkenVoorEdit(site.verantwoordelijke());
+
+        saveBtn.setDisable(false);
+        verantwoordelijkeCb.setDisable(false);
 
         naamTf.setText(site.naam());
         verantwoordelijkeCb.setValue(site.verantwoordelijke());
@@ -198,10 +234,16 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         clearErrors();
 
         int capaciteit;
-
         try {
             capaciteit = parseCapaciteit(capaciteitTf.getText());
         } catch (IllegalArgumentException ex) {
+            return;
+        }
+
+        GebruikerDTO verantwoordelijke = verantwoordelijkeCb.getValue();
+        if (verantwoordelijke == null) {
+            verantwoordelijkeErr.setText("Verantwoordelijke is verplicht.");
+            verantwoordelijkeCb.getStyleClass().add("field-error");
             return;
         }
 
@@ -213,16 +255,19 @@ public class SiteFormController implements FormController, ClosableFormGuard {
             String gemeente = gemeenteTf.getText();
             String land = landCb.getValue();
 
-            GebruikerDTO verantwoordelijke = verantwoordelijkeCb.getValue();
-            Long verantwoordelijkeId = verantwoordelijke != null ? verantwoordelijke.gebruikerId() : null;
+            Long verantwoordelijkeId = verantwoordelijke.gebruikerId();
 
             OperationeleStatus op = operationeelCb.getValue();
             ProductieStatus prod = productieCb.getValue();
 
             if (editingSiteId == null) {
-                observableSites.addSite(naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+                observableSites.addSite(
+                        naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod
+                );
             } else {
-                observableSites.updateSite(editingSiteId, verantwoordelijkeId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+                observableSites.updateSite(
+                        editingSiteId, verantwoordelijkeId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod
+                );
             }
 
             observableSites.reload();
@@ -230,11 +275,6 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
         } catch (ValidationException ex) {
             showValidationErrors(ex);
-//        } catch (IllegalArgumentException ex) {
-//            naamErr.setText(ex.getMessage());
-//            naamErr.setManaged(true);
-//            naamErr.setVisible(true);
-//            naamTf.getStyleClass().add("field-error");
         } catch (RuntimeException ex) {
             new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
         }
@@ -420,5 +460,4 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
         return alert.showAndWait().orElse(nee) == ja;
     }
-
 }

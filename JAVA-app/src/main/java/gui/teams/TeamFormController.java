@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 public class TeamFormController implements FormController, ClosableFormGuard {
 
-    @FXML private VBox root;
     @FXML private Label titleLabel;
 
     @FXML private ComboBox<SiteDTO> siteCb;
@@ -46,6 +45,7 @@ public class TeamFormController implements FormController, ClosableFormGuard {
     @FXML private Label siteErr;
     @FXML private Label verantwoordelijkeErr;
     @FXML private Label medewerkersErr;
+    @FXML private Label formInfoLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
@@ -174,7 +174,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         editingTeamId = null;
         titleLabel.setText("Nieuw team");
 
-        loadData();
+        loadSitesVoorCreate();
+        loadWerknemers();
+//        loadData();
 
         siteCb.setValue(null);
         geselecteerdeWerknemers.clear();
@@ -182,13 +184,21 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
         clearErrors();
         updateVerantwoordelijkeDisplay();
+
+        if (siteCb.getItems().isEmpty()) {
+            formInfoLbl.setText("Er kan geen nieuw team worden aangemaakt, omdat alle sites al een team hebben.");
+            saveBtn.setDisable(true);
+        }
     }
 
     public void loadForEdit(TeamDTO team) {
         editingTeamId = team.teamCode();
         titleLabel.setText("Team wijzigen");
 
-        loadData();
+        //loadData();
+        loadSitesVoorEdit(team.site());
+        loadWerknemers();
+
 
         siteCb.setValue(team.site());
 
@@ -207,12 +217,50 @@ public class TeamFormController implements FormController, ClosableFormGuard {
     }
 
     private void loadSites() {
-        List<SiteDTO> sites = context.getObservableSites()
-                .getFilteredSiteList()
+        List<SiteDTO> sites = context.getSiteController()
+                .getSitesZonderTeam()
                 .stream()
                 .sorted(Comparator.comparing(SiteDTO::naam, String.CASE_INSENSITIVE_ORDER))
                 .toList();
 
+        siteCb.setItems(FXCollections.observableArrayList(sites));
+    }
+
+    private void loadSitesVoorCreate() {
+        List<SiteDTO> sites = context.getSiteController()
+                .getSitesZonderTeam()
+                .stream()
+                .sorted(Comparator.comparing(SiteDTO::naam, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        siteCb.setItems(FXCollections.observableArrayList(sites));
+
+        boolean geenBeschikbareSites = sites.isEmpty();
+
+        siteCb.setDisable(geenBeschikbareSites);
+        saveBtn.setDisable(geenBeschikbareSites);
+
+        if (geenBeschikbareSites) {
+            formInfoLbl.setText("Er kan geen nieuw team worden aangemaakt, omdat alle sites al een team hebben.");
+            formInfoLbl.setVisible(true);
+            formInfoLbl.setManaged(true);
+        } else {
+            formInfoLbl.setVisible(false);
+            formInfoLbl.setManaged(false);
+        }
+    }
+
+    private void loadSitesVoorEdit(SiteDTO huidigeSite) {
+        List<SiteDTO> sites = new ArrayList<>(context.getSiteController().getSitesZonderTeam());
+
+        boolean huidigeSiteAlAanwezig = sites.stream()
+                .anyMatch(s -> s.siteId() == huidigeSite.siteId());
+
+        if (!huidigeSiteAlAanwezig) {
+            sites.add(huidigeSite);
+        }
+
+        sites.sort(Comparator.comparing(SiteDTO::naam, String.CASE_INSENSITIVE_ORDER));
         siteCb.setItems(FXCollections.observableArrayList(sites));
     }
 

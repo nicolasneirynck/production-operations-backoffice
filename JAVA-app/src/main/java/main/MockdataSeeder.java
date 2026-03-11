@@ -26,7 +26,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Gent Plant",
-                3L,   // verantwoordelijke
+                3L,
                 "Kortrijksesteenweg",
                 "80",
                 "9000",
@@ -39,7 +39,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Antwerp Hub",
-                null,   // geen verantwoordelijke
+                4L,
                 "Noorderlaan",
                 "101",
                 "2030",
@@ -52,7 +52,7 @@ public class MockdataSeeder {
 
         sc.addSite(
                 "Brussels Factory",
-                3L,   // zelfde verantwoordelijke kan meerdere sites hebben
+                5L,
                 "Industrielaan",
                 "12",
                 "1000",
@@ -117,6 +117,32 @@ public class MockdataSeeder {
                 Rollen.VERANTWOORDELIJKE,
                 GebruikerStatus.ACTIEF,
                 "verantwoordelijke"
+        );
+
+        gc.addGebruiker(
+                4,
+                "Verantwoordelijke",
+                "Site2",
+                "1995-06-10",
+                "Brussel, België",
+                "verantwoordelijke2@test.com",
+                "",
+                Rollen.VERANTWOORDELIJKE,
+                GebruikerStatus.ACTIEF,
+                "verantwoordelijke2"
+        );
+
+        gc.addGebruiker(
+                5,
+                "Verantwoordelijke",
+                "Site3",
+                "1992-03-18",
+                "Gent, België",
+                "verantwoordelijke3@test.com",
+                "",
+                Rollen.VERANTWOORDELIJKE,
+                GebruikerStatus.ACTIEF,
+                "verantwoordelijke3"
         );
 
         gc.addGebruiker(
@@ -292,9 +318,9 @@ public class MockdataSeeder {
     private static void seedTeams(AppContext context) throws ValidationException {
         TeamController teamController = context.getTeamController();
 
-        teamController.addTeam(1L, List.of(5L, 6L, 7L, 8L, 9L));
-        teamController.addTeam(2L, List.of(10L, 11L, 12L));
-        teamController.addTeam(3L, List.of(13L, 14L, 15L));
+        teamController.addTeam(1L, List.of(6L, 7L, 8L, 9L, 10L));
+        teamController.addTeam(2L, List.of(11L, 12L, 13L));
+        teamController.addTeam(3L, List.of(14L, 15L, 16L));
     }
 
     public static void seed(AppContext context) throws ValidationException {

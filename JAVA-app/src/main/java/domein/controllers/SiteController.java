@@ -4,6 +4,7 @@ import domein.beheerders.SiteBeheerder;
 import domein.entiteiten.Gebruiker;
 import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;
+import dto.DTOMapper;
 import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
@@ -96,5 +97,11 @@ public class SiteController {
                 site.getOperationeleStatus(),
                 site.getProductieStatus()
         );
+    }
+
+    public List<SiteDTO> getSitesZonderTeam() {
+        return siteBeheerder.getSitesZonderTeam().stream()
+                .map(DTOMapper::toSiteDTO)
+                .toList();
     }
 }

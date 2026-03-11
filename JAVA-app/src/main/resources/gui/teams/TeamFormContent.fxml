@@ -16,6 +16,12 @@
 
     <Label fx:id="titleLabel" text="Nieuw team" styleClass="card-title"/>
 
+
+    <Label fx:id="formInfoLbl"
+           wrapText="true"
+           visible="false"
+           managed="false"
+           styleClass="info-label"/>
     <!-- Bovenste blok -->
     <VBox spacing="12">
 

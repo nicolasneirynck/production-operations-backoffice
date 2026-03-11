@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repository.GebruikerDao;
 import repository.SiteDao;
+import util.GebruikerStatus;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
@@ -520,5 +521,88 @@ class SiteBeheerderTest {
         verify(siteRepo).rollbackTransaction();
         verify(siteRepo, never()).commitTransaction();
         verify(siteRepo, never()).delete(any());
+    }
+    @Test
+    void addSite_verantwoordelijkeHeeftAlAndereSite_gooitValidationException() {
+        Gebruiker verantwoordelijke = Gebruiker.builder()
+                .personeelsnummer(1001)
+                .naam("Janssens")
+                .voornaam("Jan")
+                .geboortedatum("2000-01-01")
+                .adres("Teststraat 1, 9000 Gent")
+                .email("verantwoordelijke@example.com")
+                .gsm("0470123456")
+                .rol(Rollen.VERANTWOORDELIJKE)
+                .status(GebruikerStatus.ACTIEF)
+                .wachtwoord("Test123!")
+                .build();
+
+        when(gebruikerRepo.get(GELDIGE_VERANTWOORDELIJKE_ID)).thenReturn(verantwoordelijke);
+        when(siteRepo.verantwoordelijkeHeeftAndereSite(GELDIGE_VERANTWOORDELIJKE_ID, null)).thenReturn(true);
+
+        assertThrows(ValidationException.class, () ->
+                siteBeheerder.addSite(
+                        GELDIGE_NAAM,
+                        GELDIGE_VERANTWOORDELIJKE_ID,
+                        GELDIGE_STRAAT,
+                        GELDIGE_NUMMER,
+                        GELDIGE_POSTCODE,
+                        GELDIGE_GEMEENTE,
+                        GELDIGE_LAND,
+                        100,
+                        OperationeleStatus.ACTIEF,
+                        ProductieStatus.GEZOND
+                )
+        );
+    }
+
+    @Test
+    void updateSite_verantwoordelijkeHeeftAndereSite_gooitValidationException_enRollback() throws Exception {
+        long id = 1L;
+
+        Site bestaande = Site.builder()
+                .naam("OUD")
+                .locatie(Locatie.builder("Oudstraat", "1", "1000", "Brussel", "België"))
+                .capaciteit(50)
+                .operationeleStatus(OperationeleStatus.ACTIEF)
+                .productieStatus(ProductieStatus.GEZOND)
+                .build();
+
+        Gebruiker verantwoordelijke = Gebruiker.builder()
+                .personeelsnummer(1001)
+                .naam("Janssens")
+                .voornaam("Jan")
+                .geboortedatum("2000-01-01")
+                .adres("Teststraat 1, 9000 Gent")
+                .email("verantwoordelijke@example.com")
+                .gsm("0470123456")
+                .rol(Rollen.VERANTWOORDELIJKE)
+                .status(GebruikerStatus.ACTIEF)
+                .wachtwoord("Test123!")
+                .build();
+
+        when(siteRepo.get(id)).thenReturn(bestaande);
+        when(siteRepo.existsByName(GELDIGE_NAAM, id)).thenReturn(false);
+        when(gebruikerRepo.get(GELDIGE_VERANTWOORDELIJKE_ID)).thenReturn(verantwoordelijke);
+        when(siteRepo.verantwoordelijkeHeeftAndereSite(GELDIGE_VERANTWOORDELIJKE_ID, id)).thenReturn(true);
+
+        assertThrows(ValidationException.class, () ->
+                siteBeheerder.updateSite(
+                        id,
+                        GELDIGE_NAAM,
+                        GELDIGE_VERANTWOORDELIJKE_ID,
+                        GELDIGE_STRAAT,
+                        GELDIGE_NUMMER,
+                        GELDIGE_POSTCODE,
+                        GELDIGE_GEMEENTE,
+                        GELDIGE_LAND,
+                        100,
+                        OperationeleStatus.ACTIEF,
+                        ProductieStatus.GEZOND
+                )
+        );
+
+        verify(siteRepo).rollbackTransaction();
+        verify(siteRepo, never()).commitTransaction();
     }
 }
