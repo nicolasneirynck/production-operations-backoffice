@@ -2,6 +2,8 @@ package gui.gebruikers;
 
 import domein.GebruikerController;
 import dto.GebruikerDTO;
+import gui.navigation.NavigableController;
+import gui.navigation.Navigator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -10,13 +12,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Setter;
+import main.AppContext;
 import util.GebruikerStatus;
 import util.Rollen;
 
-public class GebruikerOverviewController {
+public class GebruikerOverviewController implements NavigableController {
 
     @FXML private TableView<GebruikerDTO> gebruikerTable;
 
@@ -30,13 +39,16 @@ public class GebruikerOverviewController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
 
-    // ObservableList maakt wijzigingen in deze lijst "observeerbaar"
+    @Setter private Navigator navigator;
+    private AppContext context;
+    private GebruikerController gc;
+
     private final ObservableList<GebruikerDTO> gebruikers = FXCollections.observableArrayList();
 
-    private final GebruikerController gc;
-
-    public GebruikerOverviewController(GebruikerController gc){
-        this.gc = gc;
+    @Override
+    public void setContext(AppContext context) {
+        this.context = context;
+        this.gc = context.getGebruikerController();
     }
 
     @FXML
@@ -47,22 +59,24 @@ public class GebruikerOverviewController {
         rolCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().rol()));
         statusCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().status()));
 
-        // gebruikers ophalen uit DB
-        gebruikers.addAll(gc.getAllGebruikers());
-        gebruikerTable.setItems(gebruikers); // ObservableList linken
+        gebruikerTable.setItems(gebruikers);
 
         editBtn.disableProperty().bind(gebruikerTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(gebruikerTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
+    @Override
+    public void loadData() {
+        gebruikers.setAll(gc.getAllGebruikers());
+    }
+
     private FXMLLoader createLoader() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/GebruikerFormView.fxml"));
-        loader.setControllerFactory(type ->
-        {
-            if (type == GebruikerFormController.class)
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/gebruikers/GebruikerFormView.fxml"));
+        loader.setControllerFactory(type -> {
+            if (type == GebruikerFormController.class) {
                 return new GebruikerFormController(gc);
-            try
-            {
+            }
+            try {
                 return type.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -74,8 +88,7 @@ public class GebruikerOverviewController {
 
     @FXML
     private void onAdd() {
-        try
-        {
+        try {
             FXMLLoader loader = createLoader();
 
             Parent root = loader.load();
@@ -123,7 +136,7 @@ public class GebruikerOverviewController {
     private void onDelete() {
         GebruikerDTO selected = gebruikerTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
-        if(selected.status() == GebruikerStatus.INACTIEF) {
+        if (selected.status() == GebruikerStatus.INACTIEF) {
             new Alert(Alert.AlertType.WARNING, "Gebruiker is al verwijderd.").showAndWait();
             return;
         }
@@ -133,15 +146,15 @@ public class GebruikerOverviewController {
         alert.setHeaderText("Ben je zeker dat je deze gebruiker wil verwijderen?");
         alert.setContentText(selected.naam() + ", " + selected.voornaam() + " (" + selected.email() + ")");
 
-        ButtonType deleteBtn = new ButtonType("Verwijderen");
-        ButtonType cancelBtn = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(deleteBtn, cancelBtn);
+        ButtonType delete = new ButtonType("Verwijderen");
+        ButtonType cancel = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(delete, cancel);
 
         alert.showAndWait().ifPresent(response -> {
-            if (response == deleteBtn) {
+            if (response == delete) {
                 try {
                     gc.deleteGebruiker(selected.gebruikerId());
-                    gebruikers.setAll(gc.getAllGebruikers()); // refresh table
+                    gebruikers.setAll(gc.getAllGebruikers());
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -150,6 +163,4 @@ public class GebruikerOverviewController {
             }
         });
     }
-
-    private void loadFxml(String resource){}
 }

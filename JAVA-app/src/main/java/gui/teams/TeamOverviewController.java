@@ -19,7 +19,7 @@ import lombok.Setter;
 import main.AppContext;
 import util.View;
 
-public class TeamOverviewController implements NavigableController, NavigationGuard {
+public class TeamOverviewController implements NavigableController, NavigationGuard, TeamModeAware {
 
     @FXML private VBox formHost;
     @FXML private Button addBtn;
@@ -39,11 +39,23 @@ public class TeamOverviewController implements NavigableController, NavigationGu
 
     private ClosableFormGuard activeFormGuard;
 
+    private TeamBeheerMode mode = TeamBeheerMode.MANAGER;
+
+
 
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableTeams = ctx.getObservableTeams();
+    }
+
+
+    public void setMode(TeamBeheerMode mode) {
+        this.mode = mode == null ? TeamBeheerMode.MANAGER : mode;
+
+        if (actiesCol != null) {
+            configureActiesColumn();
+        }
     }
 
     @FXML
@@ -110,7 +122,7 @@ public class TeamOverviewController implements NavigableController, NavigationGu
             }
         });
 
-        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::delete);
+        configureActiesColumn();
 
         siteCol.setStyle("-fx-alignment: CENTER-LEFT;");
         verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
@@ -121,17 +133,36 @@ public class TeamOverviewController implements NavigableController, NavigationGu
         actiesCol.setSortable(false);
 
         teamTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        teamTable.setFixedCellSize(84);    }
+        teamTable.setFixedCellSize(84);
+    }
+
+    private void configureActiesColumn() {
+        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+            ActionColumnFactory.configureEditOnlyColumn(actiesCol, this::edit);
+        } else {
+            ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::delete);
+        }
+    }
+
 
     @Override
     public void loadData() {
-        observableTeams.reload();
+        configureActiesColumn();
+
+        if (mode == TeamBeheerMode.MANAGER) {
+            observableTeams.reload();
+        } else {
+            observableTeams.setSingleTeam(context.getTeamController().getMijnTeam());
+        }
 
         if (sortedList == null) {
             sortedList = new SortedList<>(observableTeams.getFilteredTeamList());
             sortedList.comparatorProperty().bind(teamTable.comparatorProperty());
             teamTable.setItems(sortedList);
         }
+
+        addBtn.setVisible(mode == TeamBeheerMode.MANAGER);
+        addBtn.setManaged(mode == TeamBeheerMode.MANAGER);
     }
 
     @FXML
@@ -140,7 +171,10 @@ public class TeamOverviewController implements NavigableController, NavigationGu
                 formHost,
                 context,
                 View.TEAMS_FORM.fxml,
-                TeamFormController::loadForCreate
+                c -> {
+                    c.setMode(mode);
+                    c.loadForCreate();
+                }
         );
 
         controller.setOnClose(this::closeForm);
@@ -153,8 +187,11 @@ public class TeamOverviewController implements NavigableController, NavigationGu
                 formHost,
                 context,
                 View.TEAMS_FORM.fxml,
-                c -> c.loadForEdit(team)
-        );
+                c -> {
+                    c.setMode(mode);
+                    c.loadForEdit(team);
+                }
+        );;
 
         controller.setOnClose(this::closeForm);
         activeFormGuard = controller;

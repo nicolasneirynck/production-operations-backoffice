@@ -326,6 +326,7 @@ public class MockdataSeeder {
     public static void seed(AppContext context) throws ValidationException {
         SecurityContext.login(
                 new UserPrincipal(
+                        0L,
                         "temp",
                         "temp",
                         Rollen.ADMINISTRATOR,

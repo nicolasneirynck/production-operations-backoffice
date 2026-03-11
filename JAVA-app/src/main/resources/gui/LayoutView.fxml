@@ -71,6 +71,13 @@
                 </HBox>
             </HBox>
 
+            <HBox fx:id="usersRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="usersBtn" maxWidth="1.7976931348623157E308" onAction="#onGebruikers" styleClass="nav-item" text="Gebruikers Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
             <HBox fx:id="teamsRow" styleClass="nav-wrapper">
                 <Region styleClass="active-indicator" />
                 <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">

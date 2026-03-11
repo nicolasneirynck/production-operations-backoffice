@@ -1,6 +1,8 @@
 package gui.navigation;
 
 import gui.LayoutController;
+import gui.teams.TeamBeheerMode;
+import gui.teams.TeamModeAware;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,6 +11,8 @@ import lombok.Getter;
 import main.AppContext;
 import security.Authorizer;
 import security.Permission;
+import security.SecurityContext;
+import util.Rollen;
 import util.View;
 
 import java.io.IOException;
@@ -115,6 +119,15 @@ public class Navigator {
     }
 
     private void initializeController(Object controller) {
+
+        if (controller instanceof TeamModeAware teamModeAware) {
+            var user = SecurityContext.getUser();
+            TeamBeheerMode mode = user != null && user.rol() == Rollen.VERANTWOORDELIJKE
+                    ? TeamBeheerMode.VERANTWOORDELIJKE
+                    : TeamBeheerMode.MANAGER;
+
+            teamModeAware.setMode(mode);
+        }
 
         if (controller instanceof NavigableController nc) {
             nc.setNavigator(this);

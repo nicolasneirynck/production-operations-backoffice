@@ -2,11 +2,8 @@ package gui;
 
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
-import util.View;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -19,6 +16,8 @@ import security.Authorizer;
 import security.Permission;
 import security.SecurityContext;
 import security.UserPrincipal;
+import util.Rollen;
+import util.View;
 
 import java.util.List;
 
@@ -34,10 +33,13 @@ public class LayoutController implements NavigableController {
     // sidebar
     private List<HBox> navRows;
     @FXML private HBox homeRow;
+    @FXML private HBox usersRow;
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
     @FXML private HBox loginRow;
    // @FXML private HBox machinesRow;
+    @FXML private Button usersBtn;
+    @FXML private Button teamsBtn;
     @FXML private Button logoutBtn;
     @FXML public HBox takenRow;
 
@@ -53,6 +55,7 @@ public class LayoutController implements NavigableController {
     }
 
     private void changeVisibility(boolean visible) {
+        setRowVisibility(usersRow, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
         setRowVisibility(sitesRow, visible & Authorizer.has(Permission.SITES_BEHEREN));
         setRowVisibility(teamsRow, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
         setRowVisibility(takenRow, visible & Authorizer.has(Permission.TAKEN_BEHEREN));
@@ -73,8 +76,10 @@ public class LayoutController implements NavigableController {
 
             userNameLbl.setText(newUser.voornaam() + " " + newUser.naam());
             userRoleLbl.setText(newUser.rol().toString());
+            teamsBtn.setText(newUser.rol() == Rollen.VERANTWOORDELIJKE ? "Team Beheren" : "Teams Beheren");
         } else {
             changeVisibility(false);
+            teamsBtn.setText("Teams Beheren");
         }
     }
 
@@ -86,7 +91,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, teamsRow, sitesRow,takenRow);
+        navRows = List.of(homeRow, usersRow, teamsRow, sitesRow, takenRow);
 
         bindToAuthorization();
         handleAuthorizationChange(SecurityContext.userProperty().get());
@@ -159,6 +164,12 @@ public class LayoutController implements NavigableController {
     private void onHome() {
         navigator.goTo(View.HOME);
         setActive(homeRow);
+    }
+
+    @FXML
+    private void onGebruikers() {
+        navigator.goTo(View.GEBRUIKER_OVERVIEW);
+        setActive(usersRow);
     }
 
     @FXML

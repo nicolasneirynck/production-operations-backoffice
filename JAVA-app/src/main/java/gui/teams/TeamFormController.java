@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class TeamFormController implements FormController, ClosableFormGuard {
+public class TeamFormController implements FormController, ClosableFormGuard, TeamModeAware {
 
     @FXML private Label titleLabel;
 
@@ -52,6 +52,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
     @Setter private Runnable onClose;
 
+    private TeamBeheerMode mode = TeamBeheerMode.MANAGER;
+
+
     private AppContext context;
     private ObservableTeams observableTeams;
 
@@ -66,6 +69,10 @@ public class TeamFormController implements FormController, ClosableFormGuard {
     public void setContext(AppContext ctx) {
         this.context = ctx;
         this.observableTeams = ctx.getObservableTeams();
+    }
+
+    public void setMode(TeamBeheerMode mode) {
+        this.mode = mode == null ? TeamBeheerMode.MANAGER : mode;
     }
 
     @FXML
@@ -174,13 +181,32 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         editingTeamId = null;
         titleLabel.setText("Nieuw team");
 
+        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+            formInfoLbl.setText("Als verantwoordelijke kan je geen nieuw team aanmaken.");
+            formInfoLbl.setVisible(true);
+            formInfoLbl.setManaged(true);
+
+            siteCb.setItems(FXCollections.observableArrayList());
+            siteCb.setValue(null);
+            siteCb.setDisable(true);
+
+            geselecteerdeWerknemers.clear();
+            zoekTf.clear();
+            saveBtn.setDisable(true);
+
+            clearErrors();
+            updateVerantwoordelijkeDisplay();
+            return;
+        }
+
         loadSitesVoorCreate();
         loadWerknemers();
-//        loadData();
 
         siteCb.setValue(null);
+        siteCb.setDisable(false);
         geselecteerdeWerknemers.clear();
         zoekTf.clear();
+
 
         clearErrors();
         updateVerantwoordelijkeDisplay();
@@ -188,6 +214,8 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         if (siteCb.getItems().isEmpty()) {
             formInfoLbl.setText("Er kan geen nieuw team worden aangemaakt, omdat alle sites al een team hebben.");
             saveBtn.setDisable(true);
+        } else {
+            saveBtn.setDisable(false);
         }
     }
 
@@ -195,11 +223,15 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         editingTeamId = team.teamCode();
         titleLabel.setText("Team wijzigen");
 
-        //loadData();
-        loadSitesVoorEdit(team.site());
+        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+            siteCb.setItems(FXCollections.observableArrayList(List.of(team.site())));
+            siteCb.setDisable(true);
+        } else {
+            loadSitesVoorEdit(team.site());
+            siteCb.setDisable(false);
+        }
+
         loadWerknemers();
-
-
         siteCb.setValue(team.site());
 
         geselecteerdeWerknemers.setAll(team.teamleden().stream()
@@ -208,12 +240,8 @@ public class TeamFormController implements FormController, ClosableFormGuard {
                 .toList());
 
         zoekTf.clear();
-
         clearErrors();
         updateVerantwoordelijkeDisplay();
-
-        // Als site wijzigen bij edit niet mag:
-        // siteCb.setDisable(true);
     }
 
     private void loadSites() {
@@ -353,13 +381,23 @@ public class TeamFormController implements FormController, ClosableFormGuard {
                 .toList();
 
         try {
-            if (editingTeamId == null) {
-                observableTeams.addTeam(site.siteId(), medewerkerIds);
+            if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+                if (editingTeamId == null) {
+                    throw new IllegalStateException("Als verantwoordelijke kan je geen team aanmaken.");
+                }
+
+                context.getTeamController().updateMijnTeam(editingTeamId, medewerkerIds);
+                observableTeams.setSingleTeam(context.getTeamController().getMijnTeam());
             } else {
-                observableTeams.updateTeam(editingTeamId, medewerkerIds);
+                if (editingTeamId == null) {
+                    observableTeams.addTeam(site.siteId(), medewerkerIds);
+                } else {
+                    observableTeams.updateTeam(editingTeamId, medewerkerIds);
+                }
+
+                observableTeams.reload();
             }
 
-            observableTeams.reload();
             close();
 
         } catch (ValidationException ex) {

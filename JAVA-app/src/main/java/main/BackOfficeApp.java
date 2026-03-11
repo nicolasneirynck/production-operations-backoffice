@@ -14,7 +14,6 @@ public class BackOfficeApp extends Application {
 
     private void bindAuthNavigation(Navigator navigator) {
         SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
-            // TODO: in de plaats van goTo(HOME): laat een specifiek scherm zien afhankelijk van de role?
             if (newUser != null) navigator.goTo(View.HOME);
             else navigator.goTo(View.LOGIN);
         });
@@ -49,4 +48,3 @@ public class BackOfficeApp extends Application {
         initGuiEffects(stage.getScene());
     }
 }
-

@@ -56,4 +56,12 @@ public class ObservableTeams {
         controller.updateTeam(teamId, medewerkerIds);
         reload();
     }
+
+    public void setSingleTeam(TeamDTO team) {
+        if (team == null) {
+            observableTeamList.clear();
+        } else {
+            observableTeamList.setAll(team);
+        }
+    }
 }

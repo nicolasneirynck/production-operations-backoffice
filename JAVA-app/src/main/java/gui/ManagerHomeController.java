@@ -4,18 +4,22 @@ import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import lombok.Setter;
 import main.AppContext;
-import util.View;
 import security.Authorizer;
 import security.Permission;
 import security.SecurityContext;
 import security.UserPrincipal;
+import util.Rollen;
+import util.View;
 
 public class ManagerHomeController implements NavigableController {
 
+    @FXML private Button usersTile;
     @FXML private Button teamsTile;
     @FXML private Button sitesTile;
+    @FXML private Label teamsTileLabel;
 
 
     @Setter private Navigator navigator;
@@ -25,13 +29,23 @@ public class ManagerHomeController implements NavigableController {
     private LayoutController layout;
 
     private void changeVisibility(boolean visible) {
-        // TODO: add de andere
-        sitesTile.setVisible(visible & Authorizer.has(Permission.SITES_BEHEREN));
-        teamsTile.setVisible(visible & Authorizer.has(Permission.TEAMS_BEHEREN));
+        setTileVisibility(usersTile, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
+        setTileVisibility(sitesTile, visible & Authorizer.has(Permission.SITES_BEHEREN));
+        setTileVisibility(teamsTile, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
+    }
+
+    private void setTileVisibility(Button tile, boolean visible) {
+        tile.setVisible(visible);
+        tile.setManaged(visible);
     }
 
     private void handleAuthorizationChange(UserPrincipal newUser) {
         changeVisibility(newUser != null);
+        if (newUser != null) {
+            teamsTileLabel.setText(newUser.rol() == Rollen.VERANTWOORDELIJKE ? "Team\nBeheren" : "Teams\nBeheren");
+        } else {
+            teamsTileLabel.setText("Teams\nBeheren");
+        }
     }
 
     private void bindToAuthorization() {
@@ -49,8 +63,12 @@ public class ManagerHomeController implements NavigableController {
 
     @FXML
     private void onTeamsTile() {
-        System.out.println("Teams beheren via tile");
-        //layout.setContent("/gui/TeamsOverviewContent.fxml");
+        navigator.goTo(View.TEAMS_OVERVIEW);
+    }
+
+    @FXML
+    private void onGebruikersTile() {
+        navigator.goTo(View.GEBRUIKER_OVERVIEW);
     }
 
     @FXML

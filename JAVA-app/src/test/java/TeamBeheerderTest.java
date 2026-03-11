@@ -57,6 +57,18 @@ public class TeamBeheerderTest {
                 .build();
     }
 
+    private Site siteMetVerantwoordelijke(Gebruiker verantwoordelijke) throws ValidationException {
+        return Site.builder()
+                .naam("SITE-V")
+                .verantwoordelijke(verantwoordelijke)
+                .locatie(Locatie.builder("Straat", "1", "9000", "Gent", "België"))
+                .capaciteit(100)
+                .operationeleStatus(OperationeleStatus.ACTIEF)
+                .productieStatus(ProductieStatus.GEZOND)
+                .build();
+    }
+
+
     private Gebruiker werknemer(int personeelsnummer, String email) {
         return maakGebruikerMetRol(Rollen.WERKNEMER, personeelsnummer, email);
     }
@@ -273,4 +285,50 @@ public class TeamBeheerderTest {
         verify(teamRepo, never()).commitTransaction();
         verify(teamRepo, never()).delete(any());
     }
+
+    @Test
+    public void updateEigenTeam_eigenTeam_pastTeamAan() throws Exception {
+        Gebruiker verantwoordelijke = maakGebruikerMetRol(Rollen.VERANTWOORDELIJKE, 10, "v@test.be");
+        Site site = siteMetVerantwoordelijke(verantwoordelijke);
+
+        Team team = new Team(site, List.of(
+                werknemer(1, "w1@test.be"),
+                werknemer(2, "w2@test.be"),
+                werknemer(3, "w3@test.be")
+        ));
+
+        when(teamRepo.get(1L)).thenReturn(team);
+        when(gebruikerRepo.get(1L)).thenReturn(werknemer(1, "w1@test.be"));
+        when(gebruikerRepo.get(2L)).thenReturn(werknemer(2, "w2@test.be"));
+        when(gebruikerRepo.get(4L)).thenReturn(werknemer(4, "w4@test.be"));
+
+        teamBeheerder.updateEigenTeam(verantwoordelijke.getGebruikerId(), 1L, List.of(1L, 2L, 4L));
+
+        verify(teamRepo).commitTransaction();
+        verify(teamRepo, never()).rollbackTransaction();
+    }
+
+
+    @Test
+    public void updateEigenTeam_anderTeam_gooitException() throws Exception {
+        Gebruiker eigenaar = maakGebruikerMetRol(Rollen.VERANTWOORDELIJKE, 10, "owner@test.be");
+        Gebruiker andere = maakGebruikerMetRol(Rollen.VERANTWOORDELIJKE, 11, "other@test.be");
+        Site site = siteMetVerantwoordelijke(andere);
+
+        Team team = new Team(site, List.of(
+                werknemer(1, "w1@test.be"),
+                werknemer(2, "w2@test.be"),
+                werknemer(3, "w3@test.be")
+        ));
+
+        when(teamRepo.get(1L)).thenReturn(team);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> teamBeheerder.updateEigenTeam(eigenaar.getGebruikerId(), 1L, List.of(1L, 2L, 3L)));
+
+        verify(teamRepo).rollbackTransaction();
+        verify(teamRepo, never()).commitTransaction();
+    }
+
+
 }

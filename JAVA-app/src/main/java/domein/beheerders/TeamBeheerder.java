@@ -108,4 +108,49 @@ public class TeamBeheerder {
             throw ex;
         }
     }
+
+    public Team getTeamVanVerantwoordelijke(long verantwoordelijkeId) {
+        return teamRepo.findAll().stream()
+                .filter(team -> isVanVerantwoordelijke(team, verantwoordelijkeId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void updateEigenTeam(long verantwoordelijkeId, long teamCode, List<Long> werknemerIds) throws ValidationException {
+        teamRepo.startTransaction();
+        try {
+            Team team = teamRepo.get(teamCode);
+            if (team == null) {
+                throw new IllegalArgumentException("Team niet gevonden.");
+            }
+
+            if (!isVanVerantwoordelijke(team, verantwoordelijkeId)) {
+                throw new IllegalArgumentException("Je mag enkel je eigen team wijzigen.");
+            }
+
+            List<Gebruiker> werknemers = werknemerIds.stream()
+                    .map(id -> {
+                        Gebruiker gebruiker = gebruikerRepo.get(id);
+                        if (gebruiker == null) {
+                            throw new IllegalArgumentException("Gebruiker niet gevonden met id: " + id);
+                        }
+                        return gebruiker;
+                    })
+                    .toList();
+
+            team.updateLeden(werknemers);
+            teamRepo.commitTransaction();
+
+        } catch (RuntimeException | ValidationException ex) {
+            teamRepo.rollbackTransaction();
+            throw ex;
+        }
+    }
+
+    private boolean isVanVerantwoordelijke(Team team, long verantwoordelijkeId) {
+        return team != null
+                && team.getSite() != null
+                && team.getSite().getVerantwoordelijke() != null
+                && team.getSite().getVerantwoordelijke().getGebruikerId() == verantwoordelijkeId;
+    }
 }

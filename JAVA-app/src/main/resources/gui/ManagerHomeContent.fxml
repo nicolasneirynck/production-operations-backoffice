@@ -22,6 +22,13 @@
         </VBox>
 
         <HBox fx:id="tilesRow" spacing="18">
+            <Button fx:id="usersTile" styleClass="tile" onAction="#onGebruikersTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <Label text="Gebruikers&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
             <Button fx:id="teamsTile" styleClass="tile" onAction="#onTeamsTile">
                 <graphic>
                     <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
@@ -31,11 +38,11 @@
                             </image>
                         </ImageView>
 
-                        <Label text="Teams&#10;Beheren" styleClass="tile-text"/>
+                        <Label fx:id="teamsTileLabel" text="Teams&#10;Beheren" styleClass="tile-text"/>
                     </VBox>
                 </graphic>
             </Button>
-            <Button fx:id="sitesTile" styleClass="tile" onAction="#onTeamsTile">
+            <Button fx:id="sitesTile" styleClass="tile" onAction="#onSitesTile">
                 <graphic>
                     <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
                         <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">

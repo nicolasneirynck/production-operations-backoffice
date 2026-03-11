@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 public class ActionColumnFactory {
 
-    // Miss later bij autorisatie nog een extra methode voor enkel Edit kolommen?
     public static <T> void configureEditDeleteColumn(
             TableColumn<T, T> column,
             Consumer<T> onEdit,
@@ -45,6 +44,39 @@ public class ActionColumnFactory {
                     T item = getItem();
                     if (item != null) {
                         onDelete.accept(item);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty || item == null ? null : box);
+            }
+        });
+    }
+
+    public static <T> void configureEditOnlyColumn(
+            TableColumn<T, T> column,
+            Consumer<T> onEdit
+    ) {
+        column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+
+        column.setCellFactory(col -> new TableCell<>() {
+
+            private final Button editBtn =
+                    IconButtonFactory.createIconButton("/images/pencil-write.png", "Bewerken");
+
+            private final HBox box = new HBox(editBtn);
+
+            {
+                box.setAlignment(Pos.CENTER);
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+                editBtn.setOnAction(e -> {
+                    T item = getItem();
+                    if (item != null) {
+                        onEdit.accept(item);
                     }
                 });
             }
