@@ -1,6 +1,6 @@
 package gui.teams;
 
-public enum TeamBeheerMode {
+public enum TeamBeheerType {
     MANAGER,
     VERANTWOORDELIJKE
 }

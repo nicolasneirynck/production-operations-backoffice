@@ -8,18 +8,19 @@ import gui.factories.ActionColumnFactory;
 import gui.navigation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 import util.View;
 
-public class TeamOverviewController implements NavigableController, NavigationGuard, TeamModeAware {
+import java.util.List;
+import java.util.Objects;
+
+public class TeamOverviewController implements NavigableController, NavigationGuard, TeamBeheerTypeAware {
 
     @FXML private VBox formHost;
     @FXML private Button addBtn;
@@ -33,14 +34,11 @@ public class TeamOverviewController implements NavigableController, NavigationGu
     private AppContext context;
     @Setter private LayoutController layout;
     @Setter private Navigator navigator;
-    private ObservableTeams observableTeams;
-
-    private SortedList<TeamDTO> sortedList;
-
     private ClosableFormGuard activeFormGuard;
+    private TeamBeheerType beheerType = TeamBeheerType.MANAGER;
 
-    private TeamBeheerMode mode = TeamBeheerMode.MANAGER;
-
+    private ObservableTeams observableTeams;
+    private SortedList<TeamDTO> sortedList;
 
 
     @Override
@@ -49,149 +47,113 @@ public class TeamOverviewController implements NavigableController, NavigationGu
         this.observableTeams = ctx.getObservableTeams();
     }
 
-
-    public void setMode(TeamBeheerMode mode) {
-        this.mode = mode == null ? TeamBeheerMode.MANAGER : mode;
-
-        if (actiesCol != null) {
-            configureActiesColumn();
-        }
+    @Override
+    public void setBeheerType(TeamBeheerType type) {
+        this.beheerType = Objects.requireNonNull(type, "beheerType mag niet null zijn");
+        configureActiesColumn();
     }
 
     @FXML
     private void initialize() {
-        siteCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().site().naam()));
+        configureColumns();
+        configureTableLayout();
+    }
+
+    private void configureColumns(){
+        siteCol.setCellValueFactory(cellData -> {
+                SiteDTO site = cellData.getValue().site();
+                return new SimpleStringProperty(site == null ? "-" : site.naam());
+                });
+
         verantwoordelijkeCol.setCellValueFactory(cellData -> {
-            var site = cellData.getValue().site();
-            var verantwoordelijke = site == null ? null : site.verantwoordelijke();
+            SiteDTO site = cellData.getValue().site();
+            GebruikerDTO verantwoordelijke = site == null ? null : site.verantwoordelijke();
             return new SimpleStringProperty(
                     verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
             );
         });
 
         medewerkersCol.setCellValueFactory(cellData -> Bindings.createObjectBinding(cellData::getValue));
-        medewerkersCol.setCellFactory(col -> new TableCell<>() {
-            private final FlowPane badgesPane = new FlowPane();
+        medewerkersCol.setCellFactory(col -> new TeamLedenTableCell());
 
-            {
-                badgesPane.setHgap(8);
-                badgesPane.setVgap(8);
-                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-            }
+        medewerkersCol.setSortable(false);
+        actiesCol.setSortable(false);
+    }
 
-            @Override
-            protected void updateItem(TeamDTO team, boolean empty) {
-                super.updateItem(team, empty);
-
-                if (empty || team == null || team.teamleden() == null || team.teamleden().isEmpty()) {
-                    setGraphic(null);
-                    return;
-                }
-
-                badgesPane.getChildren().clear();
-
-                badgesPane.setPrefWrapLength(getTableColumn().getWidth() - 30);
-
-                var leden = team.teamleden();
-
-                int maxVisible = 6;
-
-                int visible = Math.min(maxVisible, leden.size());
-
-                for (int i = 0; i < visible; i++) {
-                    GebruikerDTO medewerker = leden.get(i);
-
-                    Label badge = new Label(medewerker.volledigeNaam());
-                    badge.getStyleClass().add("employee-badge");
-
-                    badgesPane.getChildren().add(badge);
-                }
-
-                if (leden.size() > maxVisible) {
-                    int remaining = leden.size() - maxVisible;
-
-                    Label moreBadge = new Label("+" + remaining);
-                    moreBadge.getStyleClass().add("employee-badge");
-                    moreBadge.getStyleClass().add("employee-badge-more");
-
-                    badgesPane.getChildren().add(moreBadge);
-                }
-
-                setGraphic(badgesPane);
-            }
-        });
-
-        configureActiesColumn();
-
+    private void configureTableLayout(){
         siteCol.setStyle("-fx-alignment: CENTER-LEFT;");
         verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
         medewerkersCol.setStyle("-fx-alignment: CENTER-LEFT;");
         actiesCol.setStyle("-fx-alignment: CENTER;");
 
-        medewerkersCol.setSortable(false);
-        actiesCol.setSortable(false);
-
         teamTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         teamTable.setFixedCellSize(84);
-    }
-
-    private void configureActiesColumn() {
-        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
-            ActionColumnFactory.configureEditOnlyColumn(actiesCol, this::edit);
-        } else {
-            ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::delete);
-        }
     }
 
 
     @Override
     public void loadData() {
-        configureActiesColumn();
 
-        if (mode == TeamBeheerMode.MANAGER) {
+        configureActiesColumn();
+        configureAddButton();
+        loadTeams();
+        initializeTableItems();
+    }
+
+    private void configureActiesColumn() {
+        if (beheerType == TeamBeheerType.VERANTWOORDELIJKE) {
+            ActionColumnFactory.configureEditOnlyColumn(actiesCol, this::onEdit);
+        } else {
+            ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::onEdit, this::delete);
+        }
+    }
+
+    private void configureAddButton() {
+        boolean manager = beheerType == TeamBeheerType.MANAGER;
+        addBtn.setVisible(manager);
+        addBtn.setManaged(manager);
+    }
+
+    private void loadTeams() {
+        if (beheerType == TeamBeheerType.MANAGER) {
             observableTeams.reload();
         } else {
             observableTeams.setSingleTeam(context.getTeamController().getMijnTeam());
         }
+    }
 
+    private void initializeTableItems() {
         if (sortedList == null) {
             sortedList = new SortedList<>(observableTeams.getFilteredTeamList());
             sortedList.comparatorProperty().bind(teamTable.comparatorProperty());
             teamTable.setItems(sortedList);
         }
-
-        addBtn.setVisible(mode == TeamBeheerMode.MANAGER);
-        addBtn.setManaged(mode == TeamBeheerMode.MANAGER);
     }
 
     @FXML
     private void onAdd() {
         TeamFormController controller = FormLoader.showForm(
-                formHost,
-                context,
-                View.TEAMS_FORM.fxml,
-                c -> {
-                    c.setMode(mode);
+                formHost, context, View.TEAMS_FORM.fxml, c ->
+                {
+                    c.setBeheerType(beheerType);
                     c.loadForCreate();
-                }
-        );
+                });
 
         controller.setOnClose(this::closeForm);
         activeFormGuard = controller;
     }
 
 
-    private void edit(TeamDTO team) {
+    private void onEdit(TeamDTO team) {
         TeamFormController controller = FormLoader.showForm(
                 formHost,
                 context,
                 View.TEAMS_FORM.fxml,
                 c -> {
-                    c.setMode(mode);
+                    c.setBeheerType(beheerType);
                     c.loadForEdit(team);
                 }
-        );;
+        );
 
         controller.setOnClose(this::closeForm);
         activeFormGuard = controller;
@@ -218,11 +180,7 @@ public class TeamOverviewController implements NavigableController, NavigationGu
 
             if (response == yesBtn) {
                 try {
-
                     observableTeams.deleteTeam(team.teamCode());
-
-                    observableTeams.reload();
-
                 } catch (RuntimeException ex) {
 
                     Alert error = new Alert(Alert.AlertType.ERROR);

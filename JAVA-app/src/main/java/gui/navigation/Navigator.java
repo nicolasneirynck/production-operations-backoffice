@@ -1,8 +1,8 @@
 package gui.navigation;
 
 import gui.LayoutController;
-import gui.teams.TeamBeheerMode;
-import gui.teams.TeamModeAware;
+import gui.teams.TeamBeheerType;
+import gui.teams.TeamBeheerTypeAware;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,12 +12,10 @@ import main.AppContext;
 import security.Authorizer;
 import security.Permission;
 import security.SecurityContext;
+import security.UserPrincipal;
 import util.Rollen;
 import util.View;
 
-import java.io.IOException;
-
-// TODO nu ingewikkeld systeem met controllerfactory, is dit wel nodig? (afwachten tot authorisatie geïmplementeerd is)
 public class Navigator {
 
     @Getter
@@ -76,14 +74,6 @@ public class Navigator {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-//            loader.setControllerFactory(type -> {
-//                try {
-//                    return type.getDeclaredConstructor().newInstance();
-//                } catch (Exception e) {
-//                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
-//                }
-//            });
-
             Parent content = loader.load(); // FXML injecteren + initialize() oproepen
 
             Object controller = loader.getController();
@@ -103,35 +93,24 @@ public class Navigator {
         }
     }
 
-    // TODO testen -> gebruiken we deze nog?
-    public Parent load(View view) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-            Parent root = loader.load();
-
-            initializeController(loader.getController());
-
-            return root;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void initializeController(Object controller) {
-
-        if (controller instanceof TeamModeAware teamModeAware) {
-            var user = SecurityContext.getUser();
-            TeamBeheerMode mode = user != null && user.rol() == Rollen.VERANTWOORDELIJKE
-                    ? TeamBeheerMode.VERANTWOORDELIJKE
-                    : TeamBeheerMode.MANAGER;
-
-            teamModeAware.setMode(mode);
-        }
 
         if (controller instanceof NavigableController nc) {
             nc.setNavigator(this);
             nc.setContext(context);
+        }
+
+        if (controller instanceof TeamBeheerTypeAware teamBeheerTypeAware) {
+            UserPrincipal user = SecurityContext.getUser();
+            TeamBeheerType mode = (user != null && user.rol() == Rollen.VERANTWOORDELIJKE)
+                    ? TeamBeheerType.VERANTWOORDELIJKE
+                    : TeamBeheerType.MANAGER;
+
+            teamBeheerTypeAware.setBeheerType(mode);
+        }
+
+        // dit altijd op het einde!
+        if (controller instanceof NavigableController nc) {
             nc.loadData();
         }
     }
