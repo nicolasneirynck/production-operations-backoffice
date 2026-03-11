@@ -525,3 +525,12 @@
     -fx-text-fill: #334155;
     -fx-font-weight: 700;
 }
+
+.team-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.team-scroll > .viewport {
+    -fx-background-color: transparent;
+}

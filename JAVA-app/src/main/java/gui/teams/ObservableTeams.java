@@ -1,6 +1,6 @@
 package gui.teams;
 
-import domein.TeamController;
+import domein.controllers.TeamController;
 import dto.TeamDTO;
 import exception.ValidationException;
 import javafx.collections.FXCollections;
@@ -50,5 +50,10 @@ public class ObservableTeams {
                 return i;
         }
         return -1;
+    }
+
+    public void updateTeam(long teamId, List<Long> medewerkerIds) throws ValidationException {
+        controller.updateTeam(teamId, medewerkerIds);
+        reload();
     }
 }

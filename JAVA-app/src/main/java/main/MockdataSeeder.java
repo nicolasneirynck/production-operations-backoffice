@@ -1,7 +1,7 @@
 package main;
 
 import domein.GebruikerController;
-import domein.TeamController;
+import domein.controllers.TeamController;
 import domein.controllers.SiteController;
 import domein.controllers.TaakController;
 import exception.ValidationException;

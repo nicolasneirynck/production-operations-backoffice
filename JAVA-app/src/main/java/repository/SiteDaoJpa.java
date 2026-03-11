@@ -2,6 +2,8 @@ package repository;
 
 import domein.entiteiten.Site;
 
+import java.util.List;
+
 public class SiteDaoJpa extends GenericDaoJpa<Site> implements SiteDao {
 
     public SiteDaoJpa(){super(Site.class);}
@@ -13,5 +15,13 @@ public class SiteDaoJpa extends GenericDaoJpa<Site> implements SiteDao {
                 .setParameter("id", id)   // null bij add, id bij update
                 .getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public List<Site> findSitesZonderVerantwoordelijke() {
+        return em.createQuery(
+                "select s from Site s where s.verantwoordelijke is null",
+                Site.class
+        ).getResultList();
     }
 }

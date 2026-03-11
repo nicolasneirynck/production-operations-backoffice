@@ -7,6 +7,8 @@ public enum View {
     TAKEN_FORM("/gui/taken/TaakFormContent.fxml","Taken beheren"),
 
     TEAMS_OVERVIEW("/gui/teams/TeamOverviewContent.fxml", "Teams beheren"),
+    TEAMS_FORM("/gui/teams/TeamFormContent.fxml", "Teams beheren"),
+
 
 
     GEBRUIKER_OVERVIEW("/gui/gebruikers/GebruikerOverviewView.fxml","Gebruikers beheren"),

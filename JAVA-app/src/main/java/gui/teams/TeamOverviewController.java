@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
+import util.View;
 
 public class TeamOverviewController implements NavigableController, NavigationGuard {
 
@@ -135,13 +136,28 @@ public class TeamOverviewController implements NavigableController, NavigationGu
 
     @FXML
     private void onAdd() {
-        // navigator.navigateTo(...);
-        System.out.println("Nieuw team toevoegen");
+        TeamFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.TEAMS_FORM.fxml,
+                TeamFormController::loadForCreate
+        );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
 
     private void edit(TeamDTO team) {
-        System.out.println("Team bewerken: " + team.teamCode());
+        TeamFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.TEAMS_FORM.fxml,
+                c -> c.loadForEdit(team)
+        );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
     private void closeForm() {
@@ -150,7 +166,36 @@ public class TeamOverviewController implements NavigableController, NavigationGu
     }
 
     private void delete(TeamDTO team) {
-        System.out.println("Team verwijderen: " + team.teamCode());
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Team verwijderen");
+        alert.setHeaderText("Team verwijderen");
+        alert.setContentText("Ben je zeker dat je dit team wil verwijderen?");
+
+        ButtonType yesBtn = new ButtonType("Verwijderen");
+        ButtonType cancelBtn = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(yesBtn, cancelBtn);
+
+        alert.showAndWait().ifPresent(response -> {
+
+            if (response == yesBtn) {
+                try {
+
+                    observableTeams.deleteTeam(team.teamCode());
+
+                    observableTeams.reload();
+
+                } catch (RuntimeException ex) {
+
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+                    error.setTitle("Fout");
+                    error.setHeaderText("Team kon niet verwijderd worden");
+                    error.setContentText(ex.getMessage());
+                    error.showAndWait();
+                }
+            }
+        });
     }
 
     @Override

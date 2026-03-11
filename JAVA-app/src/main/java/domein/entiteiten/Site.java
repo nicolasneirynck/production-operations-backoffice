@@ -23,7 +23,7 @@ import java.util.*;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(of = "naam")
 public class Site {
 
 	@Id

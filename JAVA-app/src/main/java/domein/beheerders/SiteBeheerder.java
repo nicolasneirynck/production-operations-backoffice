@@ -158,4 +158,8 @@ public class SiteBeheerder {
             throw ex;
         }
     }
+
+    public List<Site> getSitesZonderVerantwoordelijke() {
+        return siteRepo.findSitesZonderVerantwoordelijke();
+    }
 }

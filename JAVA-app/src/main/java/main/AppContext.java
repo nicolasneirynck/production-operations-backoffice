@@ -2,7 +2,7 @@ package main;
 
 import domein.AuthenticationController;
 import domein.GebruikerController;
-import domein.TeamController;
+import domein.controllers.TeamController;
 import domein.controllers.SiteController;
 import domein.controllers.TaakController;
 import gui.sites.ObservableSites;

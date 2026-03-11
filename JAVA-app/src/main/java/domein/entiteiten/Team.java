@@ -12,12 +12,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 //@Setter(AccessLevel.PROTECTED)
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(of = "businessKey")
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
+    private final String businessKey = UUID.randomUUID().toString(); // tijdelijk om hash en equals te kunnen doen
 
     // team hoort tot 1 site
     @OneToOne
@@ -40,19 +41,18 @@ public class Team {
     public void updateLeden(List<Gebruiker> nieuweGebruikers) throws ValidationException {
         validate(this.site, nieuweGebruikers);
 
-        Set<Long> nieuweIds = nieuweGebruikers.stream()
-                .map(Gebruiker::getGebruikerId)
-                .collect(java.util.stream.Collectors.toSet());
-
-        leden.removeIf(lid -> !nieuweIds.contains(lid.getWerknemer().getGebruikerId()));
-
-        Set<Long> bestaandeIds = leden.stream()
-                .map(lid -> lid.getWerknemer().getGebruikerId())
+        Set<String> nieuweEmails = nieuweGebruikers.stream()
+                .map(Gebruiker::getEmail)
                 .collect(Collectors.toSet());
 
-        // voeg alleen nieuwe leden toe
+        leden.removeIf(lid -> !nieuweEmails.contains(lid.getWerknemer().getEmail()));
+
+        Set<String> bestaandeEmails = leden.stream()
+                .map(lid -> lid.getWerknemer().getEmail())
+                .collect(Collectors.toSet());
+
         for (Gebruiker gebruiker : nieuweGebruikers) {
-            if (!bestaandeIds.contains(gebruiker.getGebruikerId())) {
+            if (!bestaandeEmails.contains(gebruiker.getEmail())) {
                 leden.add(new TeamLid(this, gebruiker));
             }
         }
@@ -77,9 +77,10 @@ public class Team {
             }
 
             long aantalLeden = leden.size();
+
             long aantalUniek = leden.stream()
                     .filter(Objects::nonNull)
-                    .map(Gebruiker::getGebruikerId)
+                    .map(Gebruiker::getEmail)
                     .distinct()
                     .count();
 

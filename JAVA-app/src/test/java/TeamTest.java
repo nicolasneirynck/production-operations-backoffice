@@ -1,9 +1,14 @@
-import domein.*;
-import exception.TeamException;
-import exception.SiteException;
+import domein.entiteiten.Gebruiker;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
+import domein.entiteiten.Team;
+import exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import util.GebruikerStatus;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
@@ -15,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TeamTest {
 
-    private Site geldigeSite() throws SiteException {
+    private Site geldigeSite() throws ValidationException {
         return Site.builder()
                 .naam("SITE-A")
                 .locatie(Locatie.builder("Straat", "1", "9000", "Gent", "België"))
@@ -25,95 +30,114 @@ public class TeamTest {
                 .build();
     }
 
-    private Gebruiker werknemer(long id) {
-        Gebruiker g = new Gebruiker(id,Rollen.WERKNEMER);
-        return g;
+    private Gebruiker werknemer(int personeelsnummer, String email) {
+        return Gebruiker.builder()
+                .personeelsnummer(personeelsnummer)
+                .naam("Janssens")
+                .voornaam("Jan" + personeelsnummer)
+                .geboortedatum("2000-01-01")
+                .adres("Teststraat 1, 9000 Gent")
+                .email(email)
+                .gsm("0470123456")
+                .rol(Rollen.WERKNEMER)
+                .status(GebruikerStatus.ACTIEF)
+                .wachtwoord("geheim123")
+                .build();
     }
 
     static Stream<Arguments> geldigeTeams() {
         return Stream.of(
-                Arguments.of(List.of(1L, 2L, 3L)),
-                Arguments.of(List.of(10L, 20L, 30L, 40L))
+                Arguments.of(List.of(
+                        new WerknemerGegevens(1, "w1@test.be"),
+                        new WerknemerGegevens(2, "w2@test.be"),
+                        new WerknemerGegevens(3, "w3@test.be")
+                )),
+                Arguments.of(List.of(
+                        new WerknemerGegevens(10, "w10@test.be"),
+                        new WerknemerGegevens(20, "w20@test.be"),
+                        new WerknemerGegevens(30, "w30@test.be"),
+                        new WerknemerGegevens(40, "w40@test.be")
+                ))
         );
     }
 
     @ParameterizedTest
     @MethodSource("geldigeTeams")
-    void constructor_GeldigeParameters_GeenException(List<Long> ids) throws Exception {
-
+    void constructor_GeldigeParameters_GeenException(List<WerknemerGegevens> gegevens) throws Exception {
         Site site = geldigeSite();
 
-        List<Gebruiker> leden = ids.stream()
-                .map(this::werknemer)
+        List<Gebruiker> leden = gegevens.stream()
+                .map(g -> werknemer(g.personeelsnummer(), g.email()))
                 .toList();
 
         Team team = new Team(site, leden);
 
         assertEquals(site, team.getSite());
-        assertEquals(ids.size(), team.getLeden().size());
+        assertEquals(gegevens.size(), team.getLeden().size());
     }
 
     @Test
     void constructor_NullSite_GooitException() {
-
         List<Gebruiker> leden = List.of(
-                werknemer(1),
-                werknemer(2),
-                werknemer(3)
+                werknemer(1, "w1@test.be"),
+                werknemer(2, "w2@test.be"),
+                werknemer(3, "w3@test.be")
         );
 
-        assertThrows(TeamException.class, () -> new Team(null, leden));
+        assertThrows(ValidationException.class, () -> new Team(null, leden));
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1,2})
+    @ValueSource(ints = {1, 2})
     void constructor_MinderDanDrieLeden_GooitException(int aantal) throws Exception {
-
         Site site = geldigeSite();
 
-        List<Gebruiker> leden = java.util.stream.LongStream.rangeClosed(1, aantal)
-                .mapToObj(this::werknemer)
+        List<Gebruiker> leden = java.util.stream.IntStream.rangeClosed(1, aantal)
+                .mapToObj(i -> werknemer(i, "w" + i + "@test.be"))
                 .toList();
 
-        assertThrows(TeamException.class, () -> new Team(site, leden));
+        assertThrows(ValidationException.class, () -> new Team(site, leden));
     }
 
     @Test
     void constructor_DubbeleWerknemers_GooitException() throws Exception {
-
         Site site = geldigeSite();
 
-        Gebruiker w1 = werknemer(1);
-        Gebruiker w2 = werknemer(2);
-        Gebruiker w1Dubbel = werknemer(1);
+        Gebruiker w1 = werknemer(1, "w1@test.be");
+        Gebruiker w2 = werknemer(2, "w2@test.be");
+
+        // Dubbel op basis van dezelfde email, want equals/hashCode van Gebruiker gebruikt email
+        Gebruiker w1Dubbel = werknemer(99, "w1@test.be");
 
         List<Gebruiker> leden = List.of(w1, w2, w1Dubbel);
 
-        assertThrows(TeamException.class, () -> new Team(site, leden));
+        assertThrows(ValidationException.class, () -> new Team(site, leden));
     }
 
     @Test
     void updateLeden_GeldigeNieuweLijst_PastTeamAan() throws Exception {
-
         Site site = geldigeSite();
 
-        Gebruiker w1 = werknemer(1);
-        Gebruiker w2 = werknemer(2);
-        Gebruiker w3 = werknemer(3);
+        Gebruiker w1 = werknemer(1, "w1@test.be");
+        Gebruiker w2 = werknemer(2, "w2@test.be");
+        Gebruiker w3 = werknemer(3, "w3@test.be");
 
         Team team = new Team(site, List.of(w1, w2, w3));
 
-        Gebruiker w4 = werknemer(4);
+        Gebruiker w4 = werknemer(4, "w4@test.be");
 
         team.updateLeden(List.of(w1, w3, w4));
 
         assertEquals(3, team.getLeden().size());
 
-        List<Long> ids = team.getLeden().stream()
-                .map(l -> l.getWerknemer().getGebruikerId())
+        List<String> emails = team.getLeden().stream()
+                .map(l -> l.getWerknemer().getEmail())
                 .toList();
 
-        assertTrue(ids.containsAll(List.of(1L,3L,4L)));
-        assertFalse(ids.contains(2L));
+        assertTrue(emails.containsAll(List.of("w1@test.be", "w3@test.be", "w4@test.be")));
+        assertFalse(emails.contains("w2@test.be"));
+    }
+
+    private record WerknemerGegevens(int personeelsnummer, String email) {
     }
 }

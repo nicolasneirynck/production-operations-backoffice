@@ -13,7 +13,7 @@ import java.util.Comparator;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "gebruikerId")
+@EqualsAndHashCode(of = "email")
 @Getter
 @NamedQueries({
         @NamedQuery(name = "Gebruiker.findByEmail",
