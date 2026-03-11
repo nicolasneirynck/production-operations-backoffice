@@ -164,7 +164,7 @@ public class LayoutController implements NavigableController {
     @FXML
     private void onTeams() {
       //  setContent("/gui/TeamsOverviewContent.fxml"); // TODO
-        System.out.println("team beheer geopend");
+        navigator.goTo(View.TEAMS_OVERVIEW);
         setActive(teamsRow);
     }
 

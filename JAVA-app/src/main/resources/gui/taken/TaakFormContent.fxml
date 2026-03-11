@@ -23,7 +23,7 @@
         <VBox spacing="14" prefWidth="380" maxWidth="380">
 
             <!-- Taaktype -->
-            <VBox spacing="4">
+            <VBox spacing="2">
                 <Label text="Taak type" styleClass="form-label"/>
                 <ComboBox fx:id="typeBx"
                           promptText="KIES TAAKTYPE"
@@ -34,7 +34,7 @@
             </VBox>
 
             <!-- Duurtijd -->
-            <VBox spacing="4">
+            <VBox spacing="2">
                 <Label text="Duurtijd (minuten)" styleClass="form-label"/>
                 <ComboBox fx:id="duurtijdBx"
                           promptText="KIES DUURTIJD"
@@ -45,7 +45,7 @@
         </VBox>
 
         <!-- RECHTS: Omschrijving -->
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
             <Label text="Omschrijving" styleClass="form-label"/>
             <TextArea fx:id="omschrijvingTxt" promptText="Geef een duidelijke taakomschrijving" wrapText="true"
                       prefRowCount="4"

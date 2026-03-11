@@ -4,6 +4,7 @@ import domein.beheerders.SiteBeheerder;
 import domein.entiteiten.Gebruiker;
 import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;
+import dto.DTOMapper;
 import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
@@ -40,16 +41,16 @@ public class SiteController {
                 .toList();
     }
 
-    public void addSite(String naam, String straat, String nummer, String postcode, String gemeente, String land,
+    public void addSite(String naam, Long verantwoordelijkeId, String straat, String nummer, String postcode, String gemeente, String land,
                         int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
-        siteBeheerder.addSite(naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+        siteBeheerder.addSite(naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }
 
-    public void updateSite(long id, String naam, String straat, String nummer, String postcode, String gemeente, String land,
+    public void updateSite(long id, Long verantwoordelijkeId, String naam, String straat, String nummer, String postcode, String gemeente, String land,
                            int capaciteit, OperationeleStatus op, ProductieStatus prod) throws ValidationException {
         authorize();
-        siteBeheerder.updateSite(id, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
+        siteBeheerder.updateSite(id, naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod);
     }
 
     public void deleteSite(long id) {
@@ -96,5 +97,11 @@ public class SiteController {
                 site.getOperationeleStatus(),
                 site.getProductieStatus()
         );
+    }
+
+    public List<SiteDTO> getSitesZonderTeam() {
+        return siteBeheerder.getSitesZonderTeam().stream()
+                .map(DTOMapper::toSiteDTO)
+                .toList();
     }
 }

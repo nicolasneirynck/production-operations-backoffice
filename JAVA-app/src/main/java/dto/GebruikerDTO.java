@@ -19,6 +19,7 @@ public record GebruikerDTO(
 
     public String volledigeNaam() {
         return voornaam + " " + naam;
+
     }
 
 }

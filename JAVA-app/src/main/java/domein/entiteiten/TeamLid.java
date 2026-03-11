@@ -4,16 +4,20 @@ import jakarta.persistence.*;
 import lombok.*;
 import util.Rollen;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(of = "businessKey")
 public class TeamLid {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
+    private final String businessKey = UUID.randomUUID().toString(); // tijdelijk om hash en equals te kunnen doen
+
 
     //meerdere teamleden in 1 team
     @ManyToOne

@@ -99,6 +99,7 @@ public class Navigator {
         }
     }
 
+    // TODO testen -> gebruiken we deze nog?
     public Parent load(View view) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));

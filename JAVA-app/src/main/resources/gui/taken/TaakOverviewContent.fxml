@@ -28,9 +28,9 @@
     <TableView fx:id="taakTable" VBox.vgrow="ALWAYS" styleClass="table">
         <columns>
             <TableColumn fx:id="typeCol" text="Taak Type" prefWidth="150"/>
-            <TableColumn fx:id="omschrijvingCol" text="Omschrijving" prefWidth="300"/>
+            <TableColumn fx:id="omschrijvingCol" text="Omschrijving" prefWidth="350"/>
             <TableColumn fx:id="duurtijdCol" text="Duurtijd (minuten)" prefWidth="140"/>
-            <TableColumn fx:id="actiesCol" text="Acties" prefWidth="100"/>
+            <TableColumn fx:id="actiesCol" text="Acties" prefWidth="70"/>
         </columns>
     </TableView>
 

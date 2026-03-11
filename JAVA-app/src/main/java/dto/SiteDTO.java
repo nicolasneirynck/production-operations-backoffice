@@ -10,7 +10,6 @@ public record SiteDTO(
         LocatieDTO locatie,
         int capaciteit,
         OperationeleStatus operationeleStatus,
-        ProductieStatus productieStatus
-) {
+        ProductieStatus productieStatus) {
 
 }

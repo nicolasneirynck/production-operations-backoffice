@@ -41,7 +41,7 @@ public class BackOfficeApp extends Application {
             throw new RuntimeException(e);
         }
 
-        navigator.initLayout("/gui/LayoutView.fxml", "BackOffice", 1200, 800, "/css/app.css");
+        navigator.initLayout("/gui/LayoutView.fxml", "BackOffice", 1440, 1024, "/css/app.css");
 
         bindAuthNavigation(navigator);
         navigator.goTo(View.LOGIN);

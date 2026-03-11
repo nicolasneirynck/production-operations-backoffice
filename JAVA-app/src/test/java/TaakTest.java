@@ -1,4 +1,5 @@
 import domein.entiteiten.Taak;
+import exception.ValidationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -37,7 +38,7 @@ public class TaakTest {
     @EmptySource
     @ValueSource(strings = {" ", "   "})
     void constructor_GeenOfOngeldigTaakType_GooitException(String type) {
-        TaakException ex = assertThrows(TaakException.class, () ->
+        ValidationException ex = assertThrows(ValidationException.class, () ->
                 Taak.builder()
                         .type(type)
                         .omschrijving("Test")
@@ -51,7 +52,7 @@ public class TaakTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
     void constructor_OngeldigeOmschrijving_GooitException(String omschrijving) {
-        TaakException ex = assertThrows(TaakException.class, () ->
+        ValidationException ex = assertThrows(ValidationException.class, () ->
                 Taak.builder()
                         .type("Onderhoud")
                         .omschrijving(omschrijving)
@@ -68,7 +69,7 @@ public class TaakTest {
     @ParameterizedTest
     @MethodSource("ongeldigeDuur")
     void constructor_OngeldigeDuur_GooitException(int minuten) {
-        TaakException ex = assertThrows(TaakException.class, () ->
+        ValidationException ex = assertThrows(ValidationException.class, () ->
                 Taak.builder()
                         .type("Onderhoud")
                         .omschrijving("Test")

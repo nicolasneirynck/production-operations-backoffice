@@ -1,6 +1,7 @@
 package domein;
 
 import domein.entiteiten.Gebruiker;
+import dto.DTOMapper;
 import dto.GebruikerDTO;
 import repository.GebruikerDao;
 import repository.GebruikerDaoJpa;
@@ -88,5 +89,11 @@ public class GebruikerController {
             gebruikerRepo.rollbackTransaction();
             throw ex;
         }
+    }
+
+    public List<GebruikerDTO> getVerantwoordelijkenZonderSite() {
+        return gebruikerRepo.findVerantwoordelijkenZonderSite().stream()
+                .map(DTOMapper::toGebruikerDTO)
+                .toList();
     }
 }

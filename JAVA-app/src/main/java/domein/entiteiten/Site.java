@@ -23,7 +23,7 @@ import java.util.*;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(of = "naam")
 public class Site {
 
 	@Id
@@ -51,6 +51,7 @@ public class Site {
 
 	private Site(Builder builder){
 		this.naam = builder.naam;
+		this.verantwoordelijke = builder.verantwoordelijke;
 		this.locatie = builder.locatie;
 		this.capaciteit = builder.capaciteit;
 		this.operationeleStatus = builder.operationeleStatus;
@@ -62,19 +63,20 @@ public class Site {
 	}
 
 
-	public void update(String naam, Locatie locatie, int capaciteit,
+	public void update(String naam, Gebruiker verantwoordelijke, Locatie locatie, int capaciteit,
 					   OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
-		validate(naam, locatie, capaciteit, op, prod);
+		validate(naam,verantwoordelijke, locatie, capaciteit, op, prod);
 
 		this.naam = naam;
+		this.verantwoordelijke = verantwoordelijke;
 		this.locatie = locatie;
 		this.capaciteit = capaciteit;
 		this.operationeleStatus = op;
 		this.productieStatus = prod;
 	}
 
-	private static void validate(String naam, Locatie locatie, int capaciteit,
+	private static void validate(String naam, Gebruiker verantwoordelijke, Locatie locatie, int capaciteit,
 								 OperationeleStatus op, ProductieStatus prod) throws ValidationException {
 
 		Map<String, IllegalArgumentException> errors = new HashMap<>();
@@ -82,6 +84,9 @@ public class Site {
 		if (naam == null || naam.isBlank())
 			errors.put("naam", new IllegalArgumentException("Naam vereist."));
 
+		if (verantwoordelijke != null && verantwoordelijke.getRol() != util.Rollen.VERANTWOORDELIJKE) {
+			errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
+		}
 //		if (locatie == null)
 //			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
 
@@ -109,6 +114,7 @@ public class Site {
 
 	public static class Builder {
 		private String naam;
+		private Gebruiker verantwoordelijke;
 		private Locatie locatie;
 		private int capaciteit;
 		private OperationeleStatus operationeleStatus;
@@ -116,6 +122,11 @@ public class Site {
 
 		public Builder naam(String naam){
 			this.naam = naam;
+			return this;
+		}
+
+		public Builder verantwoordelijke(Gebruiker verantwoordelijke) {
+			this.verantwoordelijke = verantwoordelijke;
 			return this;
 		}
 
@@ -144,7 +155,7 @@ public class Site {
 		}
 
 		public Site build() throws ValidationException {
-			validate(naam, locatie, capaciteit, operationeleStatus, productieStatus);
+			validate(naam, verantwoordelijke, locatie, capaciteit, operationeleStatus, productieStatus);
 			return new Site(this);
 		}
 

@@ -6,6 +6,11 @@ public enum View {
     TAKEN_OVERVIEW("/gui/taken/TaakOverviewContent.fxml", "Taken beheren"),
     TAKEN_FORM("/gui/taken/TaakFormContent.fxml","Taken beheren"),
 
+    TEAMS_OVERVIEW("/gui/teams/TeamOverviewContent.fxml", "Teams beheren"),
+    TEAMS_FORM("/gui/teams/TeamFormContent.fxml", "Teams beheren"),
+
+
+
     GEBRUIKER_OVERVIEW("/gui/gebruikers/GebruikerOverviewView.fxml","Gebruikers beheren"),
     GEBRUIKER_FORM("/gui/gebruikers/GebruikerFormView.fxml","Gebruikers beheren"),
 

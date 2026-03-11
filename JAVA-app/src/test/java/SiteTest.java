@@ -44,7 +44,7 @@ public class SiteTest {
         assertEquals(STRAAT, site.getLocatie().getStraat());
         assertEquals(NUMMER, site.getLocatie().getNummer());
         assertEquals(POSTCODE, site.getLocatie().getPostcode());
-        assertEquals(STAD, site.getLocatie().getStad());
+        assertEquals(STAD, site.getLocatie().getGemeente());
         assertEquals(LAND, site.getLocatie().getLand());
 
         assertEquals(100, site.getCapaciteit());
