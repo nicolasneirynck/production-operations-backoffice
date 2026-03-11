@@ -38,7 +38,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
    @FXML private ComboBox<String> landCb;
 
     @FXML private Label naamErr;
-    @FXML private Label verantwoordelijkeErr;
+    //@FXML private Label verantwoordelijkeErr;
     @FXML private Label capaciteitErr;
     @FXML private Label operationeelErr;
     @FXML private Label productieErr;
@@ -47,6 +47,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @FXML private Label postcodeErr;
     @FXML private Label gemeenteErr;
     @FXML private Label landErr;
+    @FXML private Label formInfoLbl;
 
     @FXML private Button saveBtn;
     @FXML private Button cancelBtn;
@@ -199,8 +200,15 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
         boolean geenBeschikbareVerantwoordelijken = verantwoordelijkeCb.getItems().isEmpty();
         verantwoordelijkeCb.setDisable(geenBeschikbareVerantwoordelijken);
-        saveBtn.setDisable(geenBeschikbareVerantwoordelijken);
 
+        if (geenBeschikbareVerantwoordelijken) {
+            formInfoLbl.setText("Er is momenteel geen vrije verantwoordelijke beschikbaar.");
+            formInfoLbl.setVisible(true);
+            formInfoLbl.setManaged(true);
+        } else {
+            formInfoLbl.setVisible(false);
+            formInfoLbl.setManaged(false);
+        }
     }
 
     public void loadForEdit(SiteDTO site) {
@@ -241,11 +249,6 @@ public class SiteFormController implements FormController, ClosableFormGuard {
         }
 
         GebruikerDTO verantwoordelijke = verantwoordelijkeCb.getValue();
-        if (verantwoordelijke == null) {
-            verantwoordelijkeErr.setText("Verantwoordelijke is verplicht.");
-            verantwoordelijkeCb.getStyleClass().add("field-error");
-            return;
-        }
 
         try {
             String naam = naamTf.getText();
@@ -255,7 +258,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
             String gemeente = gemeenteTf.getText();
             String land = landCb.getValue();
 
-            Long verantwoordelijkeId = verantwoordelijke.gebruikerId();
+            Long verantwoordelijkeId = verantwoordelijke != null ? verantwoordelijke.gebruikerId() : null;
 
             OperationeleStatus op = operationeelCb.getValue();
             ProductieStatus prod = productieCb.getValue();
@@ -315,10 +318,10 @@ public class SiteFormController implements FormController, ClosableFormGuard {
                     naamErr.setText(msg);
                     naamTf.getStyleClass().add("field-error");
                 }
-                case "verantwoordelijke" -> {
-                    verantwoordelijkeErr.setText(msg);
-                    verantwoordelijkeCb.getStyleClass().add("field-error");
-                }
+//                case "verantwoordelijke" -> {
+//                    verantwoordelijkeErr.setText(msg);
+//                    verantwoordelijkeCb.getStyleClass().add("field-error");
+//                }
                 case "capaciteit" -> {
                     capaciteitErr.setText(msg);
                     capaciteitTf.getStyleClass().add("field-error");
@@ -379,10 +382,10 @@ public class SiteFormController implements FormController, ClosableFormGuard {
                 naamErr.setText("");
                 naamTf.getStyleClass().remove("field-error");
             }
-            case "verantwoordelijke" -> {
-                verantwoordelijkeErr.setText("");
-                verantwoordelijkeCb.getStyleClass().remove("field-error");
-            }
+//            case "verantwoordelijke" -> {
+//                verantwoordelijkeErr.setText("");
+//                verantwoordelijkeCb.getStyleClass().remove("field-error");
+//            }
             case "capaciteit" -> {
                 capaciteitErr.setText("");
                 capaciteitTf.getStyleClass().remove("field-error");
@@ -422,7 +425,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
     private void clearErrors() {
         naamErr.setText("");
-        verantwoordelijkeErr.setText("");
+        //verantwoordelijkeErr.setText("");
         capaciteitErr.setText("");
         operationeelErr.setText("");
         productieErr.setText("");

@@ -84,10 +84,6 @@ public class Site {
 		if (naam == null || naam.isBlank())
 			errors.put("naam", new IllegalArgumentException("Naam vereist."));
 
-		if (verantwoordelijke == null) {
-			errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke is vereist."));
-		}
-
 		if (verantwoordelijke != null && verantwoordelijke.getRol() != util.Rollen.VERANTWOORDELIJKE) {
 			errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
 		}

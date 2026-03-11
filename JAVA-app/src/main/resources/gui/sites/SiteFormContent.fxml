@@ -42,7 +42,11 @@
                        GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="CENTER"/>
                 <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                     <ComboBox fx:id="verantwoordelijkeCb" maxWidth="Infinity"/>
-                    <Label fx:id="verantwoordelijkeErr" styleClass="error-label"/>
+                    <Label fx:id="formInfoLbl"
+                           wrapText="true"
+                           visible="false"
+                           managed="false"
+                           styleClass="info-label"/>
                 </VBox>
 
                 <!-- Capaciteit -->

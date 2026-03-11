@@ -121,16 +121,14 @@ public class SiteBeheerder {
             }
 
             Gebruiker verantwoordelijke = null;
-            if (verantwoordelijkeId == null) {
-                errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke is verplicht."));
-            } else {
+            if (verantwoordelijkeId != null) {
                 verantwoordelijke = gebruikerRepo.get(verantwoordelijkeId);
 
                 if (verantwoordelijke == null) {
                     errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke niet gevonden."));
                 } else if (verantwoordelijke.getRol() != Rollen.VERANTWOORDELIJKE) {
                     errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
-                } else if (siteRepo.verantwoordelijkeHeeftAndereSite(verantwoordelijkeId, null)) {
+                } else if (siteRepo.verantwoordelijkeHeeftAndereSite(verantwoordelijkeId, id)) {
                     errors.put("verantwoordelijke",
                             new IllegalArgumentException("Deze verantwoordelijke is al aan een andere site gekoppeld."));
                 }
