@@ -48,9 +48,7 @@ public class SiteBeheerder {
         }
 
         Gebruiker verantwoordelijke = null;
-        if (verantwoordelijkeId == null) {
-            errors.put("verantwoordelijke", new IllegalArgumentException("Verantwoordelijke is verplicht."));
-        } else {
+        if (verantwoordelijkeId != null) {
             verantwoordelijke = gebruikerRepo.get(verantwoordelijkeId);
 
             if (verantwoordelijke == null) {
