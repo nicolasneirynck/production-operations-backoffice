@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.Setter;
 import main.AppContext;
 import security.Authorizer;
 import security.Permission;
@@ -18,36 +19,20 @@ public class Navigator {
 
     @Getter
     private final Stage stage;
-    private final AppContext context;
+    //private final AppContext context;
+    private final ControllerInitializer controllerInitializer;
 
     private NavigableController currentController;
     private LayoutController layoutController;
 
     public Navigator(Stage stage, AppContext context) {
         this.stage = stage;
-        this.context = context;
+        this.controllerInitializer = new ControllerInitializer(context, this);
     }
 
-    public void initLayout(String layoutFxml, String windowTitle, double width, double height, String cssPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(layoutFxml));
-            Parent root = loader.load();
-
-            this.layoutController = loader.getController();
-            initializeController(layoutController);
-
-            Scene scene = new Scene(root, width, height);
-            if (cssPath != null) {
-                scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-            }
-
-            stage.setScene(scene);
-            stage.setTitle(windowTitle);
-            stage.show();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Kan LayoutView niet laden: " + layoutFxml, e);
-        }
+    public void setLayoutController(LayoutController layoutController) {
+        this.layoutController = layoutController;
+        controllerInitializer.initialize(layoutController);
     }
 
     public void goTo(View view) {
@@ -76,7 +61,7 @@ public class Navigator {
             Parent content = loader.load(); // FXML injecteren + initialize() oproepen
 
             Object controller = loader.getController();
-            initializeController(controller);
+            controllerInitializer.initialize(controller);
 
             if (controller instanceof NavigableController nc) {
                 currentController = nc;
@@ -101,14 +86,4 @@ public class Navigator {
             goTo(View.ALL_TEAMS_OVERVIEW);
         }
     }
-
-    private void initializeController(Object controller) {
-
-        if (controller instanceof NavigableController nc) {
-            nc.setNavigator(this);
-            nc.setContext(context);
-            nc.loadData();
-        }
-    }
-
 }
