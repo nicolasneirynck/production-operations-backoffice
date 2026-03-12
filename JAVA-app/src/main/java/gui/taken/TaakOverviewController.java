@@ -25,7 +25,6 @@ public class TaakOverviewController implements NavigableController, NavigationGu
     @FXML private TableColumn<TaakDTO, TaakDTO> actiesCol;
 
     private AppContext context;
-    @Setter private LayoutController layout;
     @Setter private Navigator navigator;
     private ObservableTaken observableTaken;
 

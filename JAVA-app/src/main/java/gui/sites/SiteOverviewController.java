@@ -33,7 +33,6 @@ public class SiteOverviewController implements NavigableController, NavigationGu
     @FXML private TableColumn<SiteDTO, SiteDTO> actiesCol;
 
     private AppContext context;
-    @Setter private LayoutController layout;
     @Setter private Navigator navigator;
     private ObservableSites observableSites;
 

@@ -40,13 +40,59 @@ public class LayoutController implements NavigableController {
     @FXML private HBox loginRow;
     @FXML private Button teamsBtn;
     @FXML private Button logoutBtn;
-    @FXML public HBox takenRow;
+    @FXML private HBox takenRow;
 
     @Getter
     @FXML private StackPane contentHost;
 
     @Setter private Navigator navigator;
-    @Setter private AppContext context;
+    @Setter private AppContext context; // niet nodig hier
+
+    @FXML
+    private void initialize() {
+        navRows = List.of(homeRow, usersRow, teamsRow, sitesRow, takenRow);
+
+        bindToAuthorization();
+        handleAuthorizationChange(SecurityContext.userProperty().get());
+
+        // logo
+        logoImage.setViewport(null);
+        logoImage.setPreserveRatio(true);
+        logoImage.setSmooth(true);
+        logoImage.setFitHeight(20);
+    }
+
+    public void showContent(Node node) {
+        contentHost.getChildren().setAll(node);
+    }
+
+
+    @Override
+    public void loadData() {
+        clearActiveNavigation();
+    }
+
+    private void clearActiveNavigation() {
+        navRows.forEach(row -> row.getStyleClass().remove("active"));
+    }
+
+
+    public void setActiveNavigation(View view) {
+        clearActiveNavigation();
+
+        HBox row = switch (view) {
+            case HOME -> homeRow;
+            case GEBRUIKER_OVERVIEW, GEBRUIKER_FORM -> usersRow;
+            case ALL_TEAMS_OVERVIEW, MIJN_TEAM_OVERVIEW, TEAMS_FORM -> teamsRow;
+            case SITES_OVERVIEW, SITES_FORM -> sitesRow;
+            case TAKEN_OVERVIEW, TAKEN_FORM -> takenRow;
+            default -> null;
+        };
+
+        if (row != null) {
+            row.getStyleClass().add("active");
+        }
+    }
 
     private void setRowVisibility(HBox row, boolean visible) {
         row.setVisible(visible);
@@ -54,10 +100,10 @@ public class LayoutController implements NavigableController {
     }
 
     private void changeVisibility(boolean visible) {
-        setRowVisibility(usersRow, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
-        setRowVisibility(sitesRow, visible & Authorizer.has(Permission.SITES_BEHEREN));
-        setRowVisibility(teamsRow, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
-        setRowVisibility(takenRow, visible & Authorizer.has(Permission.TAKEN_BEHEREN));
+        setRowVisibility(usersRow, visible && Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
+        setRowVisibility(sitesRow, visible && Authorizer.has(Permission.SITES_BEHEREN));
+        setRowVisibility(teamsRow, visible && Authorizer.has(Permission.TEAMS_BEHEREN));
+        setRowVisibility(takenRow, visible && Authorizer.has(Permission.TAKEN_BEHEREN));
         setRowVisibility(homeRow, visible);
 
         userNameLbl.setVisible(visible);
@@ -89,66 +135,28 @@ public class LayoutController implements NavigableController {
     }
 
     @FXML
-    private void initialize() {
-        navRows = List.of(homeRow, usersRow, teamsRow, sitesRow, takenRow);
-
-        bindToAuthorization();
-        handleAuthorizationChange(SecurityContext.userProperty().get());
-
-        // logo
-        logoImage.setViewport(null);
-        logoImage.setPreserveRatio(true);
-        logoImage.setSmooth(true);
-        logoImage.setFitHeight(20);
-    }
-
-    @Override
-    public void loadData() {
-        setActive(homeRow);
-        navigator.goTo(View.HOME);
-    }
-
-    public void showContent(Node node) {
-        contentHost.getChildren().setAll(node);
-    }
-
-    private void setActive(HBox activeRow) {
-        navRows.forEach(row -> row.getStyleClass().remove("active"));
-
-        if (!activeRow.getStyleClass().contains("active")) {
-            activeRow.getStyleClass().add("active");
-        }
-    }
-
-    @FXML
     private void onHome() {
         navigator.goTo(View.HOME);
-        setActive(homeRow);
     }
 
     @FXML
     private void onGebruikers() {
         navigator.goTo(View.GEBRUIKER_OVERVIEW);
-        setActive(usersRow);
     }
 
     @FXML
     private void onTeams() {
         navigator.goToTeams();
-        setActive(teamsRow);
     }
 
     @FXML
     private void onSites() {
         navigator.goTo(View.SITES_OVERVIEW);
-        setActive(sitesRow);
     }
 
     @FXML
     private void onTaken() {
-        //setContent("/gui/SitesOverviewContent.fxml"); // TODO
         navigator.goTo(View.TAKEN_OVERVIEW);
-        setActive(takenRow);
     }
 
     @FXML

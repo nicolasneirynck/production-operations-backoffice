@@ -69,6 +69,7 @@ public class Navigator {
             }
 
             layoutController.showContent(content);
+            layoutController.setActiveNavigation(view);
             stage.setTitle(view.title);
 
         } catch (Exception e) {

@@ -23,10 +23,7 @@ public class HomeController implements NavigableController {
 
 
     @Setter private Navigator navigator;
-    @Setter private AppContext context;
-
-    @Setter
-    private LayoutController layout;
+    @Setter private AppContext context; // niet nodig hier
 
     private void changeVisibility(boolean visible) {
         setTileVisibility(usersTile, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
@@ -72,7 +69,7 @@ public class HomeController implements NavigableController {
     }
 
     @FXML
-    public void onSitesTile() {
+    private void onSitesTile() {
         navigator.goTo(View.SITES_OVERVIEW);
     }
 }
