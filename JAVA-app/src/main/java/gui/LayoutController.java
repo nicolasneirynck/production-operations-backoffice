@@ -36,9 +36,8 @@ public class LayoutController implements NavigableController {
     @FXML private HBox usersRow;
     @FXML private HBox teamsRow;
     @FXML private HBox sitesRow;
+
     @FXML private HBox loginRow;
-   // @FXML private HBox machinesRow;
-    @FXML private Button usersBtn;
     @FXML private Button teamsBtn;
     @FXML private Button logoutBtn;
     @FXML public HBox takenRow;
@@ -109,45 +108,6 @@ public class LayoutController implements NavigableController {
         navigator.goTo(View.HOME);
     }
 
-    // TODO
-    public void setUser(String name, String role) {
-        userNameLbl.setText(name);
-        userRoleLbl.setText(role);
-    }
-
-//    public void setContent(View view) {
-//    if (view == View.SITES_OVERVIEW) {
-//        Authorizer.require(Permission.SITES_BEHEREN);
-//    }
-
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(view.fxml));
-//
-//            loader.setControllerFactory(type -> {
-//                try {
-//                    Object controller = type.getDeclaredConstructor().newInstance();
-//
-//                    if (controller instanceof NavigableController nc) {
-//                        nc.setNavigator(navigator);
-//                        nc.setContext(context);
-//                    }
-//
-//                    return controller;
-//
-//                } catch (Exception e) {
-//                    throw new RuntimeException("Kan controller niet maken: " + type.getName(), e);
-//                }
-//            });
-//
-//            Parent content = loader.load();
-//
-//            contentHost.getChildren().setAll(content);
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("Kan content niet laden: " + view, e);
-//        }
-//    }
-//
     public void showContent(Node node) {
         contentHost.getChildren().setAll(node);
     }
@@ -174,14 +134,12 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void onTeams() {
-      //  setContent("/gui/TeamsOverviewContent.fxml"); // TODO
-        navigator.goTo(View.TEAMS_OVERVIEW);
+        navigator.goToTeams();
         setActive(teamsRow);
     }
 
     @FXML
     private void onSites() {
-        //setContent("/gui/SitesOverviewContent.fxml"); // TODO
         navigator.goTo(View.SITES_OVERVIEW);
         setActive(sitesRow);
     }

@@ -9,7 +9,7 @@
 <?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx/17.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.ManagerHomeController"
+      fx:controller="gui.HomeController"
       fx:id="content"
       spacing="18">
 

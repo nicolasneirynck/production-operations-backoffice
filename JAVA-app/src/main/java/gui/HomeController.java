@@ -14,7 +14,7 @@ import security.UserPrincipal;
 import util.Rollen;
 import util.View;
 
-public class ManagerHomeController implements NavigableController {
+public class HomeController implements NavigableController {
 
     @FXML private Button usersTile;
     @FXML private Button teamsTile;
@@ -63,7 +63,7 @@ public class ManagerHomeController implements NavigableController {
 
     @FXML
     private void onTeamsTile() {
-        navigator.goTo(View.TEAMS_OVERVIEW);
+        navigator.goToTeams();
     }
 
     @FXML

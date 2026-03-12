@@ -1,12 +1,13 @@
 package util;
 
 public enum View {
-    HOME("/gui/ManagerHomeContent.fxml", "Home"),
+    HOME("/gui/HomeContent.fxml", "Home"),
 
     TAKEN_OVERVIEW("/gui/taken/TaakOverviewContent.fxml", "Taken beheren"),
     TAKEN_FORM("/gui/taken/TaakFormContent.fxml","Taken beheren"),
 
-    TEAMS_OVERVIEW("/gui/teams/TeamOverviewContent.fxml", "Teams beheren"),
+    ALL_TEAMS_OVERVIEW("/gui/teams/AllTeamsOverviewContent.fxml", "Teams beheren"),
+    MIJN_TEAM_OVERVIEW("/gui/teams/MijnTeamOverviewContent.fxml", "Mijn team"),
     TEAMS_FORM("/gui/teams/TeamFormContent.fxml", "Teams beheren"),
 
 

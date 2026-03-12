@@ -1,8 +1,6 @@
 package gui.navigation;
 
 import gui.LayoutController;
-import gui.teams.TeamBeheerType;
-import gui.teams.TeamBeheerTypeAware;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -60,6 +58,8 @@ public class Navigator {
             Authorizer.require(Permission.TAKEN_BEHEREN);
         } else if (view == View.GEBRUIKER_OVERVIEW || view == View.GEBRUIKER_FORM) {
             Authorizer.require(Permission.GEBRUIKERS_BEHEREN);
+        } else if (view == View.ALL_TEAMS_OVERVIEW || view == View.MIJN_TEAM_OVERVIEW || view == View.TEAMS_FORM) {
+            Authorizer.require(Permission.TEAMS_BEHEREN);
         }
 
         if (layoutController == null) {
@@ -93,24 +93,21 @@ public class Navigator {
         }
     }
 
+    public void goToTeams() {
+        UserPrincipal user = SecurityContext.getUser();
+
+        if (user != null && user.rol() == Rollen.VERANTWOORDELIJKE) {
+            goTo(View.MIJN_TEAM_OVERVIEW);
+        } else {
+            goTo(View.ALL_TEAMS_OVERVIEW);
+        }
+    }
+
     private void initializeController(Object controller) {
 
         if (controller instanceof NavigableController nc) {
             nc.setNavigator(this);
             nc.setContext(context);
-        }
-
-        if (controller instanceof TeamBeheerTypeAware teamBeheerTypeAware) {
-            UserPrincipal user = SecurityContext.getUser();
-            TeamBeheerType mode = (user != null && user.rol() == Rollen.VERANTWOORDELIJKE)
-                    ? TeamBeheerType.VERANTWOORDELIJKE
-                    : TeamBeheerType.MANAGER;
-
-            teamBeheerTypeAware.setBeheerType(mode);
-        }
-
-        // dit altijd op het einde!
-        if (controller instanceof NavigableController nc) {
             nc.loadData();
         }
     }

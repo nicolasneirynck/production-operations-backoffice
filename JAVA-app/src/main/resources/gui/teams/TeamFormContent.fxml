@@ -81,7 +81,7 @@
         <VBox spacing="8" HBox.hgrow="ALWAYS">
             <Label text="Beschikbare medewerkers" styleClass="section-title"/>
 
-            <TableView fx:id="beschikbaarTable"
+            <TableView fx:id="werknemersTable"
                        VBox.vgrow="ALWAYS"
                        styleClass="table">
                 <columns>

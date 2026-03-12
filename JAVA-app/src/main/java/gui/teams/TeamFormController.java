@@ -4,6 +4,7 @@ import dto.GebruikerDTO;
 import dto.SiteDTO;
 import dto.TeamDTO;
 import exception.ValidationException;
+import gui.factories.BadgeFactory;
 import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,7 +17,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
 import util.Rollen;
@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
-public class TeamFormController implements FormController, ClosableFormGuard, TeamModeAware {
+public class TeamFormController implements FormController, ClosableFormGuard {
 
     @FXML private Label titleLabel;
 
@@ -35,7 +34,7 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
     @FXML private Label verantwoordelijkeBadge;
     @FXML private TextField zoekTf;
 
-    @FXML private TableView<GebruikerDTO> beschikbaarTable;
+    @FXML private TableView<GebruikerDTO> werknemersTable;
     @FXML private TableColumn<GebruikerDTO, String> naamCol;
     @FXML private TableColumn<GebruikerDTO, String> voornaamCol;
     @FXML private TableColumn<GebruikerDTO, GebruikerDTO> addCol;
@@ -52,15 +51,13 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
 
     @Setter private Runnable onClose;
 
-    private TeamBeheerMode mode = TeamBeheerMode.MANAGER;
-
-
     private AppContext context;
-    private ObservableTeams observableTeams;
+    @Setter
+    private boolean managerMode = true;
 
+    private ObservableTeams observableTeams;
     private final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
     private final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
-
     private FilteredList<GebruikerDTO> filteredBeschikbaar;
 
     private Long editingTeamId = null;
@@ -71,14 +68,10 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
         this.observableTeams = ctx.getObservableTeams();
     }
 
-    public void setMode(TeamBeheerMode mode) {
-        this.mode = mode == null ? TeamBeheerMode.MANAGER : mode;
-    }
-
     @FXML
     private void initialize() {
         configureSiteCombo();
-        configureBeschikbaarTable();
+        configureWerknemersTable();
 
         zoekTf.textProperty().addListener((obs, oldV, newV) -> applyFilter());
         siteCb.valueProperty().addListener((obs, oldV, newV) -> {
@@ -88,7 +81,7 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
 
         geselecteerdeWerknemers.addListener((javafx.collections.ListChangeListener<GebruikerDTO>) change -> {
             rebuildSelectedBadges();
-            beschikbaarTable.refresh();
+            werknemersTable.refresh();
             clearError("medewerkers");
         });
     }
@@ -111,60 +104,18 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
         });
     }
 
-    private void configureBeschikbaarTable() {
+    private void configureWerknemersTable() {
         naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
         voornaamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().voornaam()));
         addCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue()));
-
-        addCol.setCellFactory(col -> new TableCell<>() {
-            private final Button addBtn = new Button("+");
-
-            {
-                addBtn.getStyleClass().add("icon-button");
-                addBtn.setStyle("""
-                        -fx-background-color: #5F86F6;
-                        -fx-text-fill: white;
-                        -fx-background-radius: 999;
-                        -fx-min-width: 28;
-                        -fx-min-height: 28;
-                        -fx-max-width: 28;
-                        -fx-max-height: 28;
-                        -fx-font-weight: bold;
-                        """);
-
-                setAlignment(Pos.CENTER);
-
-                addBtn.setOnAction(e -> {
-                    GebruikerDTO medewerker = getItem();
-                    if (medewerker != null && !geselecteerdeWerknemers.contains(medewerker)) {
-                        geselecteerdeWerknemers.add(medewerker);
-                        geselecteerdeWerknemers.sort(Comparator
-                                .comparing(GebruikerDTO::naam, String.CASE_INSENSITIVE_ORDER)
-                                .thenComparing(GebruikerDTO::voornaam, String.CASE_INSENSITIVE_ORDER));
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(GebruikerDTO item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setGraphic(null);
-                    return;
-                }
-
-                addBtn.setDisable(geselecteerdeWerknemers.contains(item));
-                setGraphic(addBtn);
-            }
-        });
+        addCol.setCellFactory(col -> new WerknemerAddCell(geselecteerdeWerknemers));
 
         filteredBeschikbaar = new FilteredList<>(alleWerknemers, g -> true);
-        beschikbaarTable.setItems(filteredBeschikbaar);
+        werknemersTable.setItems(filteredBeschikbaar);
 
-        beschikbaarTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        beschikbaarTable.setFixedCellSize(48);
-        beschikbaarTable.setSelectionModel(null);
+        werknemersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        werknemersTable.setFixedCellSize(48);
+        werknemersTable.setSelectionModel(null);
 
         naamCol.setSortable(true);
         voornaamCol.setSortable(true);
@@ -180,24 +131,6 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
     public void loadForCreate() {
         editingTeamId = null;
         titleLabel.setText("Nieuw team");
-
-        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
-            formInfoLbl.setText("Als verantwoordelijke kan je geen nieuw team aanmaken.");
-            formInfoLbl.setVisible(true);
-            formInfoLbl.setManaged(true);
-
-            siteCb.setItems(FXCollections.observableArrayList());
-            siteCb.setValue(null);
-            siteCb.setDisable(true);
-
-            geselecteerdeWerknemers.clear();
-            zoekTf.clear();
-            saveBtn.setDisable(true);
-
-            clearErrors();
-            updateVerantwoordelijkeDisplay();
-            return;
-        }
 
         loadSitesVoorCreate();
         loadWerknemers();
@@ -223,7 +156,7 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
         editingTeamId = team.teamCode();
         titleLabel.setText("Team wijzigen");
 
-        if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+        if (!managerMode) {
             siteCb.setItems(FXCollections.observableArrayList(List.of(team.site())));
             siteCb.setDisable(true);
         } else {
@@ -340,29 +273,16 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
         selectedPane.getChildren().clear();
 
         for (GebruikerDTO medewerker : geselecteerdeWerknemers) {
-            HBox badge = new HBox(8);
-            badge.setAlignment(Pos.CENTER_LEFT);
-            badge.getStyleClass().add("employee-badge");
-
-            Label naamLbl = new Label(medewerker.volledigeNaam());
-
-            Button removeBtn = new Button("×");
-            removeBtn.getStyleClass().add("icon-button");
-            removeBtn.setStyle("""
-                    -fx-background-color: transparent;
-                    -fx-text-fill: #667085;
-                    -fx-padding: 0;
-                    -fx-font-size: 12px;
-                    -fx-font-weight: bold;
-                    """);
-
-            removeBtn.setOnAction(e -> {
-                geselecteerdeWerknemers.remove(medewerker);
-                applyFilter();
-            });
-
-            badge.getChildren().addAll(naamLbl, removeBtn);
-            selectedPane.getChildren().add(badge);
+            selectedPane.getChildren().add(
+                    BadgeFactory.createRemovableBadge(
+                            medewerker.volledigeNaam(),
+                            () -> {
+                                geselecteerdeWerknemers.remove(medewerker);
+                                applyFilter();
+                            },
+                            "employee-badge"
+                    )
+            );
         }
     }
 
@@ -381,7 +301,7 @@ public class TeamFormController implements FormController, ClosableFormGuard, Te
                 .toList();
 
         try {
-            if (mode == TeamBeheerMode.VERANTWOORDELIJKE) {
+            if (!managerMode) {
                 if (editingTeamId == null) {
                     throw new IllegalStateException("Als verantwoordelijke kan je geen team aanmaken.");
                 }
