@@ -51,7 +51,6 @@ public class Navigator {
     }
 
     public void goTo(View view) {
-        // TODO: add de andere
         if (view == View.SITES_OVERVIEW || view == View.SITES_FORM) {
             Authorizer.require(Permission.SITES_BEHEREN);
         } else if (view == View.TAKEN_OVERVIEW || view == View.TAKEN_FORM) {
