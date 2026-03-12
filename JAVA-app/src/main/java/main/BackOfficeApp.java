@@ -68,7 +68,7 @@ public class BackOfficeApp extends Application {
             navigator.getStage().setScene(scene);
             navigator.getStage().setTitle("BackOffice");
             navigator.getStage().show();
-            
+
         } catch (Exception e) {
             throw new RuntimeException("Kan LayoutView niet laden", e);
         }

@@ -17,12 +17,12 @@ public class FormLoader {
 
             T controller = loader.getController();
             controller.setContext(context);
-            //controller.setOnClose(() -> hideForm(formHost));
-            controller.loadData();
 
             if (initializer != null) {
                 initializer.accept(controller);
             }
+
+            controller.loadData();
 
             formHost.getChildren().setAll(form);
             formHost.setManaged(true);

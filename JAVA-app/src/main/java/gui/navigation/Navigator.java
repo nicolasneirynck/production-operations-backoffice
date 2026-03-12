@@ -19,7 +19,6 @@ public class Navigator {
 
     @Getter
     private final Stage stage;
-    //private final AppContext context;
     private final ControllerInitializer controllerInitializer;
 
     private NavigableController currentController;
@@ -47,7 +46,7 @@ public class Navigator {
         }
 
         if (layoutController == null) {
-            throw new IllegalStateException("Layout is not initialized. Call initLayout(...) first.");
+            throw new IllegalStateException("Layout is not initialized. Call initLayout() first.");
         }
 
         if (currentController instanceof NavigationGuard guard) {
