@@ -5,7 +5,7 @@
 }
 
 /* =========================================================
-   LOGO HEADER
+   LAYOUT
    ========================================================= */
 
 #logoHeader {
@@ -15,10 +15,6 @@
     -fx-border-width: 0 1 0 0;
     -fx-alignment: CENTER;
 }
-
-/* =========================================================
-   TOPBAR
-   ========================================================= */
 
 #topbar {
     -fx-background-color: white;
@@ -31,7 +27,6 @@
     -fx-font-size: 18;
 }
 
-/* notificatie badge */
 .badge {
     -fx-background-color: #ef4444;
     -fx-text-fill: white;
@@ -42,10 +37,6 @@
     -fx-translate-y: -10;
 }
 
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
 #sidebar {
     -fx-background-color: white;
     -fx-padding: 18 0 0 0;
@@ -53,7 +44,6 @@
     -fx-border-width: 0 1 0 0;
 }
 
-/* = active-indicator + button */
 .nav-wrapper {
     -fx-alignment: CENTER_LEFT;
     -fx-spacing: 0;
@@ -66,12 +56,10 @@
     -fx-background-color: transparent;
 }
 
-/* zodat button niet tegen rand zit */
 .nav-inset {
     -fx-padding: 0 18;
 }
 
-/* standaard button */
 .nav-item {
     -fx-background-color: transparent;
     -fx-text-fill: #1f2a37;
@@ -93,7 +81,6 @@
     -fx-text-fill: white;
 }
 
-/* logout */
 .logout-wrapper {
     -fx-padding: 0 18 18 18;
     -fx-alignment: CENTER_LEFT;
@@ -102,11 +89,6 @@
 .nav-item--danger {
     -fx-text-fill: #dc2626;
 }
-
-
-/* =========================================================
-   CONTENT
-   ========================================================= */
 
 #contentHost {
     -fx-padding: 26;
@@ -134,12 +116,11 @@
     -fx-font-size: 13px;
     -fx-font-weight: 700;
     -fx-text-fill: #374151;
-    -fx-padding: 6 0 4 0;
+    -fx-padding: 0 0 4 0;
 }
 
 .card-subtitle {
     -fx-text-fill: #6b7280;
-
 }
 
 .tile {
@@ -156,7 +137,7 @@
 }
 
 .tile .tile-text {
-    fx-font-family: "Nunito Sans SemiBold";
+    -fx-font-family: "Nunito Sans SemiBold";
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-alignment: CENTER;
@@ -168,7 +149,9 @@
     -fx-background-color: #4F78F2;
 }
 
-/* tabellen */
+/* =========================================================
+   TABLES
+   ========================================================= */
 
 .table {
     -fx-background-color: white;
@@ -179,17 +162,14 @@
     -fx-padding: 0;
 }
 
-.table-view{
-    -fx-background-radius:10;
+.table-view {
+    -fx-background-radius: 10;
 }
-
-/*.table-row-cell{*/
-/*    -fx-cell-size:45px;*/
-/*}*/
 
 .table .virtual-flow {
     -fx-background-color: transparent;
 }
+
 .table .corner {
     -fx-background-color: transparent;
 }
@@ -213,7 +193,8 @@
     -fx-font-weight: 700;
 }
 
-.table .column-header, .table .filler {
+.table .column-header,
+.table .filler {
     -fx-border-color: transparent;
 }
 
@@ -287,12 +268,6 @@
     -fx-underline: true;
 }
 
-.btn-link-danger {
-    -fx-background-color: transparent;
-    -fx-text-fill: #dc2626;
-    -fx-padding: 0;
-}
-
 .btn-link-danger:hover {
     -fx-underline: true;
 }
@@ -323,18 +298,9 @@
     -fx-cursor: hand;
 }
 
-/* FORMS */
-
-.text-field,
-.combo-box {
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: #e5e7eb;
-    -fx-border-width: 1;
-    -fx-pref-height: 18;
-    -fx-padding: 4 8;
-    -fx-background-color: white;
-}
+/* =========================================================
+   FORMS
+   ========================================================= */
 
 .text-field,
 .combo-box-base {
@@ -349,6 +315,10 @@
     -fx-max-height: 32;
 
     -fx-padding: 3 8;
+}
+
+.combo-box {
+    -fx-pref-height: 32;
 }
 
 .combo-box-base .list-cell {
@@ -366,7 +336,6 @@
     -fx-padding: 10 14;
     -fx-font-weight: 700;
     -fx-cursor: hand;
-
 }
 
 .btn-ghost:hover {
@@ -386,14 +355,9 @@
     -fx-font-weight: 700;
 }
 
-.section-title {
-    -fx-padding: 0 0 4 0;
-    -fx-font-size: 13px;
-    -fx-font-weight: 700;
-}
-
-/* ERRORS */
-
+/* =========================================================
+   VALIDATION
+   ========================================================= */
 
 .error-label {
     -fx-text-fill: #dc2626;
@@ -403,14 +367,13 @@
     -fx-pref-height: 14px;
 }
 
-
 .error-label:empty {
     -fx-opacity: 0;
 }
 
 .form-label {
-    -fx-padding: 0;
-    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 6 0 0 0;
+    -fx-alignment: TOP_LEFT;
 }
 
 .form-combo {
@@ -433,7 +396,6 @@
     -fx-background-color: white;
 }
 
-/* Belangrijk voor de zichtbare waarde in de combobox */
 .form-combo .list-cell {
     -fx-background-color: transparent;
     -fx-padding: 0 12 0 12;
@@ -441,7 +403,6 @@
     -fx-font-size: 14px;
 }
 
-/* Alleen relevant voor editable combo */
 .form-combo .text-field {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -503,13 +464,17 @@
     -fx-background-radius: 10;
 }
 
-.table-view .column-header {
+.table .column-header {
     -fx-padding: 0 6 0 6;
 }
 
-.table-view .column-header .label {
+.table .column-header .label {
     -fx-padding: 0 12 0 12;
 }
+
+/* =========================================================
+   BADGES AND HELPERS
+   ========================================================= */
 
 .employee-badge {
     -fx-background-color: #EEF2F6;

@@ -37,7 +37,7 @@ public class SiteController {
         authorize();
 
         return siteBeheerder.getAllSites().stream()
-                .map(this::toDto)
+                .map(DTOMapper::toSiteDTO)
                 .toList();
     }
 
@@ -58,48 +58,8 @@ public class SiteController {
         siteBeheerder.deleteSite(id);
     }
 
-    private SiteDTO toDto(Site site) {
-        Locatie loc = site.getLocatie();
-
-        LocatieDTO locatie = new LocatieDTO(
-                loc.getStraat(),
-                loc.getNummer(),
-                loc.getPostcode(),
-                loc.getGemeente(),
-                loc.getLand()
-        );
-
-        GebruikerDTO verantwoordelijke = null;
-        Gebruiker g = site.getVerantwoordelijke();
-
-        if (g != null) {
-            verantwoordelijke = new GebruikerDTO(
-                    g.getGebruikerId(),
-                    g.getPersoneelsnummer(),
-                    g.getNaam(),
-                    g.getVoornaam(),
-                    g.getGeboortedatum(),
-                    g.getAdres(),
-                    g.getEmail(),
-                    g.getGsm(),
-                    g.getRol(),
-                    g.getStatus(),
-                    g.getWachtwoord()
-            );
-        }
-
-        return new SiteDTO(
-                site.getId(),
-                site.getNaam(),
-                verantwoordelijke,
-                locatie,
-                site.getCapaciteit(),
-                site.getOperationeleStatus(),
-                site.getProductieStatus()
-        );
-    }
-
     public List<SiteDTO> getSitesZonderTeam() {
+        authorize();
         return siteBeheerder.getSitesZonderTeam().stream()
                 .map(DTOMapper::toSiteDTO)
                 .toList();

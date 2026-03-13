@@ -1,5 +1,6 @@
 package dto;
 
+import domein.entiteiten.Site;
 import util.OperationeleStatus;
 import util.ProductieStatus;
 

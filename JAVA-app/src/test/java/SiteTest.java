@@ -1,6 +1,7 @@
 import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;
 import exception.ValidationException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import util.OperationeleStatus;
@@ -123,9 +124,44 @@ public class SiteTest {
         );
     }
 
+    @Test
+    void builder_NullLocatie_GooitValidationException() {
+        assertThrows(ValidationException.class, () ->
+                Site.builder()
+                        .naam("Site-A")
+                        .locatie(null)
+                        .capaciteit(100)
+                        .operationeleStatus(OperationeleStatus.ACTIEF)
+                        .productieStatus(ProductieStatus.GEZOND)
+                        .build()
+        );
+    }
+
+    @Test
+    void update_NullLocatie_GooitValidationException() throws Exception {
+        Site site = Site.builder()
+                .naam("Site-A")
+                .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
+                .capaciteit(100)
+                .operationeleStatus(OperationeleStatus.ACTIEF)
+                .productieStatus(ProductieStatus.GEZOND)
+                .build();
+
+        assertThrows(ValidationException.class, () ->
+                site.update(
+                        "Nieuwe naam",
+                        null,
+                        null,
+                        200,
+                        OperationeleStatus.ACTIEF,
+                        ProductieStatus.GEZOND
+                )
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("ongeldigeLocatieVelden")
-    void builder_OngeldigeLocatie_GooitException(String straat, String nummer, String postcode, String stad, String land) {
+    void builder_OngeldigeLocatie_GooitValidationException(String straat, String nummer, String postcode, String stad, String land) {
         assertThrows(ValidationException.class, () ->
                 Site.builder()
                         .naam("X")
@@ -136,4 +172,6 @@ public class SiteTest {
                         .build()
         );
     }
+
+
 }

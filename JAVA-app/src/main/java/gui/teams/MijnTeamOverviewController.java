@@ -14,7 +14,7 @@ public class MijnTeamOverviewController extends AbstractTeamOverviewController {
 
     @Override
     protected void loadTeams() {
-        observableTeams.setSingleTeam(context.getTeamController().getMijnTeam());
+        observableTeams.replaceWithSingleTeam(context.getTeamController().getMijnTeam());
     }
 
     @Override

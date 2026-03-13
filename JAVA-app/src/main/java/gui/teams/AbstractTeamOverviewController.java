@@ -3,8 +3,6 @@ package gui.teams;
 import dto.GebruikerDTO;
 import dto.SiteDTO;
 import dto.TeamDTO;
-import gui.LayoutController;
-import gui.factories.ActionColumnFactory;
 import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormLoader;
 import gui.navigation.NavigableController;
@@ -28,9 +26,9 @@ import util.View;
 
 public abstract class AbstractTeamOverviewController implements NavigableController, NavigationGuard {
 
-    @FXML protected VBox formHost;
-    @FXML protected Button addBtn;
     @FXML protected Label titleLabel;
+    @FXML protected Button addBtn;
+    @FXML protected VBox formHost;
 
     @FXML protected TableView<TeamDTO> teamTable;
     @FXML protected TableColumn<TeamDTO, String> siteCol;
@@ -38,10 +36,10 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
     @FXML protected TableColumn<TeamDTO, TeamDTO> medewerkersCol;
     @FXML protected TableColumn<TeamDTO, TeamDTO> actiesCol;
 
-    protected AppContext context;
-    @Setter protected LayoutController layout;
     @Setter protected Navigator navigator;
     protected ClosableFormGuard activeFormGuard;
+
+    protected AppContext context;
     protected ObservableTeams observableTeams;
     protected SortedList<TeamDTO> sortedList;
 
@@ -56,21 +54,6 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
         configureColumns();
         configureTableLayout();
     }
-
-    @Override
-    public void loadData() {
-        configureScreen();
-        loadTeams();
-        initializeTableItems();
-    }
-
-    protected abstract void configureScreen();
-
-    protected abstract void loadTeams();
-
-    protected abstract void configureActiesColumn();
-
-    protected abstract boolean isManagerMode();
 
     protected void configureColumns() {
         siteCol.setCellValueFactory(cellData -> {
@@ -103,27 +86,25 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
         teamTable.setFixedCellSize(84);
     }
 
+    @Override
+    public void loadData() {
+        configureScreen();
+        loadTeams();
+        initializeTableItems();
+    }
+
+    protected abstract void configureScreen();
+
+    protected abstract void loadTeams();
+
+    protected abstract void configureActiesColumn();
+
     protected void initializeTableItems() {
         if (sortedList == null) {
             sortedList = new SortedList<>(observableTeams.getFilteredTeamList());
             sortedList.comparatorProperty().bind(teamTable.comparatorProperty());
             teamTable.setItems(sortedList);
         }
-    }
-
-    protected void onEdit(TeamDTO team) {
-        TeamFormController controller = FormLoader.showForm(
-                formHost,
-                context,
-                View.TEAMS_FORM.fxml,
-                c -> {
-                    c.setManagerMode(isManagerMode());
-                    c.loadForEdit(team);
-                }
-        );
-
-        controller.setOnClose(this::closeForm);
-        activeFormGuard = controller;
     }
 
     protected void openCreateForm() {
@@ -144,6 +125,24 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
     protected void closeForm() {
         FormLoader.hideForm(formHost);
         activeFormGuard = null;
+    }
+
+    protected abstract boolean isManagerMode();
+
+
+    protected void onEdit(TeamDTO team) {
+        TeamFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.TEAMS_FORM.fxml,
+                c -> {
+                    c.setManagerMode(isManagerMode());
+                    c.loadForEdit(team);
+                }
+        );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
     protected void delete(TeamDTO team) {

@@ -130,7 +130,6 @@ public class DTOMapper {
         return new TeamDTO(
                 team.getId() == null ? 0L : team.getId(),
                 toSiteDTO(team.getSite()),
-                team.getSite() == null ? null : toGebruikerDTO(team.getSite().getVerantwoordelijke()),
                 teamLedenToGebruikerDTOList(team.getLeden())
         );
     }

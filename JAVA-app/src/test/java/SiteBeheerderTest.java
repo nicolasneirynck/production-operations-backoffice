@@ -369,6 +369,18 @@ class SiteBeheerderTest {
         verify(gebruikerRepo).get(GELDIGE_VERANTWOORDELIJKE_ID);
         verify(siteRepo).commitTransaction();
         verify(siteRepo, never()).rollbackTransaction();
+
+        assertEquals(GELDIGE_NAAM, bestaande.getNaam());
+        assertEquals(verantwoordelijke, bestaande.getVerantwoordelijke());
+        assertEquals(GELDIGE_STRAAT, bestaande.getLocatie().getStraat());
+        assertEquals(GELDIGE_NUMMER, bestaande.getLocatie().getNummer());
+        assertEquals(GELDIGE_POSTCODE, bestaande.getLocatie().getPostcode());
+        assertEquals(GELDIGE_GEMEENTE, bestaande.getLocatie().getGemeente());
+        assertEquals(GELDIGE_LAND, bestaande.getLocatie().getLand());
+        assertEquals(100, bestaande.getCapaciteit());
+        assertEquals(OperationeleStatus.ACTIEF, bestaande.getOperationeleStatus());
+        assertEquals(ProductieStatus.GEZOND, bestaande.getProductieStatus());
+
     }
 
     @Test

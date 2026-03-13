@@ -52,15 +52,14 @@ public class TeamFormController implements FormController, ClosableFormGuard {
     @Setter private Runnable onClose;
 
     private AppContext context;
-    @Setter
-    private boolean managerMode = true;
-
+    @Setter private boolean managerMode = true;
     private ObservableTeams observableTeams;
     private final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
     private final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
     private FilteredList<GebruikerDTO> filteredBeschikbaar;
 
     private Long editingTeamId = null;
+    private TeamFormData initialFormData;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -70,7 +69,7 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
     @FXML
     private void initialize() {
-        configureSiteCombo();
+        configureSiteComboBox();
         configureWerknemersTable();
 
         zoekTf.textProperty().addListener((obs, oldV, newV) -> applyFilter());
@@ -86,7 +85,7 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         });
     }
 
-    private void configureSiteCombo() {
+    private void configureSiteComboBox() {
         siteCb.setCellFactory(cb -> new ListCell<>() {
             @Override
             protected void updateItem(SiteDTO item, boolean empty) {
@@ -150,6 +149,8 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         } else {
             saveBtn.setDisable(false);
         }
+
+        initialFormData = currentFormData();
     }
 
     public void loadForEdit(TeamDTO team) {
@@ -175,6 +176,7 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         zoekTf.clear();
         clearErrors();
         updateVerantwoordelijkeDisplay();
+        initialFormData = currentFormData();
     }
 
     private void loadSites() {
@@ -307,15 +309,13 @@ public class TeamFormController implements FormController, ClosableFormGuard {
                 }
 
                 context.getTeamController().updateMijnTeam(editingTeamId, medewerkerIds);
-                observableTeams.setSingleTeam(context.getTeamController().getMijnTeam());
+                observableTeams.replaceWithSingleTeam(context.getTeamController().getMijnTeam());
             } else {
                 if (editingTeamId == null) {
                     observableTeams.addTeam(site.siteId(), medewerkerIds);
                 } else {
                     observableTeams.updateTeam(editingTeamId, medewerkerIds);
                 }
-
-                observableTeams.reload();
             }
 
             close();
@@ -346,21 +346,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
     @FXML
     private void onCancel() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Annuleren");
-        alert.setHeaderText("Wijzigingen annuleren?");
-        alert.setContentText("Niet-opgeslagen wijzigingen gaan verloren.");
-
-        ButtonType yesBtn = new ButtonType("Ja");
-        ButtonType noBtn = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(yesBtn, noBtn);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == yesBtn) {
-                close();
-            }
-        });
+        if (canClose()) {
+            close();
+        }
     }
 
     private void close() {
@@ -406,6 +394,10 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
     @Override
     public boolean canClose() {
+        if (!hasUnsavedChanges()) {
+            return true;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Formulier sluiten");
         alert.setHeaderText("Niet-opgeslagen wijzigingen");
@@ -417,5 +409,26 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         alert.getButtonTypes().setAll(ja, nee);
 
         return alert.showAndWait().orElse(nee) == ja;
+    }
+
+    private boolean hasUnsavedChanges() {
+        return initialFormData != null && !currentFormData().equals(initialFormData);
+    }
+
+    private TeamFormData currentFormData() {
+        SiteDTO site = siteCb.getValue();
+
+        List<Long> medewerkerIds = geselecteerdeWerknemers.stream()
+                .map(GebruikerDTO::gebruikerId)
+                .sorted()
+                .toList();
+
+        return new TeamFormData(
+                site == null ? null : site.siteId(),
+                medewerkerIds
+        );
+    }
+
+    private record TeamFormData(Long siteId, List<Long> medewerkerIds) {
     }
 }
