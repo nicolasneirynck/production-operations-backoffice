@@ -29,9 +29,9 @@
 
     <TableView fx:id="siteTable" VBox.vgrow="ALWAYS" styleClass="table">
         <columns>
-            <TableColumn fx:id="naamCol" text="Naam" prefWidth="140"/>
-            <TableColumn fx:id="verantwoordelijkeCol" text="Verantwoordelijke" prefWidth="150"/>
-            <TableColumn fx:id="locatieCol" text="Locatie" prefWidth="270"/>
+            <TableColumn fx:id="naamCol" text="Naam" prefWidth="130"/>
+            <TableColumn fx:id="verantwoordelijkeCol" text="Verantwoordelijke" prefWidth="200"/>
+            <TableColumn fx:id="locatieCol" text="Locatie" prefWidth="240"/>
             <TableColumn fx:id="capaciteitCol" text="Capaciteit" prefWidth="100"/>
             <TableColumn fx:id="operationeleCol" text="Operationeel" prefWidth="110"/>
             <TableColumn fx:id="productieCol" text="Productie" prefWidth="100"/>

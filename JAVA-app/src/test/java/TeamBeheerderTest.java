@@ -169,20 +169,19 @@ public class TeamBeheerderTest {
 
     @Test
     public void updateTeam_geldigeParameters_pastTeamAan() throws Exception {
-        long teamCode = 1L;
-
         Site site = geldigeSite();
         Team team = new Team(site, List.of(
                 werknemer(1, "w1@test.be"),
                 werknemer(2, "w2@test.be"),
                 werknemer(3, "w3@test.be")
         ));
+        String teamCode = team.getCode();
 
         Gebruiker w1 = werknemer(1, "w1@test.be");
         Gebruiker w2 = werknemer(2, "w2@test.be");
         Gebruiker w4 = werknemer(4, "w4@test.be");
 
-        when(teamRepo.get(teamCode)).thenReturn(team);
+        when(teamRepo.findAll()).thenReturn(List.of(team));
         when(gebruikerRepo.get(1L)).thenReturn(w1);
         when(gebruikerRepo.get(2L)).thenReturn(w2);
         when(gebruikerRepo.get(4L)).thenReturn(w4);
@@ -190,7 +189,7 @@ public class TeamBeheerderTest {
         teamBeheerder.updateTeam(teamCode, List.of(1L, 2L, 4L));
 
         verify(teamRepo).startTransaction();
-        verify(teamRepo).get(teamCode);
+        verify(teamRepo).findAll();
         verify(gebruikerRepo).get(1L);
         verify(gebruikerRepo).get(2L);
         verify(gebruikerRepo).get(4L);
@@ -208,15 +207,14 @@ public class TeamBeheerderTest {
 
     @Test
     public void updateTeam_onbestaandTeam_gooitException_enRollback() {
-        long teamCode = 99L;
-
-        when(teamRepo.get(teamCode)).thenReturn(null);
+        String teamCode = "onbestaand-team";
+        when(teamRepo.findAll()).thenReturn(List.of());
 
         assertThrows(IllegalArgumentException.class,
                 () -> teamBeheerder.updateTeam(teamCode, List.of(1L, 2L, 3L)));
 
         verify(teamRepo).startTransaction();
-        verify(teamRepo).get(teamCode);
+        verify(teamRepo).findAll();
         verify(teamRepo).rollbackTransaction();
         verify(teamRepo, never()).commitTransaction();
         verifyNoInteractions(gebruikerRepo);
@@ -224,16 +222,15 @@ public class TeamBeheerderTest {
 
     @Test
     public void updateTeam_onbestaandeGebruiker_gooitException_enRollback() throws Exception {
-        long teamCode = 1L;
-
         Site site = geldigeSite();
         Team team = new Team(site, List.of(
                 werknemer(1, "w1@test.be"),
                 werknemer(2, "w2@test.be"),
                 werknemer(3, "w3@test.be")
         ));
+        String teamCode = team.getCode();
 
-        when(teamRepo.get(teamCode)).thenReturn(team);
+        when(teamRepo.findAll()).thenReturn(List.of(team));
         when(gebruikerRepo.get(1L)).thenReturn(werknemer(1, "w1@test.be"));
         when(gebruikerRepo.get(2L)).thenReturn(null);
 
@@ -241,7 +238,7 @@ public class TeamBeheerderTest {
                 () -> teamBeheerder.updateTeam(teamCode, List.of(1L, 2L, 4L)));
 
         verify(teamRepo).startTransaction();
-        verify(teamRepo).get(teamCode);
+        verify(teamRepo).findAll();
         verify(gebruikerRepo).get(1L);
         verify(gebruikerRepo).get(2L);
         verify(teamRepo).rollbackTransaction();
@@ -250,21 +247,20 @@ public class TeamBeheerderTest {
 
     @Test
     public void deleteTeam_bestaandTeam_verwijdertEnCommit() throws Exception {
-        long teamCode = 1L;
-
         Site site = geldigeSite();
         Team team = new Team(site, List.of(
                 werknemer(1, "w1@test.be"),
                 werknemer(2, "w2@test.be"),
                 werknemer(3, "w3@test.be")
         ));
+        String teamCode = team.getCode();
 
-        when(teamRepo.get(teamCode)).thenReturn(team);
+        when(teamRepo.findAll()).thenReturn(List.of(team));
 
         teamBeheerder.deleteTeam(teamCode);
 
         verify(teamRepo).startTransaction();
-        verify(teamRepo).get(teamCode);
+        verify(teamRepo).findAll();
         verify(teamRepo).delete(team);
         verify(teamRepo).commitTransaction();
         verify(teamRepo, never()).rollbackTransaction();
@@ -272,15 +268,14 @@ public class TeamBeheerderTest {
 
     @Test
     public void deleteTeam_onbestaandTeam_gooitException_enRollback() {
-        long teamCode = 99L;
-
-        when(teamRepo.get(teamCode)).thenReturn(null);
+        String teamCode = "onbestaand-team";
+        when(teamRepo.findAll()).thenReturn(List.of());
 
         assertThrows(IllegalArgumentException.class,
                 () -> teamBeheerder.deleteTeam(teamCode));
 
         verify(teamRepo).startTransaction();
-        verify(teamRepo).get(teamCode);
+        verify(teamRepo).findAll();
         verify(teamRepo).rollbackTransaction();
         verify(teamRepo, never()).commitTransaction();
         verify(teamRepo, never()).delete(any());
@@ -296,13 +291,14 @@ public class TeamBeheerderTest {
                 werknemer(2, "w2@test.be"),
                 werknemer(3, "w3@test.be")
         ));
+        String teamCode = team.getCode();
 
-        when(teamRepo.get(1L)).thenReturn(team);
+        when(teamRepo.findAll()).thenReturn(List.of(team));
         when(gebruikerRepo.get(1L)).thenReturn(werknemer(1, "w1@test.be"));
         when(gebruikerRepo.get(2L)).thenReturn(werknemer(2, "w2@test.be"));
         when(gebruikerRepo.get(4L)).thenReturn(werknemer(4, "w4@test.be"));
 
-        teamBeheerder.updateEigenTeam(verantwoordelijke.getGebruikerId(), 1L, List.of(1L, 2L, 4L));
+        teamBeheerder.updateEigenTeam(verantwoordelijke.getGebruikerId(), teamCode, List.of(1L, 2L, 4L));
 
         verify(teamRepo).commitTransaction();
         verify(teamRepo, never()).rollbackTransaction();
@@ -320,11 +316,12 @@ public class TeamBeheerderTest {
                 werknemer(2, "w2@test.be"),
                 werknemer(3, "w3@test.be")
         ));
+        String teamCode = team.getCode();
 
-        when(teamRepo.get(1L)).thenReturn(team);
+        when(teamRepo.findAll()).thenReturn(List.of(team));
 
         assertThrows(IllegalArgumentException.class,
-                () -> teamBeheerder.updateEigenTeam(eigenaar.getGebruikerId(), 1L, List.of(1L, 2L, 3L)));
+                () -> teamBeheerder.updateEigenTeam(eigenaar.getGebruikerId(), teamCode, List.of(1L, 2L, 3L)));
 
         verify(teamRepo).rollbackTransaction();
         verify(teamRepo, never()).commitTransaction();

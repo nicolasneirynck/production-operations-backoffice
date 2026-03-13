@@ -13,6 +13,7 @@ import util.ProductieStatus;
 public class ObservableSites {
 
     private final SiteController controller;
+
     private final ObservableList<SiteDTO> observableSiteList;
     @Getter private final FilteredList<SiteDTO> filteredSiteList;
 

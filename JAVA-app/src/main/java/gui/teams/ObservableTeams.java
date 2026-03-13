@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Getter;
 import java.util.List;
+import java.util.Optional;
 
 public class ObservableTeams {
 
@@ -26,21 +27,21 @@ public class ObservableTeams {
         reload();
     }
 
-    public void updateTeam(long teamId, List<Long> medewerkerIds) throws ValidationException {
-        controller.updateTeam(teamId, medewerkerIds);
+    public void updateTeam(String teamCode, List<Long> medewerkerIds) throws ValidationException {
+        controller.updateTeam(teamCode, medewerkerIds);
         reload();
     }
 
-    public void deleteTeam(long teamCode) {
+    public void deleteTeam(String teamCode) {
         controller.deleteTeam(teamCode);
-        observableTeamList.removeIf(t -> t.teamCode() == teamCode);
+        observableTeamList.removeIf(t -> t.teamCode().equals(teamCode));
     }
 
-    public void replaceWithSingleTeam(TeamDTO team) {
-        if (team == null) {
+    public void replaceWithSingleTeam(Optional<TeamDTO> team) {
+        if (team.isEmpty()) {
             observableTeamList.clear();
         } else {
-            observableTeamList.setAll(team);
+            observableTeamList.setAll(team.get());
         }
     }
 

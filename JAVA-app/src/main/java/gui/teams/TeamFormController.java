@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -57,8 +58,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
     private final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
     private final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
     private FilteredList<GebruikerDTO> filteredBeschikbaar;
+    private SortedList<GebruikerDTO> sortedBeschikbaar;
 
-    private Long editingTeamId = null;
+    private String editingTeamId = null;
     private TeamFormData initialFormData;
 
     @Override
@@ -110,7 +112,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         addCol.setCellFactory(col -> new WerknemerAddCell(geselecteerdeWerknemers));
 
         filteredBeschikbaar = new FilteredList<>(alleWerknemers, g -> true);
-        werknemersTable.setItems(filteredBeschikbaar);
+        sortedBeschikbaar = new SortedList<>(filteredBeschikbaar);
+        sortedBeschikbaar.comparatorProperty().bind(werknemersTable.comparatorProperty());
+        werknemersTable.setItems(sortedBeschikbaar);
 
         werknemersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         werknemersTable.setFixedCellSize(48);
@@ -123,7 +127,9 @@ public class TeamFormController implements FormController, ClosableFormGuard {
 
     @Override
     public void loadData() {
-        loadSites();
+        if (managerMode) {
+            loadSites();
+        }
         loadWerknemers();
     }
 

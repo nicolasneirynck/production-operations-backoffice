@@ -19,57 +19,6 @@ public class SiteTest {
     private static final String STAD = "Antwerpen";
     private static final String LAND = "België";
 
-    static Stream<Arguments> geldigeCombinaties() {
-        return Stream.of(
-                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),
-                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.PROBLEMEN),
-                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.OFFLINE),
-                Arguments.of(OperationeleStatus.NON_ACTIEF, ProductieStatus.OFFLINE)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("geldigeCombinaties")
-    void builder_GeldigeCombinaties_GeenException(OperationeleStatus op, ProductieStatus prod) throws Exception {
-
-        Site site = Site.builder()
-                .naam("Site-A")
-                .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
-                .capaciteit(100)
-                .operationeleStatus(op)
-                .productieStatus(prod)
-                .build();
-
-        assertEquals("Site-A", site.getNaam());
-
-        assertEquals(STRAAT, site.getLocatie().getStraat());
-        assertEquals(NUMMER, site.getLocatie().getNummer());
-        assertEquals(POSTCODE, site.getLocatie().getPostcode());
-        assertEquals(STAD, site.getLocatie().getGemeente());
-        assertEquals(LAND, site.getLocatie().getLand());
-
-        assertEquals(100, site.getCapaciteit());
-        assertEquals(op, site.getOperationeleStatus());
-        assertEquals(prod, site.getProductieStatus());
-    }
-
-    @ParameterizedTest
-    @EnumSource(
-            value = ProductieStatus.class,
-            names = {"OFFLINE"},
-            mode = EnumSource.Mode.EXCLUDE
-    )
-    void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod){
-        assertThrows(ValidationException.class, () ->
-                Site.builder()
-                        .naam("Brugge")
-                        .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
-                        .capaciteit(100)
-                        .operationeleStatus(OperationeleStatus.NON_ACTIEF)
-                        .productieStatus(prod)
-                        .build()
-        );
-    }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1, -10})
@@ -173,5 +122,56 @@ public class SiteTest {
         );
     }
 
+    static Stream<Arguments> geldigeCombinaties() {
+        return Stream.of(
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.GEZOND),
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.PROBLEMEN),
+                Arguments.of(OperationeleStatus.ACTIEF, ProductieStatus.OFFLINE),
+                Arguments.of(OperationeleStatus.NON_ACTIEF, ProductieStatus.OFFLINE)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("geldigeCombinaties")
+    void builder_GeldigeStatusCombinaties_GeenException(OperationeleStatus op, ProductieStatus prod) throws Exception {
+
+        Site site = Site.builder()
+                .naam("Site-A")
+                .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
+                .capaciteit(100)
+                .operationeleStatus(op)
+                .productieStatus(prod)
+                .build();
+
+        assertEquals("Site-A", site.getNaam());
+
+        assertEquals(STRAAT, site.getLocatie().getStraat());
+        assertEquals(NUMMER, site.getLocatie().getNummer());
+        assertEquals(POSTCODE, site.getLocatie().getPostcode());
+        assertEquals(STAD, site.getLocatie().getGemeente());
+        assertEquals(LAND, site.getLocatie().getLand());
+
+        assertEquals(100, site.getCapaciteit());
+        assertEquals(op, site.getOperationeleStatus());
+        assertEquals(prod, site.getProductieStatus());
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+            value = ProductieStatus.class,
+            names = {"OFFLINE"},
+            mode = EnumSource.Mode.EXCLUDE
+    )
+    void builder_NonActiefMetNietOffline_GooitException(ProductieStatus prod){
+        assertThrows(ValidationException.class, () ->
+                Site.builder()
+                        .naam("Brugge")
+                        .locatie(Locatie.builder(STRAAT, NUMMER, POSTCODE, STAD, LAND))
+                        .capaciteit(100)
+                        .operationeleStatus(OperationeleStatus.NON_ACTIEF)
+                        .productieStatus(prod)
+                        .build()
+        );
+    }
 
 }

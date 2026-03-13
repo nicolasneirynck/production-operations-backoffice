@@ -61,11 +61,10 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
             return new SimpleStringProperty(site == null ? "-" : site.naam());
         });
 
-        verantwoordelijkeCol.setCellValueFactory(cellData -> {
-            SiteDTO site = cellData.getValue().site();
-            GebruikerDTO verantwoordelijke = site == null ? null : site.verantwoordelijke();
+        verantwoordelijkeCol.setCellValueFactory(c -> {
+            GebruikerDTO verantwoordelijke = c.getValue().site().verantwoordelijke();
             return new SimpleStringProperty(
-                    verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
+                    verantwoordelijke == null ? "-" : verantwoordelijke.naam().toUpperCase() + " " + verantwoordelijke.voornaam()
             );
         });
 

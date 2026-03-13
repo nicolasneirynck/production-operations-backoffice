@@ -8,6 +8,7 @@ import repository.GenericDao;
 import repository.GenericDaoJpa;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TeamBeheerder {
 
@@ -64,10 +65,10 @@ public class TeamBeheerder {
         }
     }
 
-    public void updateTeam(long teamCode, List<Long> werknemerIds) throws ValidationException {
+    public void updateTeam(String teamCode, List<Long> werknemerIds) throws ValidationException {
         teamRepo.startTransaction();
         try {
-            Team team = teamRepo.get(teamCode);
+            Team team = findTeamByCode(teamCode);
             if (team == null) {
                 throw new IllegalArgumentException("Team niet gevonden.");
             }
@@ -91,10 +92,10 @@ public class TeamBeheerder {
         }
     }
 
-    public void deleteTeam(long teamCode) {
+    public void deleteTeam(String teamCode) {
         teamRepo.startTransaction();
         try {
-            Team team = teamRepo.get(teamCode);
+            Team team = findTeamByCode(teamCode);
 
             if (team == null) {
                 throw new IllegalArgumentException("Team niet gevonden.");
@@ -109,17 +110,16 @@ public class TeamBeheerder {
         }
     }
 
-    public Team getTeamVanVerantwoordelijke(long verantwoordelijkeId) {
+    public Optional<Team> findTeamVanVerantwoordelijke(long verantwoordelijkeId) {
         return teamRepo.findAll().stream()
                 .filter(team -> isVanVerantwoordelijke(team, verantwoordelijkeId))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
-    public void updateEigenTeam(long verantwoordelijkeId, long teamCode, List<Long> werknemerIds) throws ValidationException {
+    public void updateEigenTeam(long verantwoordelijkeId, String teamCode, List<Long> werknemerIds) throws ValidationException {
         teamRepo.startTransaction();
         try {
-            Team team = teamRepo.get(teamCode);
+            Team team = findTeamByCode(teamCode);
             if (team == null) {
                 throw new IllegalArgumentException("Team niet gevonden.");
             }
@@ -152,5 +152,16 @@ public class TeamBeheerder {
                 && team.getSite() != null
                 && team.getSite().getVerantwoordelijke() != null
                 && team.getSite().getVerantwoordelijke().getGebruikerId() == verantwoordelijkeId;
+    }
+
+    private Team findTeamByCode(String teamCode) {
+        if (teamCode == null || teamCode.isBlank()) {
+            return null;
+        }
+
+        return teamRepo.findAll().stream()
+                .filter(team -> teamCode.equals(team.getCode()))
+                .findFirst()
+                .orElse(null);
     }
 }

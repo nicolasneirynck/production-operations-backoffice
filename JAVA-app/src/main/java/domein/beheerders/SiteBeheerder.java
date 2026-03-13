@@ -43,10 +43,6 @@ public class SiteBeheerder {
         Locatie locatie = createLocatie(straat, nummer, postcode, gemeente, land, errors);
         Gebruiker verantwoordelijke = getVerantwoordelijke(verantwoordelijkeId, null, errors);
 
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-
         Site nieuweSite = null;
         try {
             nieuweSite = Site.builder()
@@ -59,6 +55,7 @@ public class SiteBeheerder {
                     .build();
         } catch (ValidationException ex) {
             errors.putAll(ex.getExceptionMap());
+            removeRedundantLocatieError(errors);
         }
 
         if (!errors.isEmpty()) {
@@ -100,14 +97,11 @@ public class SiteBeheerder {
             Locatie locatie = createLocatie(straat, nummer, postcode, gemeente, land, errors);
             Gebruiker verantwoordelijke = getVerantwoordelijke(verantwoordelijkeId, id, errors);
 
-            if (!errors.isEmpty()) {
-                throw new ValidationException(errors);
-            }
-
             try {
                 site.update(naam, verantwoordelijke, locatie, capaciteit, op, prod);
             } catch (ValidationException ex) {
                 errors.putAll(ex.getExceptionMap());
+                removeRedundantLocatieError(errors);
             }
 
             if (!errors.isEmpty()) {
@@ -182,5 +176,14 @@ public class SiteBeheerder {
         }
 
         return verantwoordelijke;
+    }
+
+    private void removeRedundantLocatieError(Map<String, IllegalArgumentException> errors) {
+        boolean hasSpecificLocatieErrors = errors.keySet().stream()
+                .anyMatch(key -> key.startsWith("locatie."));
+
+        if (hasSpecificLocatieErrors) {
+            errors.remove("locatie");
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TeamLedenTableCell extends TableCell<TeamDTO, TeamDTO> {
 
-    private static final int MAX_VISIBLE_LEDEN = 6;
+    private static final int MAX_VISIBLE_LEDEN = 10;
 
     private final FlowPane badgesPane = new FlowPane();
 

@@ -86,8 +86,8 @@
                 <columnConstraints>
                     <ColumnConstraints prefWidth="70" hgrow="NEVER" halignment="LEFT"/>
                     <ColumnConstraints prefWidth="210" hgrow="NEVER"/>
-                    <ColumnConstraints prefWidth="26" hgrow="NEVER" halignment="LEFT"/>
-                    <ColumnConstraints prefWidth="72" hgrow="NEVER"/>
+                    <ColumnConstraints prefWidth="20" hgrow="NEVER" halignment="LEFT"/>
+                    <ColumnConstraints prefWidth="140" hgrow="NEVER"/>
                 </columnConstraints>
 
                 <!-- Straat -->

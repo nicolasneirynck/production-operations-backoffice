@@ -8,6 +8,7 @@ import security.SecurityContext;
 import security.UserPrincipal;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TeamController {
 
@@ -32,23 +33,22 @@ public class TeamController {
         teamBeheerder.addTeam(siteId, werknemerIds);
     }
 
-    public void updateTeam(long teamCode, List<Long> werknemerIds) throws exception.ValidationException {
+    public void updateTeam(String teamCode, List<Long> werknemerIds) throws exception.ValidationException {
         teamBeheerder.updateTeam(teamCode, werknemerIds);
     }
 
-    public void deleteTeam(long teamCode) {
+    public void deleteTeam(String teamCode) {
         teamBeheerder.deleteTeam(teamCode);
     }
 
-    public TeamDTO getMijnTeam() {
+    public Optional<TeamDTO> getMijnTeam() {
         UserPrincipal user = requireAuthenticatedUser();
 
-        return DTOMapper.toTeamDTO(
-                teamBeheerder.getTeamVanVerantwoordelijke(user.gebruikerId())
-        );
+        return teamBeheerder.findTeamVanVerantwoordelijke(user.gebruikerId())
+                .map(DTOMapper::toTeamDTO);
     }
 
-    public void updateMijnTeam(long teamCode, List<Long> werknemerIds) throws ValidationException {
+    public void updateMijnTeam(String teamCode, List<Long> werknemerIds) throws ValidationException {
         UserPrincipal user = requireAuthenticatedUser();
 
         teamBeheerder.updateEigenTeam(user.gebruikerId(), teamCode, werknemerIds);

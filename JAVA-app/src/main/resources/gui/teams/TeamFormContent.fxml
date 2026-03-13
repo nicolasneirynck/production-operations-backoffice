@@ -12,6 +12,7 @@
     <styleClass>
         <String fx:value="card"/>
         <String fx:value="form-card"/>
+        <String fx:value="team-form-card"/>
     </styleClass>
 
     <Label fx:id="titleLabel" text="Nieuw team" styleClass="card-title"/>
@@ -22,40 +23,41 @@
            visible="false"
            managed="false"
            styleClass="info-label"/>
-    <!-- Bovenste blok -->
-    <VBox spacing="12">
+    <HBox spacing="18" alignment="TOP_LEFT">
 
-        <GridPane hgap="18" vgap="8">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="40"/>
-                <ColumnConstraints percentWidth="60"/>
-            </columnConstraints>
-
-            <!-- headers -->
-            <Label text="Site"
-                   styleClass="section-title"
-                   GridPane.rowIndex="0"
-                   GridPane.columnIndex="0"/>
-
-            <Label text="Verantwoordelijke"
-                   styleClass="section-title"
-                   GridPane.rowIndex="0"
-                   GridPane.columnIndex="1"/>
-
-            <!-- site select -->
-            <VBox spacing="2"
-                  GridPane.rowIndex="1"
-                  GridPane.columnIndex="0">
+        <VBox spacing="12" prefWidth="360" maxWidth="360">
+            <VBox spacing="6">
+                <Label text="Site" styleClass="section-title"/>
                 <ComboBox fx:id="siteCb"
-                          maxWidth="Infinity"
+                          prefWidth="225"
+                          maxWidth="225"
                           styleClass="form-combo"/>
                 <Label fx:id="siteErr" styleClass="error-label"/>
             </VBox>
 
-            <!-- verantwoordelijke badge -->
-            <VBox spacing="2"
-                  GridPane.rowIndex="1"
-                  GridPane.columnIndex="1">
+            <VBox spacing="6">
+                <Label text="Beschikbare medewerkers" styleClass="section-title"/>
+                <TextField fx:id="zoekTf"
+                           promptText="Zoek medewerker..."
+                           maxWidth="225"/>
+                <Label fx:id="medewerkersErr" styleClass="error-label"/>
+            </VBox>
+
+            <TableView fx:id="werknemersTable"
+                       prefWidth="360"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="table">
+                <columns>
+                    <TableColumn fx:id="naamCol" text="Naam" prefWidth="145"/>
+                    <TableColumn fx:id="voornaamCol" text="Voornaam" prefWidth="135"/>
+                    <TableColumn fx:id="addCol" text="" prefWidth="58"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox spacing="12" prefWidth="450" maxWidth="450">
+            <VBox spacing="6">
+                <Label text="Verantwoordelijke" styleClass="section-title"/>
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label fx:id="verantwoordelijkeBadge"
                            text="-"
@@ -63,51 +65,24 @@
                 </HBox>
                 <Label fx:id="verantwoordelijkeErr" styleClass="error-label"/>
             </VBox>
-        </GridPane>
 
-        <!-- zoek -->
-        <VBox spacing="2">
-            <TextField fx:id="zoekTf"
-                       promptText="Zoek medewerker..."
-                       maxWidth="260"/>
-            <Label fx:id="medewerkersErr" styleClass="error-label"/>
-        </VBox>
-    </VBox>
+            <VBox spacing="8">
+                <Label text="Medewerkers" styleClass="section-title"/>
 
-    <!-- onderste blok -->
-    <HBox spacing="18">
-
-        <!-- beschikbare medewerkers -->
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Beschikbare medewerkers" styleClass="section-title"/>
-
-            <TableView fx:id="werknemersTable"
-                       VBox.vgrow="ALWAYS"
-                       styleClass="table">
-                <columns>
-                    <TableColumn fx:id="naamCol" text="Naam" prefWidth="150"/>
-                    <TableColumn fx:id="voornaamCol" text="Voornaam" prefWidth="130"/>
-                    <TableColumn fx:id="addCol" text="" prefWidth="70"/>
-                </columns>
-            </TableView>
-        </VBox>
-
-        <!-- geselecteerde medewerkers -->
-        <VBox spacing="8" prefWidth="240" minWidth="240">
-            <Label text="Medewerkers" styleClass="section-title"/>
-
-            <ScrollPane fitToWidth="true"
-                        prefHeight="220"
-                        hbarPolicy="NEVER"
-                        vbarPolicy="AS_NEEDED"
-                        styleClass="team-scroll">
-                <content>
-                    <FlowPane fx:id="selectedPane"
-                              hgap="8"
-                              vgap="8"
-                              prefWrapLength="210"/>
-                </content>
-            </ScrollPane>
+                <ScrollPane fitToWidth="true"
+                            prefHeight="300"
+                            prefWidth="450"
+                            hbarPolicy="NEVER"
+                            vbarPolicy="AS_NEEDED"
+                            styleClass="team-scroll">
+                    <content>
+                        <FlowPane fx:id="selectedPane"
+                                  hgap="8"
+                                  vgap="8"
+                                  prefWrapLength="430"/>
+                    </content>
+                </ScrollPane>
+            </VBox>
         </VBox>
     </HBox>
 

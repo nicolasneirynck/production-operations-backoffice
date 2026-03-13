@@ -89,7 +89,7 @@ public class DTOMapper {
         }
 
         return new TeamDTO(
-                team.getId() == null ? 0L : team.getId(),
+                team.getCode(),
                 toSiteDTO(team.getSite()),
                 toGebruikerDTOList(team.getWerknemers()));
     }

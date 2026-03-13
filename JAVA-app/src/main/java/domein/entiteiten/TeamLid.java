@@ -16,14 +16,12 @@ public class TeamLid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
+
     private final String businessKey = UUID.randomUUID().toString(); // tijdelijk om hash en equals te kunnen doen
 
-
-    //meerdere teamleden in 1 team
     @ManyToOne
     private Team team;
 
-    // medewerker kan in verschillende teams zitten (is telkens een ander teamlid)
     @ManyToOne
     private Gebruiker werknemer;
 

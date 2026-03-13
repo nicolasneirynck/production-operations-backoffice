@@ -73,7 +73,7 @@ public class TeamTest {
         Team team = new Team(site, leden);
 
         assertEquals(site, team.getSite());
-        assertEquals(gegevens.size(), team.getLeden().size());
+        assertEquals(gegevens.size(), team.getWerknemers().size());
     }
 
     @Test
@@ -106,8 +106,8 @@ public class TeamTest {
         Gebruiker w1 = werknemer(1, "w1@test.be");
         Gebruiker w2 = werknemer(2, "w2@test.be");
 
-        // Dubbel op basis van dezelfde email, want equals/hashCode van Gebruiker gebruikt email
-        Gebruiker w1Dubbel = werknemer(99, "w1@test.be");
+        // Dubbel op basis van hetzelfde personeelsnummer, want dat is nu de business-identiteit in Team
+        Gebruiker w1Dubbel = werknemer(1, "ander-email@test.be");
 
         List<Gebruiker> leden = List.of(w1, w2, w1Dubbel);
 
@@ -128,11 +128,12 @@ public class TeamTest {
 
         team.updateLeden(List.of(w1, w3, w4));
 
-        assertEquals(3, team.getLeden().size());
+        assertEquals(3, team.getWerknemers().size());
 
-        List<String> emails = team.getLeden().stream()
-                .map(l -> l.getWerknemer().getEmail())
+        List<String> emails = team.getWerknemers().stream()
+                .map(Gebruiker::getEmail)
                 .toList();
+
 
         assertTrue(emails.containsAll(List.of("w1@test.be", "w3@test.be", "w4@test.be")));
         assertFalse(emails.contains("w2@test.be"));

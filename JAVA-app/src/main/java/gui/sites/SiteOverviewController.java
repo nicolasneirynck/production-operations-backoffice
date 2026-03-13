@@ -18,8 +18,6 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 
 public class SiteOverviewController implements NavigableController, NavigationGuard {
-
-    @FXML protected Label titleLabel;
     @FXML private Button addBtn;
     @FXML private VBox formHost;
 
@@ -68,7 +66,7 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         verantwoordelijkeCol.setCellValueFactory(c -> {
             GebruikerDTO verantwoordelijke = c.getValue().verantwoordelijke();
             return new SimpleStringProperty(
-                    verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
+                    verantwoordelijke == null ? "-" : verantwoordelijke.naam().toUpperCase() + " " + verantwoordelijke.voornaam()
             );
         });
         capaciteitCol.setCellValueFactory(c ->
@@ -238,9 +236,6 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         return activeFormGuard == null || activeFormGuard.canClose();
     }
 
-//    public boolean canCloseOpenForm() {
-//        return activeFormGuard == null || activeFormGuard.canClose();
-//    }
 
     private void deleteSite(SiteDTO site) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -268,4 +263,3 @@ public class SiteOverviewController implements NavigableController, NavigationGu
 
     }
 }
-

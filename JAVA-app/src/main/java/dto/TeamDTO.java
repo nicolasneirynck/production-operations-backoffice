@@ -3,7 +3,7 @@ package dto;
 import java.util.List;
 
 public record TeamDTO(
-        long teamCode,
+        String teamCode,
         SiteDTO site,
         List<GebruikerDTO> teamleden
 ) {

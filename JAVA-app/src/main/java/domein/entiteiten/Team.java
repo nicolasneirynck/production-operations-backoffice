@@ -11,50 +11,60 @@ import java.util.stream.Collectors;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-//@Setter(AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "businessKey")
+@EqualsAndHashCode(of = "code")
 public class Team {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
-    private final String businessKey = UUID.randomUUID().toString(); // tijdelijk om hash en equals te kunnen doen
+
+    private final String code = UUID.randomUUID().toString();
 
     // team hoort tot 1 site
     @OneToOne
     private Site site;
 
+    @Getter(AccessLevel.NONE)
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TeamLid> leden = new ArrayList<>();
 
     public Team(Site site, List<Gebruiker> leden) throws ValidationException {
 
         validate(site, leden);
-
         this.site = site;
+        voegLedenToe(leden);
+    }
 
-        for (Gebruiker gebruiker : leden) {
-            this.leden.add(new TeamLid(this, gebruiker));
-        }
+    public List<Gebruiker> getWerknemers() {
+        return leden.stream()
+                .map(TeamLid::getWerknemer)
+                .toList();
     }
 
     public void updateLeden(List<Gebruiker> nieuweGebruikers) throws ValidationException {
         validate(this.site, nieuweGebruikers);
 
-        Set<String> nieuweEmails = nieuweGebruikers.stream()
-                .map(Gebruiker::getEmail)
+        Set<Integer> nieuweIds = nieuweGebruikers.stream()
+                .map(Gebruiker::getPersoneelsnummer)
                 .collect(Collectors.toSet());
 
-        leden.removeIf(lid -> !nieuweEmails.contains(lid.getWerknemer().getEmail()));
+        leden.removeIf(lid -> !nieuweIds.contains(lid.getWerknemer().getPersoneelsnummer()));
 
-        Set<String> bestaandeEmails = leden.stream()
-                .map(lid -> lid.getWerknemer().getEmail())
+        Set<Integer> bestaandeIds = leden.stream()
+                .map(lid -> lid.getWerknemer().getPersoneelsnummer())
                 .collect(Collectors.toSet());
 
         for (Gebruiker gebruiker : nieuweGebruikers) {
-            if (!bestaandeEmails.contains(gebruiker.getEmail())) {
+            if (!bestaandeIds.contains(gebruiker.getPersoneelsnummer())) {
                 leden.add(new TeamLid(this, gebruiker));
             }
+        }
+    }
+
+    private void voegLedenToe(List<Gebruiker> gebruikers) {
+        for (Gebruiker gebruiker : gebruikers) {
+            leden.add(new TeamLid(this, gebruiker));
         }
     }
 
@@ -80,7 +90,7 @@ public class Team {
 
             long aantalUniek = leden.stream()
                     .filter(Objects::nonNull)
-                    .map(Gebruiker::getEmail)
+                    .map(Gebruiker::getPersoneelsnummer)
                     .distinct()
                     .count();
 
