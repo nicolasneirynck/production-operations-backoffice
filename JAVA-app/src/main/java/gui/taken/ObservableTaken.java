@@ -10,14 +10,13 @@ import lombok.Getter;
 
 public class ObservableTaken {
     private final TaakController controller;
+
     private final ObservableList<TaakDTO> observableTaakList;
-    @Getter
-    private final FilteredList<TaakDTO> filteredTaakList;
+    @Getter private final FilteredList<TaakDTO> filteredTaakList;
 
     public ObservableTaken(TaakController controller){
         this.controller = controller;
-        this.observableTaakList = FXCollections.observableArrayList(); // maak observable list aan
-        observableTaakList.addAll(controller.getAllTaken());
+        this.observableTaakList = FXCollections.observableArrayList();
         this.filteredTaakList = new FilteredList<>(observableTaakList,t -> true);
     }
 
@@ -26,26 +25,19 @@ public class ObservableTaken {
         reload();
     }
 
-    public void editTaak(long id,String type, String omschrijving, Integer duurtijd) throws ValidationException{
+    public void updateTaak(long id,String type, String omschrijving, Integer duurtijd) throws ValidationException{
         controller.updateTaak(id, type, omschrijving, duurtijd);
         reload();
-       // return updated;
     }
 
     public void deleteTaak(long id){
         controller.deleteTaak(id);
         observableTaakList.removeIf(t -> t.taakId() == id);
+        reload();
     }
 
     // voor expliciet syncen met DB
     public void reload() {
         observableTaakList.setAll(controller.getAllTaken());
-    }
-
-    private int indexOf(long id) {
-        for (int i = 0; i < observableTaakList.size(); i++) {
-            if (observableTaakList.get(i).taakId() == id) return i;
-        }
-        return -1;
     }
 }

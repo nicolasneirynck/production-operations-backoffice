@@ -1,5 +1,6 @@
 package domein.entiteiten;
 
+import dto.LocatieDTO;
 import exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -45,9 +46,8 @@ public class Site {
 	@ManyToOne
 	private Gebruiker verantwoordelijke;
 
-	// een team hoort tot 1 site
 	@OneToOne(mappedBy = "site")
-	private Team team;
+	private Team team; // bidirectionele relatie zinvol? miss later voor webapp?
 
 	private Site(Builder builder){
 		this.naam = builder.naam;
@@ -87,8 +87,8 @@ public class Site {
 		if (verantwoordelijke != null && verantwoordelijke.getRol() != util.Rollen.VERANTWOORDELIJKE) {
 			errors.put("verantwoordelijke", new IllegalArgumentException("Gebruiker moet de rol VERANTWOORDELIJKE hebben."));
 		}
-//		if (locatie == null)
-//			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
+		if (locatie == null)
+			errors.put("locatie", new IllegalArgumentException("Locatie vereist."));
 
 		if (capaciteit <= 0)
 			errors.put("capaciteit", new IllegalArgumentException("Capaciteit moet groter zijn dan 0."));

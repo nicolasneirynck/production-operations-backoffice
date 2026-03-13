@@ -2,7 +2,6 @@ package gui.sites;
 
 import dto.GebruikerDTO;
 import dto.SiteDTO;
-import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
 import gui.navigation.*;
 import util.View;
@@ -20,8 +19,9 @@ import util.ProductieStatus;
 
 public class SiteOverviewController implements NavigableController, NavigationGuard {
 
-    @FXML private VBox formHost;
+    @FXML protected Label titleLabel;
     @FXML private Button addBtn;
+    @FXML private VBox formHost;
 
     @FXML private TableView<SiteDTO> siteTable;
     @FXML private TableColumn<SiteDTO, String> naamCol;
@@ -32,13 +32,12 @@ public class SiteOverviewController implements NavigableController, NavigationGu
     @FXML private TableColumn<SiteDTO, ProductieStatus> productieCol;
     @FXML private TableColumn<SiteDTO, SiteDTO> actiesCol;
 
-    private AppContext context;
     @Setter private Navigator navigator;
-    private ObservableSites observableSites;
-
-    private SortedList<SiteDTO> sortedList;
-
     private ClosableFormGuard activeFormGuard;
+
+    private AppContext context;
+    private ObservableSites observableSites;
+    private SortedList<SiteDTO> sortedList;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -46,48 +45,49 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         this.observableSites = ctx.getObservableSites();
     }
 
-    // TODO -> badge-factory maken?
     @FXML
     private void initialize() {
-        naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
-        locatieCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().locatie().volledigeLocatie()));
-        // TODO later elegantere oplossing zoeken
-        verantwoordelijkeCol.setCellValueFactory(c -> {
-            GebruikerDTO v = c.getValue().verantwoordelijke();
-            return new SimpleStringProperty(
-                    v == null ? "-" : v.volledigeNaam()
-            );
-        });
-        capaciteitCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().capaciteit()));
-
+        configureColumns();
         configureStatusColumns();
-        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteSite);
+        configureActiesColumn();
+        configureTableLayout();
 
-        naamCol.setStyle("-fx-alignment: center-left;");
-        verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
-        locatieCol.setStyle("-fx-alignment: center-left;");
-        capaciteitCol.setStyle("-fx-alignment: CENTER;");
-        operationeleCol.setStyle("-fx-alignment: CENTER;");
-        productieCol.setStyle("-fx-alignment: CENTER;");
-        actiesCol.setStyle("-fx-alignment: CENTER;");
-        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        siteTable.setFixedCellSize(44); // rijhoogte
-        siteTable.setSelectionModel(null);
-
-
-        //addBtn.disableProperty().bind(formHost.visibleProperty());
         addBtn.managedProperty().bind(formHost.visibleProperty().not());
         addBtn.visibleProperty().bind(formHost.visibleProperty().not());
     }
 
-    private void configureStatusColumns() {
+    protected void configureColumns() {
 
+        naamCol.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().naam()));
+        locatieCol.setCellValueFactory(c -> {
+            SiteDTO site = c.getValue();
+            String locatie = site.locatie() == null ? "-" : site.locatie().volledigeLocatie();
+            return new SimpleStringProperty(locatie);
+        });
+        verantwoordelijkeCol.setCellValueFactory(c -> {
+            GebruikerDTO verantwoordelijke = c.getValue().verantwoordelijke();
+            return new SimpleStringProperty(
+                    verantwoordelijke == null ? "-" : verantwoordelijke.volledigeNaam()
+            );
+        });
+        capaciteitCol.setCellValueFactory(c ->
+                new SimpleObjectProperty<>(c.getValue().capaciteit()));
+
+
+    }
+
+    private void configureStatusColumns() {
+        configureOperationeleColumn();
+        configureProductieColumn();
+    }
+
+    private void configureOperationeleColumn() {
         operationeleCol.setCellValueFactory(
                 c -> new SimpleObjectProperty<>(c.getValue().operationeleStatus())
         );
 
         operationeleCol.setCellFactory(col -> new TableCell<>() {
-
             private final Label label = new Label();
 
             {
@@ -114,7 +114,9 @@ public class SiteOverviewController implements NavigableController, NavigationGu
                 setGraphic(label);
             }
         });
+    }
 
+    private void configureProductieColumn() {
         productieCol.setCellValueFactory(
                 c -> new SimpleObjectProperty<>(c.getValue().productieStatus())
         );
@@ -150,31 +152,59 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         });
     }
 
+    private void configureActiesColumn() {
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteSite);
+    }
+
+    private void configureTableLayout() {
+        naamCol.setStyle("-fx-alignment: center-left;");
+        verantwoordelijkeCol.setStyle("-fx-alignment: CENTER;");
+        locatieCol.setStyle("-fx-alignment: center-left;");
+        capaciteitCol.setStyle("-fx-alignment: CENTER;");
+        operationeleCol.setStyle("-fx-alignment: CENTER;");
+        productieCol.setStyle("-fx-alignment: CENTER;");
+        actiesCol.setStyle("-fx-alignment: CENTER;");
+
+        siteTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        siteTable.setFixedCellSize(44); // rijhoogte
+        siteTable.setSelectionModel(null);
+    }
+
     @Override
     public void loadData() {
-        observableSites.reload();
+        loadSites();
+        initializeTableItems();
+    }
 
+    private void loadSites() {
+        observableSites.reload();
+    }
+
+    private void initializeTableItems() {
         if (sortedList == null) {
             sortedList = new SortedList<>(observableSites.getFilteredSiteList());
+
             // binding voor kolomsortering
             sortedList.comparatorProperty().bind(siteTable.comparatorProperty());
             siteTable.setItems(sortedList);
 
             // default sortering
             naamCol.setSortType(TableColumn.SortType.ASCENDING);
-            //siteTable.getSortOrder().setAll(naamCol);
             siteTable.getSortOrder().add(naamCol);
 
             locatieCol.setSortable(false);
             operationeleCol.setSortable(false);
             productieCol.setSortable(false);
             actiesCol.setSortable(false);
-
-            }
+        }
     }
 
     @FXML
     private void onAdd() {
+        openCreateForm();
+    }
+
+    protected void openCreateForm() {
         SiteFormController controller = FormLoader.showForm(
                 formHost,
                 context,
@@ -203,15 +233,21 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         activeFormGuard = null;
     }
 
-    public boolean canCloseOpenForm() {
+    @Override
+    public boolean canNavigateAway() {
         return activeFormGuard == null || activeFormGuard.canClose();
     }
+
+//    public boolean canCloseOpenForm() {
+//        return activeFormGuard == null || activeFormGuard.canClose();
+//    }
 
     private void deleteSite(SiteDTO site) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Site verwijderen");
         alert.setHeaderText("Ben je zeker dat je deze site wil verwijderen?");
-        alert.setContentText(site.naam() + " (" + site.locatie().volledigeLocatie() + ")");
+        String locatieTekst = site.locatie() == null ? "-" : site.locatie().volledigeLocatie();
+        alert.setContentText(site.naam() + " (" + locatieTekst + ")");
 
         ButtonType delete = new ButtonType("Verwijderen");
         ButtonType cancel = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -230,11 +266,6 @@ public class SiteOverviewController implements NavigableController, NavigationGu
             }
         });
 
-    }
-
-    @Override
-    public boolean canNavigateAway() {
-        return activeFormGuard == null || activeFormGuard.canClose();
     }
 }
 

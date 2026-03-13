@@ -40,13 +40,25 @@ public class TaakOverviewController implements NavigableController, NavigationGu
 
     @FXML
     private void initialize() {
+        configureColumns();
+        configureActiesColumn();
+        configureTableLayout();
 
+        addBtn.managedProperty().bind(formHost.visibleProperty().not());
+        addBtn.visibleProperty().bind(formHost.visibleProperty().not());
+    }
+
+    private void configureColumns() {
         typeCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().taakType()));
         omschrijvingCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().omschrijving()));
         duurtijdCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().duurtijd()));
+    }
 
-        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::edit, this::deleteTaak);
+    private void configureActiesColumn() {
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteTaak);
+    }
 
+    private void configureTableLayout() {
         typeCol.setStyle("-fx-alignment: center-left;");
         omschrijvingCol.setStyle("-fx-alignment: center-left;");
         duurtijdCol.setStyle("-fx-alignment: CENTER;");
@@ -54,32 +66,38 @@ public class TaakOverviewController implements NavigableController, NavigationGu
         taakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         taakTable.setFixedCellSize(44);
         taakTable.setSelectionModel(null);
-
-        //addBtn.disableProperty().bind(formHost.visibleProperty());
-        addBtn.managedProperty().bind(formHost.visibleProperty().not());
-        addBtn.visibleProperty().bind(formHost.visibleProperty().not());
     }
 
-    public void loadData(){
-        observableTaken.reload();
+    @Override
+    public void loadData() {
+        loadTaken();
+        initializeTableItems();
+    }
 
+    private void loadTaken() {
+        observableTaken.reload();
+    }
+
+    private void initializeTableItems() {
         if (sortedList == null) {
             sortedList = new SortedList<>(observableTaken.getFilteredTaakList());
             sortedList.comparatorProperty().bind(taakTable.comparatorProperty());
             taakTable.setItems(sortedList);
+
+            typeCol.setSortType(TableColumn.SortType.ASCENDING);
+            taakTable.getSortOrder().add(typeCol);
+
+            omschrijvingCol.setSortable(false);
+            actiesCol.setSortable(false);
         }
-
-        // default sortering
-        typeCol.setSortType(TableColumn.SortType.ASCENDING);
-        //siteTable.getSortOrder().setAll(naamCol);
-        taakTable.getSortOrder().add(typeCol);
-
-        omschrijvingCol.setSortable(false);
-        actiesCol.setSortable(false);
     }
 
     @FXML
     private void onAdd() {
+        openCreateForm();
+    }
+
+    private void openCreateForm() {
         TaakFormController controller = FormLoader.showForm(
                 formHost,
                 context,
@@ -91,7 +109,7 @@ public class TaakOverviewController implements NavigableController, NavigationGu
         activeFormGuard = controller;
     }
 
-    private void edit(TaakDTO taak) {
+    private void showEditForm(TaakDTO taak) {
         TaakFormController controller = FormLoader.showForm(
                 formHost,
                 context,
@@ -122,7 +140,7 @@ public class TaakOverviewController implements NavigableController, NavigationGu
             if (choice == delete) {
                 try {
                     observableTaken.deleteTaak(taak.taakId());
-                    observableTaken.reload();
+                    loadData();
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {

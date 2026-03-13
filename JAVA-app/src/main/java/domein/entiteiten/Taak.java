@@ -45,16 +45,16 @@ public class Taak {
         this.duurtijd = duurtijd;
     }
 
-    private static void validate(String type, String omschrijving, int duurtijd) throws ValidationException {
+    private static void validate(String type, String omschrijving, Integer duurtijd) throws ValidationException {
         Map<String, IllegalArgumentException> errors = new HashMap<>();
 
         if (type == null || type.isBlank()) errors.put("taakType", new IllegalArgumentException("Type is vereist"));
         if (omschrijving == null || omschrijving.isBlank())
             errors.put("omschrijving", new IllegalArgumentException("Omschrijving is vereist"));
 
-//        if (duurtijd == null) {
-//            errors.put("duurtijd", new IllegalArgumentException("Duurtijd is verplicht"));
-        if (duurtijd <= 0) {
+        if (duurtijd == null) {
+            errors.put("duurtijd", new IllegalArgumentException("Duurtijd is verplicht"));
+        } else if (duurtijd <= 0) {
             errors.put("duurtijd", new IllegalArgumentException("Duurtijd moet groter zijn dan 0"));
         } else if (duurtijd > 240 || duurtijd % 15 != 0) {
             errors.put("duurtijd", new IllegalArgumentException(

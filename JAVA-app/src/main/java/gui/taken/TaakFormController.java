@@ -35,7 +35,9 @@ public class TaakFormController implements FormController, ClosableFormGuard {
     private ObservableTaken observableTaken;
 
     private Long editingId = null;
+    private TaakFormData initialFormData;
 
+    @Override
     public void setContext(AppContext ctx) {
         this.ctx = ctx;
         this.observableTaken = ctx.getObservableTaken();
@@ -43,19 +45,30 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
     @FXML
     private void initialize() {
-        duurtijdBx.setItems(FXCollections.observableArrayList(
-                        IntStream.rangeClosed(1, 16)
-                                .map(i -> i * 15)
-                                .boxed() //int naar Stream<Integer>
-                                .toList()));
-
-        duurtijdBx.setValue(15);
-
-        typeBx.valueProperty().addListener((o,a,b) -> clearError("taakType"));
-        omschrijvingTxt.textProperty().addListener((o, a, b) -> clearError("omschrijving"));
-
+        configureDuurtijdComboBox();
+        configureValidationListeners();
     }
 
+    private void configureDuurtijdComboBox() {
+        duurtijdBx.setItems(FXCollections.observableArrayList(
+                IntStream.rangeClosed(1, 16)
+                        .map(i -> i * 15)
+                        .boxed()
+                        .toList()));
+
+        duurtijdBx.setValue(15);
+    }
+
+    private void configureValidationListeners() {
+        typeBx.valueProperty().addListener((o, a, b) -> clearError("taakType"));
+        if (typeBx.isEditable()) {
+            typeBx.getEditor().textProperty().addListener((o, a, b) -> clearError("taakType"));
+        }
+        duurtijdBx.valueProperty().addListener((o, a, b) -> clearError("duurtijd"));
+        omschrijvingTxt.textProperty().addListener((o, a, b) -> clearError("omschrijving"));
+    }
+
+    @Override
     public void loadData() {
         observableTaken.reload();
 
@@ -66,17 +79,18 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
     public void loadForCreate() {
         editingId = null;
-
         titleLabel.setText("Taak aanmaken");
+
         typeBx.setValue(null);
         duurtijdBx.setValue(15);
         omschrijvingTxt.clear();
 
         clearErrors();
+        initialFormData = currentFormData();
     }
 
     public void loadForEdit(TaakDTO dto) {
-        this.editingId = dto.taakId();
+        editingId = dto.taakId();
         titleLabel.setText("Taak wijzigen");
 
         typeBx.setValue(dto.taakType());
@@ -84,6 +98,7 @@ public class TaakFormController implements FormController, ClosableFormGuard {
         omschrijvingTxt.setText(dto.omschrijving());
 
         clearErrors();
+        initialFormData = currentFormData();
     }
 
     @FXML
@@ -99,10 +114,9 @@ public class TaakFormController implements FormController, ClosableFormGuard {
             if (editingId == null) {
                 observableTaken.addTaak(type, omschrijving, duurtijd);
             } else {
-                observableTaken.editTaak(editingId, type, omschrijving, duurtijd);
+                observableTaken.updateTaak(editingId, type, omschrijving, duurtijd);
             }
 
-            observableTaken.reload();
             close();
         } catch (ValidationException ex) {
             showValidationErrors(ex);
@@ -113,21 +127,9 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
     @FXML
     private void onCancel() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Annuleren");
-        alert.setHeaderText("Wijzigingen annuleren?");
-        alert.setContentText("Niet-opgeslagen wijzigingen gaan verloren.");
-
-        ButtonType yesBtn = new ButtonType("Ja");
-        ButtonType noBtn = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(yesBtn, noBtn);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == yesBtn) {
-                close();
-            }
-        });
+        if (canClose()) {
+            close();
+        }
     }
 
     private void close() {
@@ -150,6 +152,9 @@ public class TaakFormController implements FormController, ClosableFormGuard {
                     omschrijvingErrorLbl.setText(msg);
                     omschrijvingTxt.getStyleClass().add("field-error");
                 }
+                case "duurtijd" -> {
+                    duurtijdBx.getStyleClass().add("field-error");
+                }
                 default -> {new Alert(Alert.AlertType.ERROR, msg).showAndWait();}
             }
         });
@@ -163,7 +168,10 @@ public class TaakFormController implements FormController, ClosableFormGuard {
             }
             case "omschrijving" -> {
                 omschrijvingErrorLbl.setText("");
-                omschrijvingErrorLbl.getStyleClass().remove("field-error");
+                omschrijvingTxt.getStyleClass().remove("field-error");
+            }
+            case "duurtijd" -> {
+                duurtijdBx.getStyleClass().remove("field-error");
             }
         }
     }
@@ -180,12 +188,14 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
     @Override
     public boolean canClose() {
-
+        if (!hasUnsavedChanges()) {
+            return true;
+        }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Formulier sluiten");
         alert.setHeaderText("Niet-opgeslagen wijzigingen");
-        alert.setContentText("Mogelijke wijzigen werden niet opgeslaan. Wil je de pagina verlaten?");
+        alert.setContentText("Je wijzigingen werden niet opgeslagen. Ben je zeker dat je de pagina wil verlaten?");
 
         ButtonType ja = new ButtonType("Ja");
         ButtonType nee = new ButtonType("Nee", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -193,5 +203,26 @@ public class TaakFormController implements FormController, ClosableFormGuard {
         alert.getButtonTypes().setAll(ja, nee);
 
         return alert.showAndWait().orElse(nee) == ja;
+    }
+
+    private TaakFormData currentFormData() {
+        String type = typeBx.isEditable() ? typeBx.getEditor().getText() : typeBx.getValue();
+
+        return new TaakFormData(
+                type,
+                duurtijdBx.getValue(),
+                omschrijvingTxt.getText()
+        );
+    }
+
+    private boolean hasUnsavedChanges() {
+        return !currentFormData().equals(initialFormData);
+    }
+
+    private record TaakFormData(
+            String taakType,
+            Integer duurtijd,
+            String omschrijving
+    ) {
     }
 }

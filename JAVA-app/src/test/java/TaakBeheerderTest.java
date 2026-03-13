@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import repository.GenericDao;
 import repository.TaakDao;
 
 @ExtendWith(MockitoExtension.class)

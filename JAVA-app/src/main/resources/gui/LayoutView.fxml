@@ -25,7 +25,7 @@
 
     <StackPane fx:id="logoHeader" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <ImageView fx:id="logoImage" preserveRatio="true">
-            <Image url="@/images/logo-clean.png"/>
+            <Image url="@/images/logo-header.png"/>
         </ImageView>
     </StackPane>
 

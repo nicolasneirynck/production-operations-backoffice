@@ -1,5 +1,6 @@
 import domein.entiteiten.Taak;
 import exception.ValidationException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -76,6 +77,18 @@ public class TaakTest {
                         .duurtijd(minuten)
                         .build()
         );
+        assertTrue(ex.getExceptionMap().containsKey("duurtijd"));
+    }
+
+    @Test
+    void constructor_GeenDuur_GooitException() {
+        ValidationException ex = assertThrows(ValidationException.class, () ->
+                Taak.builder()
+                        .type("Onderhoud")
+                        .omschrijving("Test")
+                        .build()
+        );
+
         assertTrue(ex.getExceptionMap().containsKey("duurtijd"));
     }
 }

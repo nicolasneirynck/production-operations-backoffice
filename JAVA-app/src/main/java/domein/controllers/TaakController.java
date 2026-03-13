@@ -1,6 +1,6 @@
 package domein.controllers;
 
-import domein.entiteiten.Taak;
+import dto.DTOMapper;
 import dto.TaakDTO;
 import domein.beheerders.TaakBeheerder;
 import exception.ValidationException;
@@ -22,7 +22,7 @@ public class TaakController {
 
     public List<TaakDTO> getAllTaken() {
         return taakBeheerder.getAllTaken().stream()
-                .map(this::toDto)
+                .map(DTOMapper::toTaakDTO)
                 .toList();
     }
 
@@ -40,14 +40,5 @@ public class TaakController {
 
     public List<String> getAllTaakTypes() {
         return taakBeheerder.getAllTaakTypes();
-    }
-
-    private TaakDTO toDto(Taak taak) {
-        return new TaakDTO(
-                taak.getId(),
-                taak.getTaakType(),
-                taak.getOmschrijving(),
-                taak.getDuurtijd()
-        );
     }
 }

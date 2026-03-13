@@ -13,15 +13,11 @@ public class ObservableTeams {
 
     private final TeamController controller;
     private final ObservableList<TeamDTO> observableTeamList;
-    @Getter
-    private final FilteredList<TeamDTO> filteredTeamList;
+    @Getter private final FilteredList<TeamDTO> filteredTeamList;
 
     public ObservableTeams(TeamController controller) {
         this.controller = controller;
-
         this.observableTeamList = FXCollections.observableArrayList();
-        observableTeamList.addAll(controller.getAllTeams());
-
         this.filteredTeamList = new FilteredList<>(observableTeamList, t -> true);
     }
 
@@ -30,8 +26,8 @@ public class ObservableTeams {
         reload();
     }
 
-    public void editTeam(long teamCode, List<Long> werknemerIds) throws ValidationException {
-        controller.updateTeam(teamCode, werknemerIds);
+    public void updateTeam(long teamId, List<Long> medewerkerIds) throws ValidationException {
+        controller.updateTeam(teamId, medewerkerIds);
         reload();
     }
 
@@ -40,28 +36,16 @@ public class ObservableTeams {
         observableTeamList.removeIf(t -> t.teamCode() == teamCode);
     }
 
-    public void reload() {
-        observableTeamList.setAll(controller.getAllTeams());
-    }
-
-    private int indexOf(long teamCode) {
-        for (int i = 0; i < observableTeamList.size(); i++) {
-            if (observableTeamList.get(i).teamCode() == teamCode)
-                return i;
-        }
-        return -1;
-    }
-
-    public void updateTeam(long teamId, List<Long> medewerkerIds) throws ValidationException {
-        controller.updateTeam(teamId, medewerkerIds);
-        reload();
-    }
-
-    public void setSingleTeam(TeamDTO team) {
+    public void replaceWithSingleTeam(TeamDTO team) {
         if (team == null) {
             observableTeamList.clear();
         } else {
             observableTeamList.setAll(team);
         }
     }
+
+    public void reload() {
+        observableTeamList.setAll(controller.getAllTeams());
+    }
+
 }

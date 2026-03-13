@@ -34,7 +34,7 @@
                     <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
                         <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
                             <image>
-                                <Image url="@/images/teams.png"/>
+                                <Image url="@/images/tile-teams.png"/>
                             </image>
                         </ImageView>
 
@@ -47,11 +47,24 @@
                     <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
                         <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
                             <image>
-                                <Image url="@/images/sites.png"/>
+                                <Image url="@/images/tile-sites.png"/>
                             </image>
                         </ImageView>
 
                         <Label text="Sites&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Button fx:id="takenTile" styleClass="tile" onAction="#onTakenTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <image>
+                                <Image url="@/images/tile-taken.png"/>
+                            </image>
+                        </ImageView>
+
+                        <Label text="Taken&#10;Beheren" styleClass="tile-text"/>
                     </VBox>
                 </graphic>
             </Button>

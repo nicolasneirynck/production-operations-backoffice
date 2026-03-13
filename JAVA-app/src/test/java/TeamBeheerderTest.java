@@ -98,7 +98,7 @@ public class TeamBeheerderTest {
 
         assertEquals(1, teams.size());
         assertEquals(site, teams.getFirst().getSite());
-        assertEquals(3, teams.getFirst().getLeden().size());
+        assertEquals(3, teams.getFirst().getWerknemers().size());
 
         verify(teamRepo).findAll();
     }
@@ -197,8 +197,8 @@ public class TeamBeheerderTest {
         verify(teamRepo).commitTransaction();
         verify(teamRepo, never()).rollbackTransaction();
 
-        List<String> emails = team.getLeden().stream()
-                .map(lid -> lid.getWerknemer().getEmail())
+        List<String> emails = team.getWerknemers().stream()
+                .map(Gebruiker::getEmail)
                 .toList();
 
         assertEquals(3, emails.size());

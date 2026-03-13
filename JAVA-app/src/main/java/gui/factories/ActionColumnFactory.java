@@ -22,10 +22,10 @@ public class ActionColumnFactory {
         column.setCellFactory(col -> new TableCell<>() {
 
             private final Button editBtn =
-                    IconButtonFactory.createIconButton("/images/pencil-write.png", "Bewerken");
+                    IconButtonFactory.createIconButton("/images/icon-edit.png", "Bewerken");
 
             private final Button deleteBtn =
-                    IconButtonFactory.createIconButton("/images/bin.png", "Verwijderen");
+                    IconButtonFactory.createIconButton("/images/icon-delete.png", "Verwijderen");
 
             private final HBox box = new HBox(8, editBtn, deleteBtn);
 
@@ -65,7 +65,7 @@ public class ActionColumnFactory {
         column.setCellFactory(col -> new TableCell<>() {
 
             private final Button editBtn =
-                    IconButtonFactory.createIconButton("/images/pencil-write.png", "Bewerken");
+                    IconButtonFactory.createIconButton("/images/icon-edit.png", "Bewerken");
 
             private final HBox box = new HBox(editBtn);
 

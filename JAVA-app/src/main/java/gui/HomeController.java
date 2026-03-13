@@ -19,6 +19,7 @@ public class HomeController implements NavigableController {
     @FXML private Button usersTile;
     @FXML private Button teamsTile;
     @FXML private Button sitesTile;
+    @FXML private Button takenTile;
     @FXML private Label teamsTileLabel;
 
 
@@ -29,6 +30,7 @@ public class HomeController implements NavigableController {
         setTileVisibility(usersTile, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
         setTileVisibility(sitesTile, visible & Authorizer.has(Permission.SITES_BEHEREN));
         setTileVisibility(teamsTile, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
+        setTileVisibility(takenTile, visible & Authorizer.has(Permission.TAKEN_BEHEREN));
     }
 
     private void setTileVisibility(Button tile, boolean visible) {
@@ -71,5 +73,10 @@ public class HomeController implements NavigableController {
     @FXML
     private void onSitesTile() {
         navigator.goTo(View.SITES_OVERVIEW);
+    }
+
+    @FXML
+    private void onTakenTile() {
+        navigator.goTo(View.TAKEN_OVERVIEW);
     }
 }
