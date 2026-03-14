@@ -57,11 +57,4 @@ public class SiteController {
         authorize();
         siteBeheerder.deleteSite(id);
     }
-
-    public List<SiteDTO> getSitesZonderTeam() {
-        authorize();
-        return siteBeheerder.getSitesZonderTeam().stream()
-                .map(DTOMapper::toSiteDTO)
-                .toList();
-    }
 }

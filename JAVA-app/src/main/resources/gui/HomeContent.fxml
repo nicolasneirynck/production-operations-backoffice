@@ -29,16 +29,25 @@
                     </VBox>
                 </graphic>
             </Button>
-            <Button fx:id="teamsTile" styleClass="tile" onAction="#onTeamsTile">
+            <Button fx:id="allTeamsTile" styleClass="tile" onAction="#onAllTeamsTile">
                 <graphic>
                     <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
                         <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
-                            <image>
-                                <Image url="@/images/tile-teams.png"/>
-                            </image>
+                            <Image url="@/images/tile-teams.png"/>
                         </ImageView>
 
-                        <Label fx:id="teamsTileLabel" text="Teams&#10;Beheren" styleClass="tile-text"/>
+                        <Label text="Teams&#10;Beheren" styleClass="tile-text"/>
+                    </VBox>
+                </graphic>
+            </Button>
+            <Button fx:id="mijnTeamTile" styleClass="tile" onAction="#onMijnTeamTile">
+                <graphic>
+                    <VBox alignment="CENTER" spacing="10" styleClass="tile-content">
+                        <ImageView fitWidth="35" fitHeight="35" preserveRatio="true">
+                            <Image url="@/images/tile-teams.png"/>
+                        </ImageView>
+
+                        <Label text="Team&#10;Beheren" styleClass="tile-text"/>
                     </VBox>
                 </graphic>
             </Button>

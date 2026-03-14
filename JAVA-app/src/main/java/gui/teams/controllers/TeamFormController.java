@@ -1,5 +1,6 @@
 package gui.teams.controllers;
 
+import domein.controllers.AlleTeamsService;
 import dto.GebruikerDTO;
 import dto.SiteDTO;
 import dto.TeamDTO;
@@ -60,7 +61,8 @@ public abstract class TeamFormController implements FormController, ClosableForm
 
     @Setter private Runnable onClose;
 
-    @Setter protected AppContext context;
+    protected AppContext context;
+    private AlleTeamsService alleTeamsService;
     protected final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
     protected final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
     private FilteredList<GebruikerDTO> filteredBeschikbaar;
@@ -69,6 +71,11 @@ public abstract class TeamFormController implements FormController, ClosableForm
     protected String editingTeamId = null;
     private TeamFormData initialFormData;
 
+    @Override
+    public void setContext(AppContext context) {
+        this.context = context;
+        this.alleTeamsService = context.getAlleTeamsService();
+    }
 
     @FXML
     private void initialize() {
@@ -225,8 +232,7 @@ public abstract class TeamFormController implements FormController, ClosableForm
     }
 
     private void loadSites() {
-        List<SiteDTO> sites = context.getSiteController()
-                .getSitesZonderTeam()
+        List<SiteDTO> sites = alleTeamsService.getBeschikbareSitesVoorNieuwTeam()
                 .stream()
                 .sorted(Comparator.comparing(SiteDTO::naam, String.CASE_INSENSITIVE_ORDER))
                 .toList();
@@ -235,8 +241,7 @@ public abstract class TeamFormController implements FormController, ClosableForm
     }
 
     private void loadSitesVoorCreate() {
-        List<SiteDTO> sites = context.getSiteController()
-                .getSitesZonderTeam()
+        List<SiteDTO> sites = alleTeamsService.getBeschikbareSitesVoorNieuwTeam()
                 .stream()
                 .sorted(Comparator.comparing(SiteDTO::naam, String.CASE_INSENSITIVE_ORDER))
                 .toList();
@@ -259,7 +264,7 @@ public abstract class TeamFormController implements FormController, ClosableForm
     }
 
     private void loadSitesVoorEdit(SiteDTO huidigeSite) {
-        List<SiteDTO> sites = new ArrayList<>(context.getSiteController().getSitesZonderTeam());
+        List<SiteDTO> sites = new ArrayList<>(alleTeamsService.getBeschikbareSitesVoorNieuwTeam());
 
         boolean huidigeSiteAlAanwezig = sites.stream()
                 .anyMatch(s -> s.siteId() == huidigeSite.siteId());

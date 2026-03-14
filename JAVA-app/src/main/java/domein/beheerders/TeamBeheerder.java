@@ -10,7 +10,7 @@ import repository.GenericDaoJpa;
 import java.util.List;
 import java.util.Optional;
 
-public class TeamBeheerder implements AlleTeamsBeheer, MijnTeamBeheer{
+public class TeamBeheerder{
 
     private final GenericDao<Team> teamRepo;
     private final GenericDao<Site> siteRepo;

@@ -17,10 +17,10 @@ import util.View;
 public class HomeController implements NavigableController {
 
     @FXML private Button usersTile;
-    @FXML private Button teamsTile;
+    @FXML private Button allTeamsTile;
+    @FXML private Button mijnTeamTile;
     @FXML private Button sitesTile;
     @FXML private Button takenTile;
-    @FXML private Label teamsTileLabel;
 
 
     @Setter private Navigator navigator;
@@ -29,7 +29,8 @@ public class HomeController implements NavigableController {
     private void changeVisibility(boolean visible) {
         setTileVisibility(usersTile, visible & Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
         setTileVisibility(sitesTile, visible & Authorizer.has(Permission.SITES_BEHEREN));
-        setTileVisibility(teamsTile, visible & Authorizer.has(Permission.TEAMS_BEHEREN));
+        setTileVisibility(allTeamsTile, visible & Authorizer.has(Permission.ALLE_TEAMS_BEHEREN));
+        setTileVisibility(mijnTeamTile, visible & Authorizer.has(Permission.MIJN_TEAM_BEHEREN));
         setTileVisibility(takenTile, visible & Authorizer.has(Permission.TAKEN_BEHEREN));
     }
 
@@ -40,11 +41,6 @@ public class HomeController implements NavigableController {
 
     private void handleAuthorizationChange(UserPrincipal newUser) {
         changeVisibility(newUser != null);
-        if (newUser != null) {
-            teamsTileLabel.setText(newUser.rol() == Rollen.VERANTWOORDELIJKE ? "Team\nBeheren" : "Teams\nBeheren");
-        } else {
-            teamsTileLabel.setText("Teams\nBeheren");
-        }
     }
 
     private void bindToAuthorization() {
@@ -61,8 +57,13 @@ public class HomeController implements NavigableController {
     }
 
     @FXML
-    private void onTeamsTile() {
-        navigator.goToTeams();
+    private void onAllTeamsTile() {
+        navigator.goTo(View.ALL_TEAMS_OVERVIEW);
+    }
+
+    @FXML
+    private void onMijnTeamTile() {
+        navigator.goTo(View.MIJN_TEAM_OVERVIEW);
     }
 
     @FXML

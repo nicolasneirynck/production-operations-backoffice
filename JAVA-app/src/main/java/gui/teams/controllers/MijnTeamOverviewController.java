@@ -42,7 +42,7 @@ public class MijnTeamOverviewController extends TeamOverviewController {
     }
 
     @Override
-    protected void removeTeamFromState(String teamCode) {
+    protected void deleteTeam(String teamCode) {
         throw new UnsupportedOperationException("Mijn team kan niet verwijderd worden.");
     }
 

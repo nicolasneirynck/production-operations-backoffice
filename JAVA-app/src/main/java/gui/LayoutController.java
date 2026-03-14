@@ -34,11 +34,11 @@ public class LayoutController implements NavigableController {
     private List<HBox> navRows;
     @FXML private HBox homeRow;
     @FXML private HBox usersRow;
-    @FXML private HBox teamsRow;
+    @FXML private HBox allTeamsRow;
+    @FXML private HBox mijnTeamRow;
     @FXML private HBox sitesRow;
 
     @FXML private HBox loginRow;
-    @FXML private Button teamsBtn;
     @FXML private Button logoutBtn;
     @FXML private HBox takenRow;
 
@@ -50,7 +50,7 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void initialize() {
-        navRows = List.of(homeRow, usersRow, teamsRow, sitesRow, takenRow);
+        navRows = List.of(homeRow, usersRow, allTeamsRow, mijnTeamRow, sitesRow, takenRow);
 
         bindToAuthorization();
         handleAuthorizationChange(SecurityContext.userProperty().get());
@@ -83,7 +83,8 @@ public class LayoutController implements NavigableController {
         HBox row = switch (view) {
             case HOME -> homeRow;
             case GEBRUIKER_OVERVIEW, GEBRUIKER_FORM -> usersRow;
-            case ALL_TEAMS_OVERVIEW, MIJN_TEAM_OVERVIEW, TEAMS_FORM -> teamsRow;
+            case ALL_TEAMS_OVERVIEW, MANAGER_TEAMS_FORM -> allTeamsRow;
+            case MIJN_TEAM_OVERVIEW, VERANTWOORDELIJKE_TEAMS_FORM -> mijnTeamRow;
             case SITES_OVERVIEW, SITES_FORM -> sitesRow;
             case TAKEN_OVERVIEW, TAKEN_FORM -> takenRow;
             default -> null;
@@ -102,7 +103,8 @@ public class LayoutController implements NavigableController {
     private void changeVisibility(boolean visible) {
         setRowVisibility(usersRow, visible && Authorizer.has(Permission.GEBRUIKERS_BEHEREN));
         setRowVisibility(sitesRow, visible && Authorizer.has(Permission.SITES_BEHEREN));
-        setRowVisibility(teamsRow, visible && Authorizer.has(Permission.TEAMS_BEHEREN));
+        setRowVisibility(allTeamsRow, visible && Authorizer.has(Permission.ALLE_TEAMS_BEHEREN ));
+        setRowVisibility(mijnTeamRow, visible && Authorizer.has(Permission.MIJN_TEAM_BEHEREN ));
         setRowVisibility(takenRow, visible && Authorizer.has(Permission.TAKEN_BEHEREN));
         setRowVisibility(homeRow, visible);
 
@@ -121,10 +123,8 @@ public class LayoutController implements NavigableController {
 
             userNameLbl.setText(newUser.voornaam() + " " + newUser.naam());
             userRoleLbl.setText(newUser.rol().toString());
-            teamsBtn.setText(newUser.rol() == Rollen.VERANTWOORDELIJKE ? "Team Beheren" : "Teams Beheren");
         } else {
             changeVisibility(false);
-            teamsBtn.setText("Teams Beheren");
         }
     }
 
@@ -145,8 +145,13 @@ public class LayoutController implements NavigableController {
     }
 
     @FXML
-    private void onTeams() {
-        navigator.goToTeams();
+    private void onAllTeams() {
+        navigator.goTo(View.ALL_TEAMS_OVERVIEW);
+    }
+
+    @FXML
+    private void onMijnTeam(){
+        navigator.goTo(View.MIJN_TEAM_OVERVIEW);
     }
 
     @FXML

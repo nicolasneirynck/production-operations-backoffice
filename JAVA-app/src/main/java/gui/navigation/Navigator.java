@@ -35,15 +35,7 @@ public class Navigator {
     }
 
     public void goTo(View view) {
-        if (view == View.SITES_OVERVIEW || view == View.SITES_FORM) {
-            Authorizer.require(Permission.SITES_BEHEREN);
-        } else if (view == View.TAKEN_OVERVIEW || view == View.TAKEN_FORM) {
-            Authorizer.require(Permission.TAKEN_BEHEREN);
-        } else if (view == View.GEBRUIKER_OVERVIEW || view == View.GEBRUIKER_FORM) {
-            Authorizer.require(Permission.GEBRUIKERS_BEHEREN);
-        } else if (view == View.ALL_TEAMS_OVERVIEW || view == View.MIJN_TEAM_OVERVIEW || view == View.TEAMS_FORM) {
-            Authorizer.require(Permission.TEAMS_BEHEREN);
-        }
+        Authorizer.require(view);
 
         if (layoutController == null) {
             throw new IllegalStateException("Layout is not initialized. Call initLayout() first.");
@@ -74,16 +66,6 @@ public class Navigator {
 
         } catch (Exception e) {
             throw new RuntimeException("Kan content view niet laden: " + view, e);
-        }
-    }
-
-    public void goToTeams() {
-        UserPrincipal user = SecurityContext.getUser();
-
-        if (user != null && user.rol() == Rollen.VERANTWOORDELIJKE) {
-            goTo(View.MIJN_TEAM_OVERVIEW);
-        } else {
-            goTo(View.ALL_TEAMS_OVERVIEW);
         }
     }
 }

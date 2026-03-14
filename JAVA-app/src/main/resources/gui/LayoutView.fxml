@@ -74,10 +74,17 @@
                 </HBox>
             </HBox>
 
-            <HBox fx:id="teamsRow" styleClass="nav-wrapper">
+            <HBox fx:id="allTeamsRow" styleClass="nav-wrapper">
                 <Region styleClass="active-indicator" />
                 <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
-                    <Button fx:id="teamsBtn" maxWidth="1.7976931348623157E308" onAction="#onTeams" styleClass="nav-item" text="Teams Beheren" HBox.hgrow="ALWAYS" />
+                    <Button fx:id="allTeamsBtn" maxWidth="1.7976931348623157E308" onAction="#onAllTeams" styleClass="nav-item" text="Teams Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="mijnTeamRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="mijnTeamBtn" maxWidth="1.7976931348623157E308" onAction="#onMijnTeam" styleClass="nav-item" text="Team Beheren" HBox.hgrow="ALWAYS" />
                 </HBox>
             </HBox>
 
