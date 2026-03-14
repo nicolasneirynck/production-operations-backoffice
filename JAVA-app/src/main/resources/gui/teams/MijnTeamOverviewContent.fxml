@@ -10,7 +10,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.teams.MijnTeamOverviewController"
+      fx:controller="gui.teams.controllers.MijnTeamOverviewController"
       spacing="18">
 
     <HBox alignment="CENTER_LEFT" spacing="12">

@@ -1,4 +1,4 @@
-package domein;
+package domein.beheerders;
 
 import domein.entiteiten.Gebruiker;
 import domein.entiteiten.Site;
@@ -10,7 +10,7 @@ import repository.GenericDaoJpa;
 import java.util.List;
 import java.util.Optional;
 
-public class TeamBeheerder {
+public class TeamBeheerder implements AlleTeamsBeheer, MijnTeamBeheer{
 
     private final GenericDao<Team> teamRepo;
     private final GenericDao<Site> siteRepo;
@@ -110,7 +110,7 @@ public class TeamBeheerder {
         }
     }
 
-    public Optional<Team> findTeamVanVerantwoordelijke(long verantwoordelijkeId) {
+    public Optional<Team> findMijnTeam(long verantwoordelijkeId) {
         return teamRepo.findAll().stream()
                 .filter(team -> isVanVerantwoordelijke(team, verantwoordelijkeId))
                 .findFirst();

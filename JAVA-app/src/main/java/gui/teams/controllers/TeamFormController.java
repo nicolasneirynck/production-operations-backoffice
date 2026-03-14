@@ -1,4 +1,4 @@
-package gui.teams;
+package gui.teams.controllers;
 
 import dto.GebruikerDTO;
 import dto.SiteDTO;
@@ -7,6 +7,7 @@ import exception.ValidationException;
 import gui.factories.BadgeFactory;
 import gui.navigation.ClosableFormGuard;
 import gui.navigation.FormController;
+import gui.teams.WerknemerAddCell;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,10 +15,17 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import lombok.Setter;
 import main.AppContext;
 import util.Rollen;
@@ -27,47 +35,40 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public class TeamFormController implements FormController, ClosableFormGuard {
+public abstract class TeamFormController implements FormController, ClosableFormGuard {
 
-    @FXML private Label titleLabel;
+    @FXML protected Label titleLabel;
 
-    @FXML private ComboBox<SiteDTO> siteCb;
-    @FXML private Label verantwoordelijkeBadge;
-    @FXML private TextField zoekTf;
+    @FXML protected ComboBox<SiteDTO> siteCb;
+    @FXML protected Label verantwoordelijkeBadge;
+    @FXML protected TextField zoekTf;
 
-    @FXML private TableView<GebruikerDTO> werknemersTable;
-    @FXML private TableColumn<GebruikerDTO, String> naamCol;
-    @FXML private TableColumn<GebruikerDTO, String> voornaamCol;
-    @FXML private TableColumn<GebruikerDTO, GebruikerDTO> addCol;
+    @FXML protected TableView<GebruikerDTO> werknemersTable;
+    @FXML protected TableColumn<GebruikerDTO, String> naamCol;
+    @FXML protected TableColumn<GebruikerDTO, String> voornaamCol;
+    @FXML protected TableColumn<GebruikerDTO, GebruikerDTO> addCol;
 
-    @FXML private FlowPane selectedPane;
+    @FXML protected FlowPane selectedPane;
 
-    @FXML private Label siteErr;
-    @FXML private Label verantwoordelijkeErr;
-    @FXML private Label medewerkersErr;
-    @FXML private Label formInfoLbl;
+    @FXML protected Label siteErr;
+    @FXML protected Label verantwoordelijkeErr;
+    @FXML protected Label medewerkersErr;
+    @FXML protected Label formInfoLbl;
 
-    @FXML private Button saveBtn;
-    @FXML private Button cancelBtn;
+    @FXML protected Button saveBtn;
+    @FXML protected Button cancelBtn;
 
     @Setter private Runnable onClose;
 
-    private AppContext context;
-    @Setter private boolean managerMode = true;
-    private ObservableTeams observableTeams;
-    private final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
-    private final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
+    @Setter protected AppContext context;
+    protected final ObservableList<GebruikerDTO> alleWerknemers = FXCollections.observableArrayList();
+    protected final ObservableList<GebruikerDTO> geselecteerdeWerknemers = FXCollections.observableArrayList();
     private FilteredList<GebruikerDTO> filteredBeschikbaar;
     private SortedList<GebruikerDTO> sortedBeschikbaar;
 
-    private String editingTeamId = null;
+    protected String editingTeamId = null;
     private TeamFormData initialFormData;
 
-    @Override
-    public void setContext(AppContext ctx) {
-        this.context = ctx;
-        this.observableTeams = ctx.getObservableTeams();
-    }
 
     @FXML
     private void initialize() {
@@ -85,6 +86,104 @@ public class TeamFormController implements FormController, ClosableFormGuard {
             werknemersTable.refresh();
             clearError("medewerkers");
         });
+    }
+
+    @Override
+    public void loadData() {
+        if (isManagerMode()) {
+            loadSites();
+        }
+        loadWerknemers();
+    }
+
+    public void prepareForCreate() {
+        if (!isManagerMode()) {
+            throw new IllegalStateException("Alleen managers kunnen een team aanmaken.");
+        }
+
+        editingTeamId = null;
+        titleLabel.setText("Nieuw team");
+
+        loadSitesVoorCreate();
+        loadWerknemers();
+
+        siteCb.setValue(null);
+        siteCb.setDisable(false);
+        geselecteerdeWerknemers.clear();
+        zoekTf.clear();
+
+        clearErrors();
+        updateVerantwoordelijkeDisplay();
+
+        if (siteCb.getItems().isEmpty()) {
+            formInfoLbl.setText("Er kan geen nieuw team worden aangemaakt, omdat alle sites al een team hebben.");
+            saveBtn.setDisable(true);
+        } else {
+            saveBtn.setDisable(false);
+        }
+
+        initialFormData = currentFormData();
+    }
+
+    public void prepareForEdit(TeamDTO team) {
+        editingTeamId = team.teamCode();
+        titleLabel.setText("Team wijzigen");
+
+        if (isManagerMode()) {
+            loadSitesVoorEdit(team.site());
+            siteCb.setDisable(false);
+        } else {
+            siteCb.setItems(FXCollections.observableArrayList(List.of(team.site())));
+            siteCb.setDisable(true);
+        }
+
+        loadWerknemers();
+        siteCb.setValue(team.site());
+
+        geselecteerdeWerknemers.setAll(team.teamleden().stream()
+                .sorted(Comparator.comparing(GebruikerDTO::naam, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(GebruikerDTO::voornaam, String.CASE_INSENSITIVE_ORDER))
+                .toList());
+
+        zoekTf.clear();
+        clearErrors();
+        updateVerantwoordelijkeDisplay();
+        initialFormData = currentFormData();
+    }
+
+    protected abstract boolean isManagerMode();
+
+    protected abstract void saveTeam(SiteDTO site, List<Long> medewerkerIds) throws ValidationException;
+
+    @FXML
+    private void onSave() {
+        clearErrors();
+
+        SiteDTO site = siteCb.getValue();
+
+        if (!validateForm(site)) {
+            return;
+        }
+
+        List<Long> medewerkerIds = geselecteerdeWerknemers.stream()
+                .map(GebruikerDTO::gebruikerId)
+                .toList();
+
+        try {
+            saveTeam(site, medewerkerIds);
+            close();
+        } catch (ValidationException ex) {
+            showValidationErrors(ex);
+        } catch (RuntimeException ex) {
+            new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
+        }
+    }
+
+    @FXML
+    private void onCancel() {
+        if (canClose()) {
+            close();
+        }
     }
 
     private void configureSiteComboBox() {
@@ -123,66 +222,6 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         naamCol.setSortable(true);
         voornaamCol.setSortable(true);
         addCol.setSortable(false);
-    }
-
-    @Override
-    public void loadData() {
-        if (managerMode) {
-            loadSites();
-        }
-        loadWerknemers();
-    }
-
-    public void loadForCreate() {
-        editingTeamId = null;
-        titleLabel.setText("Nieuw team");
-
-        loadSitesVoorCreate();
-        loadWerknemers();
-
-        siteCb.setValue(null);
-        siteCb.setDisable(false);
-        geselecteerdeWerknemers.clear();
-        zoekTf.clear();
-
-
-        clearErrors();
-        updateVerantwoordelijkeDisplay();
-
-        if (siteCb.getItems().isEmpty()) {
-            formInfoLbl.setText("Er kan geen nieuw team worden aangemaakt, omdat alle sites al een team hebben.");
-            saveBtn.setDisable(true);
-        } else {
-            saveBtn.setDisable(false);
-        }
-
-        initialFormData = currentFormData();
-    }
-
-    public void loadForEdit(TeamDTO team) {
-        editingTeamId = team.teamCode();
-        titleLabel.setText("Team wijzigen");
-
-        if (!managerMode) {
-            siteCb.setItems(FXCollections.observableArrayList(List.of(team.site())));
-            siteCb.setDisable(true);
-        } else {
-            loadSitesVoorEdit(team.site());
-            siteCb.setDisable(false);
-        }
-
-        loadWerknemers();
-        siteCb.setValue(team.site());
-
-        geselecteerdeWerknemers.setAll(team.teamleden().stream()
-                .sorted(Comparator.comparing(GebruikerDTO::naam, String.CASE_INSENSITIVE_ORDER)
-                        .thenComparing(GebruikerDTO::voornaam, String.CASE_INSENSITIVE_ORDER))
-                .toList());
-
-        zoekTf.clear();
-        clearErrors();
-        updateVerantwoordelijkeDisplay();
-        initialFormData = currentFormData();
     }
 
     private void loadSites() {
@@ -294,45 +333,6 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         }
     }
 
-    @FXML
-    private void onSave() {
-        clearErrors();
-
-        SiteDTO site = siteCb.getValue();
-
-        if (!validateForm(site)) {
-            return;
-        }
-
-        List<Long> medewerkerIds = geselecteerdeWerknemers.stream()
-                .map(GebruikerDTO::gebruikerId)
-                .toList();
-
-        try {
-            if (!managerMode) {
-                if (editingTeamId == null) {
-                    throw new IllegalStateException("Als verantwoordelijke kan je geen team aanmaken.");
-                }
-
-                context.getTeamController().updateMijnTeam(editingTeamId, medewerkerIds);
-                observableTeams.replaceWithSingleTeam(context.getTeamController().getMijnTeam());
-            } else {
-                if (editingTeamId == null) {
-                    observableTeams.addTeam(site.siteId(), medewerkerIds);
-                } else {
-                    observableTeams.updateTeam(editingTeamId, medewerkerIds);
-                }
-            }
-
-            close();
-
-        } catch (ValidationException ex) {
-            showValidationErrors(ex);
-        } catch (RuntimeException ex) {
-            new Alert(Alert.AlertType.ERROR, "Opslaan mislukt: " + ex.getMessage()).showAndWait();
-        }
-    }
-
     private boolean validateForm(SiteDTO site) {
         boolean valid = true;
 
@@ -348,13 +348,6 @@ public class TeamFormController implements FormController, ClosableFormGuard {
         }
 
         return valid;
-    }
-
-    @FXML
-    private void onCancel() {
-        if (canClose()) {
-            close();
-        }
     }
 
     private void close() {

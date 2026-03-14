@@ -5,23 +5,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import lombok.Getter;
-import java.util.List;
 
-public class ObservableTeams {
+import java.util.Optional;
+
+public class ObservableTeam {
 
     private final ObservableList<TeamDTO> observableTeamList;
     @Getter private final FilteredList<TeamDTO> filteredTeamList;
 
-    public ObservableTeams() {
+    public ObservableTeam() {
         this.observableTeamList = FXCollections.observableArrayList();
         this.filteredTeamList = new FilteredList<>(observableTeamList, t -> true);
     }
 
-    public void setTeams(List<TeamDTO> teams) {
-        observableTeamList.setAll(teams);
-    }
-
-    public void removeTeam(String teamCode) {
-        observableTeamList.removeIf(t -> t.teamCode().equals(teamCode));
+    public void setTeam(Optional<TeamDTO> team) {
+        if (team.isEmpty()) {
+            observableTeamList.clear();
+        } else {
+            observableTeamList.setAll(team.get());
+        }
     }
 }

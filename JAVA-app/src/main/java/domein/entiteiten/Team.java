@@ -20,7 +20,7 @@ public class Team {
     private Long id;
 
     private final String code = UUID.randomUUID().toString();
- 
+
     // team hoort tot 1 site
     @OneToOne
     private Site site;

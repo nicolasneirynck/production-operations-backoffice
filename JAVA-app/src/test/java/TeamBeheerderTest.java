@@ -1,4 +1,4 @@
-import domein.TeamBeheerder;
+import domein.beheerders.TeamBeheerder;
 import domein.entiteiten.Gebruiker;
 import domein.entiteiten.Locatie;
 import domein.entiteiten.Site;

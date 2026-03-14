@@ -1,4 +1,4 @@
-package gui.teams;
+package gui.teams.controllers;
 
 import dto.GebruikerDTO;
 import dto.SiteDTO;
@@ -8,8 +8,10 @@ import gui.navigation.FormLoader;
 import gui.navigation.NavigableController;
 import gui.navigation.NavigationGuard;
 import gui.navigation.Navigator;
+import gui.teams.TeamLedenTableCell;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -22,9 +24,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
-import util.View;
 
-public abstract class AbstractTeamOverviewController implements NavigableController, NavigationGuard {
+public abstract class TeamOverviewController implements NavigableController, NavigationGuard {
+    private static final String MANAGER_FORM_FXML = "/gui/teams/ManagerTeamFormContent.fxml";
+    private static final String MIJN_TEAM_FORM_FXML = "/gui/teams/MijnTeamFormContent.fxml";
 
     @FXML protected Label titleLabel;
     @FXML protected Button addBtn;
@@ -39,15 +42,8 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
     @Setter protected Navigator navigator;
     protected ClosableFormGuard activeFormGuard;
 
-    protected AppContext context;
-    protected ObservableTeams observableTeams;
+    @Setter protected AppContext context;
     protected SortedList<TeamDTO> sortedList;
-
-    @Override
-    public void setContext(AppContext ctx) {
-        this.context = ctx;
-        this.observableTeams = ctx.getObservableTeams();
-    }
 
     @FXML
     private void initialize() {
@@ -98,9 +94,13 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
 
     protected abstract void configureActiesColumn();
 
+    protected abstract FilteredList<TeamDTO> getFilteredTeams();
+
+    protected abstract void deleteTeam(String teamCode);
+
     protected void initializeTableItems() {
         if (sortedList == null) {
-            sortedList = new SortedList<>(observableTeams.getFilteredTeamList());
+            sortedList = new SortedList<>(getFilteredTeams());
             sortedList.comparatorProperty().bind(teamTable.comparatorProperty());
             teamTable.setItems(sortedList);
         }
@@ -110,11 +110,8 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
         TeamFormController controller = FormLoader.showForm(
                 formHost,
                 context,
-                View.TEAMS_FORM.fxml,
-                c -> {
-                    c.setManagerMode(true);
-                    c.loadForCreate();
-                }
+                getFormFxmlPath(),
+                TeamFormController::prepareForCreate
         );
 
         controller.setOnClose(this::closeForm);
@@ -128,16 +125,16 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
 
     protected abstract boolean isManagerMode();
 
+    private String getFormFxmlPath() {
+        return isManagerMode() ? MANAGER_FORM_FXML : MIJN_TEAM_FORM_FXML;
+    }
 
     protected void onEdit(TeamDTO team) {
         TeamFormController controller = FormLoader.showForm(
                 formHost,
                 context,
-                View.TEAMS_FORM.fxml,
-                c -> {
-                    c.setManagerMode(isManagerMode());
-                    c.loadForEdit(team);
-                }
+                getFormFxmlPath(),
+                c -> c.prepareForEdit(team)
         );
 
         controller.setOnClose(this::closeForm);
@@ -158,7 +155,7 @@ public abstract class AbstractTeamOverviewController implements NavigableControl
         alert.showAndWait().ifPresent(response -> {
             if (response == yesBtn) {
                 try {
-                    observableTeams.deleteTeam(team.teamCode());
+                    deleteTeam(team.teamCode());
                 } catch (RuntimeException ex) {
                     Alert error = new Alert(Alert.AlertType.ERROR);
                     error.setTitle("Fout");

@@ -1,7 +1,7 @@
 package main;
 
 import domein.GebruikerController;
-import domein.controllers.TeamController;
+import domein.controllers.TeamService;
 import domein.controllers.SiteController;
 import domein.controllers.TaakController;
 import exception.ValidationException;
@@ -316,11 +316,11 @@ public class MockdataSeeder {
     }
 
     private static void seedTeams(AppContext context) throws ValidationException {
-        TeamController teamController = context.getTeamController();
+        TeamService teamService = context.getTeamService();
 
-        teamController.addTeam(1L, List.of(6L, 7L, 8L, 9L, 10L));
-        teamController.addTeam(2L, List.of(11L, 12L, 13L));
-        teamController.addTeam(3L, List.of(14L, 15L, 16L));
+        teamService.addTeam(1L, List.of(6L, 7L, 8L, 9L, 10L));
+        teamService.addTeam(2L, List.of(11L, 12L, 13L));
+        teamService.addTeam(3L, List.of(14L, 15L, 16L));
     }
 
     public static void seed(AppContext context) throws ValidationException {
