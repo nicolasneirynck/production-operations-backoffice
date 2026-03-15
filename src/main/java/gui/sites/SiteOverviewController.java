@@ -1,5 +1,6 @@
 package gui.sites;
 
+import domein.services.SiteService;
 import dto.GebruikerDTO;
 import dto.SiteDTO;
 import gui.factories.ActionColumnFactory;
@@ -34,12 +35,14 @@ public class SiteOverviewController implements NavigableController, NavigationGu
     private ClosableFormGuard activeFormGuard;
 
     private AppContext context;
+    private SiteService siteService;
     private ObservableSites observableSites;
     private SortedList<SiteDTO> sortedList;
 
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
+        this.siteService = ctx.getSiteService();
         this.observableSites = ctx.getObservableSites();
     }
 
@@ -175,7 +178,7 @@ public class SiteOverviewController implements NavigableController, NavigationGu
     }
 
     private void loadSites() {
-        observableSites.reload();
+        observableSites.setSites(siteService.getAllSites());
     }
 
     private void initializeTableItems() {
@@ -251,8 +254,9 @@ public class SiteOverviewController implements NavigableController, NavigationGu
         alert.showAndWait().ifPresent(choice -> {
             if (choice == delete) {
                 try {
-                    observableSites.deleteSite(site.siteId()); // moet bestaan
-                   loadData();
+                    siteService.deleteSite(site.siteId());
+                    observableSites.removeSite(site.siteId());
+                    loadData();
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {

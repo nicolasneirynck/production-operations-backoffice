@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.sites.SiteFormController"
+      fx:id="root"
+      spacing="10">
+
+    <styleClass>
+        <String fx:value="card"/>
+        <String fx:value="form-card"/>
+    </styleClass>
+
+    <Label fx:id="titleLabel" text="Site aanmaken" styleClass="card-title"/>
+
+    <HBox spacing="24">
+
+        <!-- LINKS: Algemene gegevens -->
+        <VBox spacing="8" prefWidth="380" minWidth="380" maxWidth="380">
+            <Label text="Algemene gegevens" styleClass="section-title"/>
+
+            <GridPane hgap="8" vgap="6">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="155" hgrow="NEVER" halignment="LEFT"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <!-- Site naam -->
+                <Label text="Site naam" styleClass="form-label"
+                       GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <VBox spacing="2" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <TextField fx:id="naamTf" promptText="bv. Gent Plant" maxWidth="Infinity"/>
+                    <Label fx:id="naamErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Verantwoordelijke -->
+                <Label text="Verantwoordelijke" styleClass="form-label"
+                       GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <VBox spacing="2" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <ComboBox fx:id="verantwoordelijkeCb" maxWidth="Infinity"/>
+                    <Label fx:id="formInfoLbl"
+                           wrapText="true"
+                           maxWidth="300"
+                           visible="false"
+                           managed="false"
+                           styleClass="info-label"/>
+                    <Label fx:id="verantwoordelijkeErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Capaciteit -->
+                <Label text="Capaciteit" styleClass="form-label"
+                       GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <VBox spacing="2" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <TextField fx:id="capaciteitTf" promptText="bv. 120" maxWidth="Infinity"/>
+                    <Label fx:id="capaciteitErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Operationele status -->
+                <Label text="Operationele status" styleClass="form-label"
+                       GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <VBox spacing="2" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <ComboBox fx:id="operationeelCb" maxWidth="Infinity"/>
+                    <Label fx:id="operationeelErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Productie status -->
+                <Label text="Productie status" styleClass="form-label"
+                       GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <VBox spacing="2" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+                    <ComboBox fx:id="productieCb" maxWidth="Infinity"/>
+                    <Label fx:id="productieErr" styleClass="error-label"/>
+                </VBox>
+
+            </GridPane>
+        </VBox>
+
+        <!-- RECHTS: Adres -->
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label text="Adres" styleClass="section-title"/>
+
+            <GridPane hgap="8" vgap="6">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="70" hgrow="NEVER" halignment="LEFT"/>
+                    <ColumnConstraints prefWidth="210" hgrow="NEVER"/>
+                    <ColumnConstraints prefWidth="20" hgrow="NEVER" halignment="LEFT"/>
+                    <ColumnConstraints prefWidth="140" hgrow="NEVER"/>
+                </columnConstraints>
+
+                <!-- Straat -->
+                <Label text="Straat" styleClass="form-label"
+                       GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+
+                <VBox spacing="3" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <TextField fx:id="straatTf" maxWidth="Infinity"/>
+                    <Label fx:id="straatErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Nummer -->
+                <Label text="Nr" styleClass="form-label"
+                       GridPane.rowIndex="0" GridPane.columnIndex="2" GridPane.valignment="TOP"/>
+
+                <VBox spacing="3" GridPane.rowIndex="0" GridPane.columnIndex="3">
+                    <TextField fx:id="nummerTf" prefWidth="72" maxWidth="72"/>
+                    <Label fx:id="nummerErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Postcode -->
+                <Label text="Postcode" styleClass="form-label"
+                       GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="1"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
+                    <TextField fx:id="postcodeTf"
+                               promptText="bv. 9000"
+                               maxWidth="150"/>
+
+                    <Label fx:id="postcodeErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Gemeente -->
+                <Label text="Gemeente" styleClass="form-label"
+                       GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="2"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
+                    <TextField fx:id="gemeenteTf"
+                               maxWidth="260"/>
+
+                    <Label fx:id="gemeenteErr" styleClass="error-label"/>
+                </VBox>
+
+                <!-- Land -->
+                <Label text="Land" styleClass="form-label"
+                       GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+
+                <VBox spacing="3"
+                      GridPane.rowIndex="3"
+                      GridPane.columnIndex="1"
+                      GridPane.columnSpan="3"
+                      GridPane.hgrow="ALWAYS">
+
+                    <ComboBox fx:id="landCb" maxWidth="260"/>
+
+                    <Label fx:id="landErr" styleClass="error-label"/>
+                </VBox>
+
+            </GridPane>
+        </VBox>
+
+    </HBox>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelBtn" text="Annuleren" onAction="#onCancel" styleClass="btn-ghost"/>
+        <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
+    </HBox>
+
+</VBox>

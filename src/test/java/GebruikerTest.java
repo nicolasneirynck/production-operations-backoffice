@@ -1,4 +1,5 @@
 import domein.entiteiten.Gebruiker;
+import domein.entiteiten.Locatie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import util.GebruikerStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,13 +20,13 @@ public class GebruikerTest {
     private Gebruiker.Builder gebruikerBuilder;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         gebruikerBuilder = Gebruiker.builder()
                 .personeelsnummer(1)
                 .naam("eenNaam")
                 .voornaam("eenVoornaam")
-                .geboortedatum("02/24/2000")
-                .adres("Straat 5; Stad; Land")
+                .geboortedatum(LocalDate.of(2000, 2, 24))
+                .locatie(Locatie.builder("Straat", "5", "9000", "Stad", "Land"))
                 .email("geldigeEmail@gmail.com")
                 .gsm("+32 2 152 45 62")
                 .rol(Rollen.WERKNEMER)
@@ -32,15 +35,22 @@ public class GebruikerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"5, Achternaam, Lars, 08/02/1980, EenStraat 16; Gent; België, lars@gmail.com, +32 5 113 45 62, mijnWachtwoord", "512390581, Langelangelangelangelangeachternaam, Pérsöon, 12/12/1950, LangeLangeLangeStraat 16; Brussel; België, eenEmail@proton.me, +50 5 144 45 62, w@132_"})
-    void builder_GeldigeCombinaties_MaaktNieuweGebruikerMetCorrecteInfo(int personeelsnummer, String naam, String voornaam, String geboortedatum, String adres, String email, String gsm, String wachtwoord) {
-        Gebruiker gebruiker = gebruikerBuilder.personeelsnummer(personeelsnummer).naam(naam).voornaam(voornaam).geboortedatum(geboortedatum).adres(adres).email(email).gsm(gsm).wachtwoord(wachtwoord).build();
+    @CsvSource({"5, Achternaam, Lars, 1980, 8, 2, EenStraat, 16, 9000, Gent, België, lars@gmail.com, +32 5 113 45 62, mijnWachtwoord", "512390581, Langelangelangelangelangeachternaam, Pérsöon, 1950, 12, 12, LangeLangeLangeStraat, 16, 1000, Brussel, België, eenEmail@proton.me, +50 5 144 45 62, w@132_"})
+    void builder_GeldigeCombinaties_MaaktNieuweGebruikerMetCorrecteInfo(int personeelsnummer, String naam, String voornaam,
+                                                                        int year, int month, int day, String straat,
+                                                                        String nummer, String postcode, String gemeente,
+                                                                        String land, String email, String gsm,
+                                                                        String wachtwoord) throws Exception {
+        LocalDate geboortedatum = LocalDate.of(year, month, day);
+        Locatie locatie = Locatie.builder(straat, nummer, postcode, gemeente, land);
+        Gebruiker gebruiker = gebruikerBuilder.personeelsnummer(personeelsnummer).naam(naam).voornaam(voornaam)
+                .geboortedatum(geboortedatum).locatie(locatie).email(email).gsm(gsm).wachtwoord(wachtwoord).build();
 
         assertEquals(personeelsnummer, gebruiker.getPersoneelsnummer());
         assertEquals(naam, gebruiker.getNaam());
         assertEquals(voornaam, gebruiker.getVoornaam());
         assertEquals(geboortedatum, gebruiker.getGeboortedatum());
-        assertEquals(adres, gebruiker.getAdres());
+        assertEquals(locatie, gebruiker.getLocatie());
         assertEquals(email, gebruiker.getEmail());
         assertEquals(gsm, gebruiker.getGsm());
         assertEquals(wachtwoord, gebruiker.getWachtwoord());

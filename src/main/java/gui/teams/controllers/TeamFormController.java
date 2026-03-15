@@ -1,6 +1,6 @@
 package gui.teams.controllers;
 
-import domein.controllers.AlleTeamsService;
+import domein.services.AlleTeamsService;
 import dto.GebruikerDTO;
 import dto.SiteDTO;
 import dto.TeamDTO;
@@ -29,8 +29,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import lombok.Setter;
 import main.AppContext;
-import util.Rollen;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -278,10 +276,9 @@ public abstract class TeamFormController implements FormController, ClosableForm
     }
 
     private void loadWerknemers() {
-        List<GebruikerDTO> werknemers = context.getGebruikerController()
-                .getAllGebruikers()
+        List<GebruikerDTO> werknemers = context.getGebruikerService()
+                .getWerknemersVoorTeamBeheer()
                 .stream()
-                .filter(g -> g.rol() == Rollen.WERKNEMER)
                 .sorted(Comparator.comparing(GebruikerDTO::naam, String.CASE_INSENSITIVE_ORDER)
                         .thenComparing(GebruikerDTO::voornaam, String.CASE_INSENSITIVE_ORDER))
                 .toList();

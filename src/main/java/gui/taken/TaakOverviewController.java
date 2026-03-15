@@ -1,6 +1,7 @@
 package gui.taken;
 
 import dto.TaakDTO;
+import domein.services.TaakService;
 import gui.navigation.*;
 import gui.LayoutController;
 import gui.factories.ActionColumnFactory;
@@ -26,6 +27,7 @@ public class TaakOverviewController implements NavigableController, NavigationGu
 
     private AppContext context;
     @Setter private Navigator navigator;
+    private TaakService taakService;
     private ObservableTaken observableTaken;
 
     private SortedList<TaakDTO> sortedList;
@@ -35,6 +37,7 @@ public class TaakOverviewController implements NavigableController, NavigationGu
     @Override
     public void setContext(AppContext ctx) {
         this.context = ctx;
+        this.taakService = ctx.getTaakService();
         this.observableTaken = ctx.getObservableTaken();
     }
 
@@ -75,7 +78,7 @@ public class TaakOverviewController implements NavigableController, NavigationGu
     }
 
     private void loadTaken() {
-        observableTaken.reload();
+        observableTaken.setTaken(taakService.getAllTaken());
     }
 
     private void initializeTableItems() {
@@ -139,7 +142,8 @@ public class TaakOverviewController implements NavigableController, NavigationGu
         alert.showAndWait().ifPresent(choice -> {
             if (choice == delete) {
                 try {
-                    observableTaken.deleteTaak(taak.taakId());
+                    taakService.deleteTaak(taak.taakId());
+                    observableTaken.removeTaak(taak.taakId());
                     loadData();
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();

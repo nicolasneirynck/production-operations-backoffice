@@ -1,9 +1,9 @@
 package main;
 
-import domein.GebruikerController;
-import domein.controllers.TeamService;
-import domein.controllers.SiteController;
-import domein.controllers.TaakController;
+import domein.services.TeamService;
+import domein.services.GebruikerService;
+import domein.services.SiteService;
+import domein.services.TaakService;
 import exception.ValidationException;
 import security.Permission;
 import security.SecurityContext;
@@ -13,6 +13,7 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class MockdataSeeder {
     }
 
     private static void seedSites(AppContext context) throws ValidationException {
-        SiteController sc = context.getSiteController();
+        SiteService sc = context.getSiteService();
 
         sc.addSite(
                 "Gent Plant",
@@ -65,7 +66,7 @@ public class MockdataSeeder {
     }
 
     private static void seedTaken(AppContext context) throws ValidationException {
-        TaakController tc = context.getTaakController();
+        TaakService tc = context.getTaakService();
 
         tc.addTaak("Onderhoud", "Maandelijks onderhoud van productiemachine", 60);
         tc.addTaak("Inspectie", "Visuele controle van assemblagelijn", 15);
@@ -78,14 +79,14 @@ public class MockdataSeeder {
     }
 
     private static void seedGebruikers(AppContext context) {
-        GebruikerController gc = context.getGebruikerController();
+        GebruikerService gc = context.getGebruikerService();
 
-        gc.addGebruiker(
-                1,
+        addGebruiker(
+                gc,
                 "Admin",
                 "System",
-                "2000-10-02",
-                "Hoofdzetel België",
+                LocalDate.parse("2000-10-02"),
+                "Hoofdzetellaan", "1", "1000", "Brussel", "België",
                 "admin@test.com",
                 "",
                 Rollen.ADMINISTRATOR,
@@ -93,12 +94,12 @@ public class MockdataSeeder {
                 "admin"
         );
 
-        gc.addGebruiker(
-                2,
+        addGebruiker(
+                gc,
                 "Manager",
                 "Plant",
-                "2000-10-02",
-                "Gent, België",
+                LocalDate.parse("2000-10-02"),
+                "Plantstraat", "2", "9000", "Gent", "België",
                 "manager@test.com",
                 "",
                 Rollen.MANAGER,
@@ -106,12 +107,12 @@ public class MockdataSeeder {
                 "manager"
         );
 
-        gc.addGebruiker(
-                3,
+        addGebruiker(
+                gc,
                 "Verantwoordelijke",
                 "Team",
-                "2000-10-02",
-                "Antwerpen, België",
+                LocalDate.parse("2000-10-02"),
+                "Teamstraat", "3", "2000", "Antwerpen", "België",
                 "verantwoordelijke@test.com",
                 "",
                 Rollen.VERANTWOORDELIJKE,
@@ -119,12 +120,12 @@ public class MockdataSeeder {
                 "verantwoordelijke"
         );
 
-        gc.addGebruiker(
-                4,
+        addGebruiker(
+                gc,
                 "Verantwoordelijke",
                 "Site2",
-                "1995-06-10",
-                "Brussel, België",
+                LocalDate.parse("1995-06-10"),
+                "Sitestraat", "4", "1000", "Brussel", "België",
                 "verantwoordelijke2@test.com",
                 "",
                 Rollen.VERANTWOORDELIJKE,
@@ -132,12 +133,12 @@ public class MockdataSeeder {
                 "verantwoordelijke2"
         );
 
-        gc.addGebruiker(
-                5,
+        addGebruiker(
+                gc,
                 "Verantwoordelijke",
                 "Site3",
-                "1992-03-18",
-                "Gent, België",
+                LocalDate.parse("1992-03-18"),
+                "Fabriekstraat", "5", "9000", "Gent", "België",
                 "verantwoordelijke3@test.com",
                 "",
                 Rollen.VERANTWOORDELIJKE,
@@ -145,12 +146,12 @@ public class MockdataSeeder {
                 "verantwoordelijke3"
         );
 
-        gc.addGebruiker(
-                1001,
+        addGebruiker(
+                gc,
                 "Jaap",
                 "Jan",
-                "1988-03-14",
-                "Stationsstraat 12, 9000 Gent",
+                LocalDate.parse("1988-03-14"),
+                "Stationsstraat", "12", "9000", "Gent", "België",
                 "jan.jaap@koga.com",
                 "0470123456",
                 Rollen.WERKNEMER,
@@ -158,12 +159,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1002,
+        addGebruiker(
+                gc,
                 "Stroeykens",
                 "Mario",
-                "1992-07-21",
-                "Kortrijksesteenweg 85, 9000 Gent",
+                LocalDate.parse("1992-07-21"),
+                "Kortrijksesteenweg", "85", "9000", "Gent", "België",
                 "mario@koga.com",
                 "0471123456",
                 Rollen.WERKNEMER,
@@ -171,12 +172,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1003,
+        addGebruiker(
+                gc,
                 "Verschaeren",
                 "Yari",
-                "1999-01-17",
-                "Brusselsesteenweg 201, 9090 Melle",
+                LocalDate.parse("1999-01-17"),
+                "Brusselsesteenweg", "201", "9090", "Melle", "België",
                 "yari@koga.com",
                 "0472123456",
                 Rollen.WERKNEMER,
@@ -184,12 +185,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1004,
+        addGebruiker(
+                gc,
                 "De Cat",
                 "Nathan",
-                "1991-11-05",
-                "Dendermondsesteenweg 44, 9040 Sint-Amandsberg",
+                LocalDate.parse("1991-11-05"),
+                "Dendermondsesteenweg", "44", "9040", "Sint-Amandsberg", "België",
                 "nathan.decat@koga.com",
                 "0473123456",
                 Rollen.WERKNEMER,
@@ -197,12 +198,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1005,
+        addGebruiker(
+                gc,
                 "Saliba",
                 "Nathan",
-                "1990-04-09",
-                "Antwerpsesteenweg 310, 9040 Sint-Amandsberg",
+                LocalDate.parse("1990-04-09"),
+                "Antwerpsesteenweg", "310", "9040", "Sint-Amandsberg", "België",
                 "nathan.saliba@koga.com",
                 "0474123456",
                 Rollen.WERKNEMER,
@@ -210,12 +211,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1006,
+        addGebruiker(
+                gc,
                 "Mourinho",
                 "Jose",
-                "1978-02-26",
-                "Kasteellaan 18, 9000 Gent",
+                LocalDate.parse("1978-02-26"),
+                "Kasteellaan", "18", "9000", "Gent", "België",
                 "jose@koga.com",
                 "0475123456",
                 Rollen.WERKNEMER,
@@ -223,12 +224,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1007,
+        addGebruiker(
+                gc,
                 "Vanaken",
                 "Hans",
-                "1987-08-12",
-                "Ledebergstraat 9, 9050 Ledeberg",
+                LocalDate.parse("1987-08-12"),
+                "Ledebergstraat", "9", "9050", "Ledeberg", "België",
                 "hans@koga.com",
                 "0476123456",
                 Rollen.WERKNEMER,
@@ -236,12 +237,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1008,
+        addGebruiker(
+                gc,
                 "Lammens",
                 "Senne",
-                "1996-06-03",
-                "Schoolstraat 27, 9820 Merelbeke",
+                LocalDate.parse("1996-06-03"),
+                "Schoolstraat", "27", "9820", "Merelbeke", "België",
                 "senne@koga.com",
                 "0477123456",
                 Rollen.WERKNEMER,
@@ -249,12 +250,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1009,
+        addGebruiker(
+                gc,
                 "Mignolet",
                 "Simon",
-                "1989-10-22",
-                "Oude Brusselseweg 61, 9050 Gentbrugge",
+                LocalDate.parse("1989-10-22"),
+                "Oude Brusselseweg", "61", "9050", "Gentbrugge", "België",
                 "simon@koga.com",
                 "0478123456",
                 Rollen.WERKNEMER,
@@ -262,12 +263,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1010,
+        addGebruiker(
+                gc,
                 "Ancelotti",
                 "Carlo",
-                "1980-09-01",
-                "Keizer Karelstraat 103, 9000 Gent",
+                LocalDate.parse("1980-09-01"),
+                "Keizer Karelstraat", "103", "9000", "Gent", "België",
                 "carlo@koga.com",
                 "0479123456",
                 Rollen.WERKNEMER,
@@ -275,12 +276,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1011,
+        addGebruiker(
+                gc,
                 "Garcia",
                 "Pablo",
-                "1993-12-11",
-                "Hundelgemsesteenweg 55, 9050 Ledeberg",
+                LocalDate.parse("1993-12-11"),
+                "Hundelgemsesteenweg", "55", "9050", "Ledeberg", "België",
                 "pablo@koga.com",
                 "0480123456",
                 Rollen.WERKNEMER,
@@ -288,12 +289,12 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1012,
+        addGebruiker(
+                gc,
                 "Boon",
                 "Pieter",
-                "1994-05-19",
-                "Meulestedekaai 8, 9000 Gent",
+                LocalDate.parse("1994-05-19"),
+                "Meulestedekaai", "8", "9000", "Gent", "België",
                 "pieter@koga.com",
                 "0481123456",
                 Rollen.WERKNEMER,
@@ -301,17 +302,26 @@ public class MockdataSeeder {
                 "test123"
         );
 
-        gc.addGebruiker(
-                1013,
+        addGebruiker(
+                gc,
                 "Pieters",
                 "Jan",
-                "1986-01-30",
-                "Nieuwstraat 77, 9030 Mariakerke",
+                LocalDate.parse("1986-01-30"),
+                "Nieuwstraat", "77", "9030", "Mariakerke", "België",
                 "jan.pieters@koga.com",
                 "0482123456",
                 Rollen.WERKNEMER,
                 GebruikerStatus.ACTIEF,
                 "test123"
+        );
+    }
+
+    private static void addGebruiker(GebruikerService gc, String naam, String voornaam, LocalDate geboortedatum,
+                                     String straat, String nummer, String postcode, String gemeente, String land,
+                                     String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord) {
+        gc.addGebruiker(
+                naam, voornaam, geboortedatum, straat, nummer, postcode, gemeente, land,
+                email, gsm, rol, status, wachtwoord
         );
     }
 

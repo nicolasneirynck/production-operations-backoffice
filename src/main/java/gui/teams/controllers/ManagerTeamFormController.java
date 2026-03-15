@@ -1,6 +1,6 @@
 package gui.teams.controllers;
 
-import domein.controllers.AlleTeamsService;
+import domein.services.AlleTeamsService;
 import dto.SiteDTO;
 import exception.ValidationException;
 import gui.teams.ObservableTeams;

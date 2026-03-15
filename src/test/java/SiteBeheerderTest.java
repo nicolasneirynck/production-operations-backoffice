@@ -25,6 +25,7 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
 @ExtendWith(MockitoExtension.class)
 class SiteBeheerderTest {
 
@@ -535,13 +536,13 @@ class SiteBeheerderTest {
         verify(siteRepo, never()).delete(any());
     }
     @Test
-    void addSite_verantwoordelijkeHeeftAlAndereSite_gooitValidationException() {
+    void addSite_verantwoordelijkeHeeftAlAndereSite_gooitValidationException() throws Exception {
         Gebruiker verantwoordelijke = Gebruiker.builder()
                 .personeelsnummer(1001)
                 .naam("Janssens")
                 .voornaam("Jan")
-                .geboortedatum("2000-01-01")
-                .adres("Teststraat 1, 9000 Gent")
+                .geboortedatum(LocalDate.parse("2000-01-01"))
+                .locatie(Locatie.builder("Teststraat", "1", "9000", "Gent", "België"))
                 .email("verantwoordelijke@example.com")
                 .gsm("0470123456")
                 .rol(Rollen.VERANTWOORDELIJKE)
@@ -584,8 +585,8 @@ class SiteBeheerderTest {
                 .personeelsnummer(1001)
                 .naam("Janssens")
                 .voornaam("Jan")
-                .geboortedatum("2000-01-01")
-                .adres("Teststraat 1, 9000 Gent")
+                .geboortedatum(LocalDate.parse("2000-01-01"))
+                .locatie(Locatie.builder("Teststraat", "1", "9000", "Gent", "België"))
                 .email("verantwoordelijke@example.com")
                 .gsm("0470123456")
                 .rol(Rollen.VERANTWOORDELIJKE)

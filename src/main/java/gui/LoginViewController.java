@@ -1,7 +1,7 @@
 package gui;
 
-import domein.AuthenticationController;
-import dto.GebruikerDTO;
+import domein.services.LoginService;
+import dto.AuthenticatedUserDTO;
 import exception.ValidationException;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
@@ -22,17 +22,15 @@ public class LoginViewController implements NavigableController {
     private static final String VERANTWOORDELIJKE_WACHTWOORD = "verantwoordelijke";
 
     @FXML private TextField emailTxt;
-    @FXML private TextField wachtwoordTxt;
+    @FXML private PasswordField wachtwoordTxt;
     @FXML private Button loginBtn;
     @FXML private Button cancelBtn;
     @FXML private Label algemeenErr;
-    @FXML private Label emailErr;
-    @FXML private Label wachtwoordErr;
 
     @Setter
     private Navigator navigator;
     private AppContext ctx;
-    private AuthenticationController ac;
+    private LoginService loginService;
 
     @Override
     public void setContext(AppContext ctx) {
@@ -44,7 +42,7 @@ public class LoginViewController implements NavigableController {
 
     @Override
     public void loadData() {
-        this.ac = ctx.getAuthenticationController();
+        this.loginService = ctx.getLoginService();
     }
 
     @FXML
@@ -52,7 +50,7 @@ public class LoginViewController implements NavigableController {
         clearErrors();
 
         try {
-            GebruikerDTO gebruiker = ac.login(emailTxt.getText(), wachtwoordTxt.getText());
+            AuthenticatedUserDTO gebruiker = loginService.login(emailTxt.getText(), wachtwoordTxt.getText());
 
             SecurityContext.login(new UserPrincipal(gebruiker.gebruikerId(),gebruiker.naam(), gebruiker.voornaam(), gebruiker.rol(), RolePermissions.getPermissions(gebruiker.rol())));
         } catch (ValidationException exception) {
@@ -84,32 +82,15 @@ public class LoginViewController implements NavigableController {
     private void showLoginErrors(ValidationException exception) {
         clearErrors();
 
-        exception.getExceptionMap().forEach((field, iae) -> {
-            String msg = iae.getMessage();
+        String msg = exception.getExceptionMap().values().stream()
+                .findFirst()
+                .map(IllegalArgumentException::getMessage)
+                .orElse("Ongeldige login.");
 
-            switch (field) {
-                case "email" -> {
-                    emailErr.setText(msg);
-//                    naamTf.getStyleClass().add("field-error");
-                }
-                case "wachtwoord" -> {
-                    wachtwoordErr.setText(msg);
-//                    capaciteitTf.getStyleClass().add("field-error");
-                }
-                case "onbestaand" -> {
-                    algemeenErr.setText(msg);
-//                    capaciteitTf.getStyleClass().add("field-error");
-                }
-                default -> {
-                    new Alert(Alert.AlertType.ERROR, msg).showAndWait();
-                }
-            }
-        });
+        algemeenErr.setText(msg);
     }
 
     private void clearErrors() {
-        emailErr.setText("");
-        wachtwoordErr.setText("");
         algemeenErr.setText("");
     }
 }

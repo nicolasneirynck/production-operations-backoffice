@@ -2,7 +2,6 @@ package main;
 
 import exception.ValidationException;
 import gui.LayoutController;
-import gui.effects.ButtonEffects;
 import gui.navigation.Navigator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,22 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import security.SecurityContext;
-import util.View;
 
 public class BackOfficeApp extends Application {
-
-    private void bindAuthNavigation(Navigator navigator) {
-        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> {
-            if (newUser != null) navigator.goTo(View.HOME);
-            else navigator.goTo(View.LOGIN);
-        });
-    }
-
-    private void initGuiEffects(Scene scene) {
-        ButtonEffects buttonEffects = new ButtonEffects();
-        buttonEffects.applyEffect(scene);
-    }
 
     @Override
     public void start(Stage stage) {
@@ -42,10 +27,8 @@ public class BackOfficeApp extends Application {
 
         loadLayout(navigator);
 
-        bindAuthNavigation(navigator);
-        navigator.goTo(View.LOGIN);
-
-        initGuiEffects(stage.getScene());
+        navigator.bindNavigationToAuthentication();
+        navigator.goToDefaultView();
     }
 
     private void loadFonts() {

@@ -1,6 +1,6 @@
 package gui.teams.controllers;
 
-import domein.controllers.AlleTeamsService;
+import domein.services.AlleTeamsService;
 import gui.factories.ActionColumnFactory;
 import gui.teams.ObservableTeams;
 import javafx.fxml.FXML;

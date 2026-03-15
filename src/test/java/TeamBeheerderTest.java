@@ -17,6 +17,7 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,13 +43,13 @@ public class TeamBeheerderTest {
         teamBeheerder = new TeamBeheerder(teamRepo, siteRepo, gebruikerRepo);
     }
 
-    private Gebruiker maakGebruikerMetRol(Rollen rol, int personeelsnummer, String email) {
+    private Gebruiker maakGebruikerMetRol(Rollen rol, int personeelsnummer, String email) throws Exception {
         return Gebruiker.builder()
                 .personeelsnummer(personeelsnummer)
                 .naam("Janssens")
                 .voornaam("Jan" + personeelsnummer)
-                .geboortedatum("2000-01-01")
-                .adres("Teststraat 1, 9000 Gent")
+                .geboortedatum(LocalDate.parse("2000-01-01"))
+                .locatie(Locatie.builder("Teststraat", "1", "9000", "Gent", "België"))
                 .email(email)
                 .gsm("0470123456")
                 .rol(rol)
@@ -69,7 +70,7 @@ public class TeamBeheerderTest {
     }
 
 
-    private Gebruiker werknemer(int personeelsnummer, String email) {
+    private Gebruiker werknemer(int personeelsnummer, String email) throws Exception {
         return maakGebruikerMetRol(Rollen.WERKNEMER, personeelsnummer, email);
     }
 

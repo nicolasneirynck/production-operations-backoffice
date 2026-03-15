@@ -1,6 +1,6 @@
 package gui.teams.controllers;
 
-import domein.controllers.MijnTeamService;
+import domein.services.MijnTeamService;
 import dto.TeamDTO;
 import gui.factories.ActionColumnFactory;
 import gui.teams.ObservableTeam;

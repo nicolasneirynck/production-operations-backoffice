@@ -1,142 +1,167 @@
 package gui.gebruikers;
 
-import domein.GebruikerController;
 import dto.GebruikerDTO;
+import gui.factories.ActionColumnFactory;
+import gui.navigation.ClosableFormGuard;
+import gui.navigation.FormLoader;
+import gui.navigation.NavigationGuard;
 import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
 import lombok.Setter;
 import main.AppContext;
+import domein.services.GebruikerService;
 import util.GebruikerStatus;
 import util.Rollen;
+import util.View;
+import javafx.collections.transformation.SortedList;
 
-public class GebruikerOverviewController implements NavigableController {
+public class GebruikerOverviewController implements NavigableController, NavigationGuard {
 
     @FXML private TableView<GebruikerDTO> gebruikerTable;
+    @FXML private VBox formHost;
 
-    @FXML private TableColumn<GebruikerDTO, Long> idCol;
     @FXML private TableColumn<GebruikerDTO, String> naamCol;
     @FXML private TableColumn<GebruikerDTO, String> voornaamCol;
     @FXML private TableColumn<GebruikerDTO, Rollen> rolCol;
     @FXML private TableColumn<GebruikerDTO, GebruikerStatus> statusCol;
+    @FXML private TableColumn<GebruikerDTO, GebruikerDTO> actiesCol;
 
-    @FXML private Button addBtn;
-    @FXML private Button editBtn;
-    @FXML private Button deleteBtn;
+    @FXML private javafx.scene.control.Button addBtn;
 
     @Setter private Navigator navigator;
     private AppContext context;
-    private GebruikerController gc;
-
-    private final ObservableList<GebruikerDTO> gebruikers = FXCollections.observableArrayList();
+    private GebruikerService gebruikerService;
+    private ObservableGebruikers observableGebruikers;
+    private SortedList<GebruikerDTO> sortedList;
+    private ClosableFormGuard activeFormGuard;
 
     @Override
     public void setContext(AppContext context) {
         this.context = context;
-        this.gc = context.getGebruikerController();
+        this.gebruikerService = context.getGebruikerService();
+        this.observableGebruikers = context.getObservableGebruikers();
     }
 
     @FXML
     private void initialize() {
-        idCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().gebruikerId()));
         naamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().naam()));
         voornaamCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().voornaam()));
         rolCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().rol()));
         statusCol.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().status()));
+        configureStatusColumn();
 
-        gebruikerTable.setItems(gebruikers);
+        ActionColumnFactory.configureEditDeleteColumn(actiesCol, this::showEditForm, this::deleteGebruiker);
 
-        editBtn.disableProperty().bind(gebruikerTable.getSelectionModel().selectedItemProperty().isNull());
-        deleteBtn.disableProperty().bind(gebruikerTable.getSelectionModel().selectedItemProperty().isNull());
+        naamCol.setStyle("-fx-alignment: center-left;");
+        voornaamCol.setStyle("-fx-alignment: center-left;");
+        rolCol.setStyle("-fx-alignment: CENTER;");
+        statusCol.setStyle("-fx-alignment: CENTER;");
+        actiesCol.setStyle("-fx-alignment: CENTER;");
+        gebruikerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        gebruikerTable.setFixedCellSize(44);
+        gebruikerTable.setSelectionModel(null);
+
+        addBtn.managedProperty().bind(formHost.visibleProperty().not());
+        addBtn.visibleProperty().bind(formHost.visibleProperty().not());
+    }
+
+    private void configureStatusColumn() {
+        statusCol.setCellFactory(col -> new TableCell<>() {
+            private final Label label = new Label();
+
+            {
+                setAlignment(Pos.CENTER);
+            }
+
+            @Override
+            protected void updateItem(GebruikerStatus status, boolean empty) {
+                super.updateItem(status, empty);
+
+                if (empty || status == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                label.setText(status.toString());
+                label.getStyleClass().setAll("status-badge");
+
+                switch (status) {
+                    case ACTIEF -> label.getStyleClass().add("status-green");
+                    case INACTIEF -> label.getStyleClass().add("status-red");
+                }
+
+                setGraphic(label);
+            }
+        });
     }
 
     @Override
     public void loadData() {
-        gebruikers.setAll(gc.getAllGebruikers());
-    }
-
-    private FXMLLoader createLoader() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/gebruikers/GebruikerFormView.fxml"));
-        loader.setControllerFactory(type -> {
-            if (type == GebruikerFormController.class) {
-                return new GebruikerFormController(gc);
-            }
-            try {
-                return type.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        return loader;
+        observableGebruikers.setGebruikers(gebruikerService.getAllGebruikers());
+        initializeTableItems();
     }
 
     @FXML
     private void onAdd() {
-        try {
-            FXMLLoader loader = createLoader();
+        openCreateForm();
+    }
 
-            Parent root = loader.load();
-            Stage dialog = new Stage();
-            dialog.setTitle("Nieuwe Gebruiker");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
+    private void initializeTableItems() {
+        if (sortedList == null) {
+            sortedList = new SortedList<>(observableGebruikers.getFilteredGebruikerList());
+            sortedList.comparatorProperty().bind(gebruikerTable.comparatorProperty());
+            gebruikerTable.setItems(sortedList);
 
-            gebruikers.setAll(gc.getAllGebruikers());
+            naamCol.setSortType(TableColumn.SortType.ASCENDING);
+            gebruikerTable.getSortOrder().add(naamCol);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+            actiesCol.setSortable(false);
         }
     }
 
-    @FXML
-    private void onEdit() {
-        GebruikerDTO selected = gebruikerTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+    private void openCreateForm() {
+        GebruikerFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.GEBRUIKER_FORM.fxml,
+                GebruikerFormController::loadForCreate
+        );
 
-        try {
-            FXMLLoader loader = createLoader();
-
-            Parent root = loader.load();
-            GebruikerFormController form = loader.getController();
-            form.loadForEdit(selected);
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Gebruiker wijzigen");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setScene(new Scene(root));
-            dialog.showAndWait();
-
-            gebruikers.setAll(gc.getAllGebruikers());
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
     }
 
-    @FXML
-    private void onDelete() {
-        GebruikerDTO selected = gebruikerTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        if (selected.status() == GebruikerStatus.INACTIEF) {
+    private void showEditForm(GebruikerDTO gebruiker) {
+        GebruikerFormController controller = FormLoader.showForm(
+                formHost,
+                context,
+                View.GEBRUIKER_FORM.fxml,
+                c -> c.loadForEdit(gebruiker)
+        );
+
+        controller.setOnClose(this::closeForm);
+        activeFormGuard = controller;
+    }
+
+    private void closeForm() {
+        FormLoader.hideForm(formHost);
+        activeFormGuard = null;
+    }
+
+    private void deleteGebruiker(GebruikerDTO gebruiker) {
+        if (gebruiker.status() == GebruikerStatus.INACTIEF) {
             new Alert(Alert.AlertType.WARNING, "Gebruiker is al verwijderd.").showAndWait();
             return;
         }
@@ -144,7 +169,7 @@ public class GebruikerOverviewController implements NavigableController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Gebruiker verwijderen");
         alert.setHeaderText("Ben je zeker dat je deze gebruiker wil verwijderen?");
-        alert.setContentText(selected.naam() + ", " + selected.voornaam() + " (" + selected.email() + ")");
+        alert.setContentText(gebruiker.naam() + ", " + gebruiker.voornaam() + " (" + gebruiker.email() + ")");
 
         ButtonType delete = new ButtonType("Verwijderen");
         ButtonType cancel = new ButtonType("Annuleren", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -153,8 +178,9 @@ public class GebruikerOverviewController implements NavigableController {
         alert.showAndWait().ifPresent(response -> {
             if (response == delete) {
                 try {
-                    gc.deleteGebruiker(selected.gebruikerId());
-                    gebruikers.setAll(gc.getAllGebruikers());
+                    gebruikerService.deleteGebruiker(gebruiker.gebruikerId());
+                    observableGebruikers.removeGebruiker(gebruiker.gebruikerId());
+                    loadData();
                 } catch (IllegalArgumentException ex) {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
                 } catch (RuntimeException ex) {
@@ -162,5 +188,10 @@ public class GebruikerOverviewController implements NavigableController {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean canNavigateAway() {
+        return activeFormGuard == null || activeFormGuard.canClose();
     }
 }

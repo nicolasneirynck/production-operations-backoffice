@@ -1,5 +1,6 @@
 package gui.taken;
 
+import domein.services.TaakService;
 import dto.TaakDTO;
 import exception.ValidationException;
 import gui.navigation.ClosableFormGuard;
@@ -32,6 +33,7 @@ public class TaakFormController implements FormController, ClosableFormGuard {
     @Setter private Runnable onClose;
 
     private AppContext ctx;
+    private TaakService taakService;
     private ObservableTaken observableTaken;
 
     private Long editingId = null;
@@ -40,6 +42,7 @@ public class TaakFormController implements FormController, ClosableFormGuard {
     @Override
     public void setContext(AppContext ctx) {
         this.ctx = ctx;
+        this.taakService = ctx.getTaakService();
         this.observableTaken = ctx.getObservableTaken();
     }
 
@@ -70,11 +73,9 @@ public class TaakFormController implements FormController, ClosableFormGuard {
 
     @Override
     public void loadData() {
-        observableTaken.reload();
+        observableTaken.setTaken(taakService.getAllTaken());
 
-        typeBx.setItems(FXCollections.observableArrayList(
-                ctx.getTaakController().getAllTaakTypes()
-        ));
+        typeBx.setItems(FXCollections.observableArrayList(taakService.getAllTaakTypes()));
     }
 
     public void loadForCreate() {
@@ -112,10 +113,11 @@ public class TaakFormController implements FormController, ClosableFormGuard {
             Integer duurtijd = duurtijdBx.getValue();
 
             if (editingId == null) {
-                observableTaken.addTaak(type, omschrijving, duurtijd);
+                taakService.addTaak(type, omschrijving, duurtijd);
             } else {
-                observableTaken.updateTaak(editingId, type, omschrijving, duurtijd);
+                taakService.updateTaak(editingId, type, omschrijving, duurtijd);
             }
+            observableTaken.setTaken(taakService.getAllTaken());
 
             close();
         } catch (ValidationException ex) {

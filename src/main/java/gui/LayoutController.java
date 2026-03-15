@@ -4,7 +4,9 @@ import gui.navigation.NavigableController;
 import gui.navigation.Navigator;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -20,6 +22,7 @@ import util.Rollen;
 import util.View;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LayoutController implements NavigableController {
 
@@ -166,7 +169,18 @@ public class LayoutController implements NavigableController {
 
     @FXML
     private void onLogout() {
-        // TODO: confirmation pop-up
-        SecurityContext.logout();
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        ButtonType jaButton = new ButtonType("Ja");
+        ButtonType neeButton = new ButtonType("Nee");
+
+        confirmDialog.setTitle("Uitloggen");
+        confirmDialog.setHeaderText("Wil je zeker uitloggen?");
+        confirmDialog.setContentText("Je huidige sessie wordt afgesloten.");
+        confirmDialog.getButtonTypes().setAll(jaButton, neeButton);
+
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == jaButton) {
+            SecurityContext.logout();
+        }
     }
 }

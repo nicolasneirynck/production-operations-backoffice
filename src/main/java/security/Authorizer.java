@@ -13,6 +13,21 @@ public class Authorizer {
         return user;
     }
 
+    public static UserPrincipal requireAny(Permission... permissions) {
+        UserPrincipal user = SecurityContext.getUser();
+        if (user == null) {
+            throw new AccessDeniedException();
+        }
+
+        for (Permission permission : permissions) {
+            if (user.permissions().contains(permission)) {
+                return user;
+            }
+        }
+
+        throw new AccessDeniedException("Je hebt niet de nodige permission: " + permissions[0]);
+    }
+
     public static void require(View view) {
         if (!hasAccess(view)) {
             throw new AccessDeniedException();

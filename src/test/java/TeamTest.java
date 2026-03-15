@@ -13,6 +13,7 @@ import util.OperationeleStatus;
 import util.ProductieStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,18 +32,22 @@ public class TeamTest {
     }
 
     private Gebruiker werknemer(int personeelsnummer, String email) {
-        return Gebruiker.builder()
-                .personeelsnummer(personeelsnummer)
-                .naam("Janssens")
-                .voornaam("Jan" + personeelsnummer)
-                .geboortedatum("2000-01-01")
-                .adres("Teststraat 1, 9000 Gent")
-                .email(email)
-                .gsm("0470123456")
-                .rol(Rollen.WERKNEMER)
-                .status(GebruikerStatus.ACTIEF)
-                .wachtwoord("geheim123")
-                .build();
+        try {
+            return Gebruiker.builder()
+                    .personeelsnummer(personeelsnummer)
+                    .naam("Janssens")
+                    .voornaam("Jan" + personeelsnummer)
+                    .geboortedatum(LocalDate.parse("2000-01-01"))
+                    .locatie(Locatie.builder("Teststraat", "1", "9000", "Gent", "België"))
+                    .email(email)
+                    .gsm("0470123456")
+                    .rol(Rollen.WERKNEMER)
+                    .status(GebruikerStatus.ACTIEF)
+                    .wachtwoord("geheim123")
+                    .build();
+        } catch (ValidationException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     static Stream<Arguments> geldigeTeams() {

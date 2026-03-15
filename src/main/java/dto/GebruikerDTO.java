@@ -3,18 +3,19 @@ package dto;
 import util.GebruikerStatus;
 import util.Rollen;
 
+import java.time.LocalDate;
+
 public record GebruikerDTO(
         long gebruikerId,
         int personeelsnummer,
         String naam,
         String voornaam,
-        String geboortedatum,
-        String adres,
+        LocalDate geboortedatum,
+        LocatieDTO locatie,
         String email,
         String gsm,
         Rollen rol,
-        GebruikerStatus status,
-        String wachtwoord
+        GebruikerStatus status
 ) {
 
     public String volledigeNaam() {

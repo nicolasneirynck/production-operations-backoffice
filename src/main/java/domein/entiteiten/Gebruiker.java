@@ -9,7 +9,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import util.GebruikerStatus;
 import util.Rollen;
 
-import java.util.Comparator;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +27,6 @@ public class Gebruiker implements Comparable<Gebruiker> {
 
     private static final EmailValidator VALIDATOR = EmailValidator.getInstance(false, false);
 
-    // TODO: can gebruikerId be removed because we have personeelsnummer?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long gebruikerId;
@@ -35,8 +34,9 @@ public class Gebruiker implements Comparable<Gebruiker> {
     private int personeelsnummer;
     private String naam;
     private String voornaam;
-    private String geboortedatum;
-    private String adres;
+    private LocalDate geboortedatum;
+    @Embedded
+    private Locatie locatie;
     @Column(unique=true)
     private String email;
     @Column(nullable=true)
@@ -47,44 +47,33 @@ public class Gebruiker implements Comparable<Gebruiker> {
     private GebruikerStatus status;
     private String wachtwoord;
 
- //   private Site site;
-
-//    @OneToOne
-//    private Team verantwoordelijkeTeam;
-//
-//    @ManyToMany
-//    private Team medewerkerTeam;
-
     public static Builder builder() {
         return new Builder();
     }
 
-    private static void validate(int personeelsnummer, String naam, String voornaam, String geboortedatum, String adres, String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord) {
-        if (personeelsnummer < 0) throw new IllegalArgumentException("Personeelsnummer mag niet onder 0 zijn.");
-        // TODO: check that there are no numbers
+    private static void validate(int personeelsnummer, String naam, String voornaam, LocalDate geboortedatum,
+                                 Locatie locatie, String email, String gsm, Rollen rol,
+                                 GebruikerStatus status, String wachtwoord) {
+        if (personeelsnummer <= 0) throw new IllegalArgumentException("Personeelsnummer moet groter zijn dan 0.");
         if (naam == null || naam.isBlank()) throw new IllegalArgumentException("Naam is verplicht.");
         if (voornaam == null || voornaam.isBlank()) throw new IllegalArgumentException("Voornaam is verplicht.");
-        // TODO: check format & make sure date is not in future and user is older than X years
-        if (geboortedatum == null || geboortedatum.isBlank()) throw new IllegalArgumentException("Geboortedatum is verplicht.");
-        // TODO: check format
-        if (adres == null || adres.isBlank()) throw new IllegalArgumentException("Adres is verplicht.");
+        if (geboortedatum == null) throw new IllegalArgumentException("Geboortedatum is verplicht.");
+        if (geboortedatum.isAfter(LocalDate.now())) throw new IllegalArgumentException("Geboortedatum mag niet in de toekomst liggen.");
+        if (locatie == null) throw new IllegalArgumentException("Adres is verplicht.");
         if (email == null || email.isBlank() || !VALIDATOR.isValid(email.trim())) throw new IllegalArgumentException("Email is verplicht en moet een geldig formaat hebben.");
-
-        // TODO: check format for gsm, null is allowed though
-
         if (rol == null) throw new IllegalArgumentException("Rol is verplicht.");
         if (status == null) throw new IllegalArgumentException("GebruikerStatus is verplicht.");
         if (wachtwoord == null || wachtwoord.isBlank()) throw new IllegalArgumentException("Wachtwoord is verplicht.");
     }
 
-    public void update(int personeelsnummer, String naam, String voornaam, String geboortedatum, String adres, String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord){
-        validate(personeelsnummer, naam, voornaam, geboortedatum, adres, email, gsm, rol, status, wachtwoord);
+    public void update(String naam, String voornaam, LocalDate geboortedatum, Locatie locatie,
+                       String email, String gsm, Rollen rol, GebruikerStatus status, String wachtwoord){
+        validate(personeelsnummer, naam, voornaam, geboortedatum, locatie, email, gsm, rol, status, wachtwoord);
 
-        this.personeelsnummer = personeelsnummer;
         this.naam = naam;
         this.voornaam = voornaam;
         this.geboortedatum = geboortedatum;
-        this.adres = adres;
+        this.locatie = locatie;
         this.email = email;
         this.gsm = gsm;
         this.rol = rol;
@@ -97,7 +86,7 @@ public class Gebruiker implements Comparable<Gebruiker> {
         this.naam = builder.naam;
         this.voornaam = builder.voornaam;
         this.geboortedatum = builder.geboortedatum;
-        this.adres = builder.adres;
+        this.locatie = builder.locatie;
         this.email = builder.email;
         this.gsm = builder.gsm;
         this.rol = builder.rol;
@@ -116,8 +105,8 @@ public class Gebruiker implements Comparable<Gebruiker> {
         private int personeelsnummer;
         private String naam;
         private String voornaam;
-        private String geboortedatum;
-        private String adres;
+        private LocalDate geboortedatum;
+        private Locatie locatie;
         private String email;
         private String gsm;
         private Rollen rol;
@@ -139,13 +128,13 @@ public class Gebruiker implements Comparable<Gebruiker> {
             return this;
         }
 
-        public Builder geboortedatum(String geboortedatum) {
+        public Builder geboortedatum(LocalDate geboortedatum) {
             this.geboortedatum = geboortedatum;
             return this;
         }
 
-        public Builder adres(String adres) {
-            this.adres = adres;
+        public Builder locatie(Locatie locatie) {
+            this.locatie = locatie;
             return this;
         }
 
@@ -175,7 +164,7 @@ public class Gebruiker implements Comparable<Gebruiker> {
         }
 
         public Gebruiker build() {
-            validate(personeelsnummer, naam, voornaam, geboortedatum, adres, email, gsm, rol, status, wachtwoord);
+            validate(personeelsnummer, naam, voornaam, geboortedatum, locatie, email, gsm, rol, status, wachtwoord);
             if (status == GebruikerStatus.INACTIEF) throw new IllegalArgumentException("GebruikerStatus is verplicht en mag niet beginnen als inactief.");
 
             return new Gebruiker(this);

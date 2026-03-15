@@ -3,16 +3,11 @@ package gui.navigation;
 import gui.LayoutController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
-import lombok.Setter;
 import main.AppContext;
 import security.Authorizer;
-import security.Permission;
 import security.SecurityContext;
-import security.UserPrincipal;
-import util.Rollen;
 import util.View;
 
 public class Navigator {
@@ -32,6 +27,18 @@ public class Navigator {
     public void setLayoutController(LayoutController layoutController) {
         this.layoutController = layoutController;
         controllerInitializer.initialize(layoutController);
+    }
+
+    public void bindNavigationToAuthentication() {
+        SecurityContext.userProperty().addListener((obs, oldUser, newUser) -> goToDefaultView());
+    }
+
+    public void goToDefaultView() {
+        if (layoutController == null) {
+            throw new IllegalStateException("Layout is not initialized. Call setLayoutController() first.");
+        }
+
+        goTo(SecurityContext.getUser() != null ? View.HOME : View.LOGIN);
     }
 
     public void goTo(View view) {

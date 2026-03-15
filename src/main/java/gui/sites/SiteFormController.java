@@ -1,5 +1,6 @@
 package gui.sites;
 
+import domein.services.SiteService;
 import dto.GebruikerDTO;
 import dto.LocatieDTO;
 import dto.SiteDTO;
@@ -54,6 +55,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @Setter private Runnable onClose;
 
     private AppContext context;
+    private SiteService siteService;
     private ObservableSites observableSites;
 
     private Long editingSiteId = null;
@@ -62,6 +64,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
     @Override
     public void setContext(AppContext ctx) {
         context = ctx;
+        this.siteService = ctx.getSiteService();
         this.observableSites = ctx.getObservableSites();
     }
 
@@ -156,11 +159,11 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
     @Override
     public void loadData() {
-        observableSites.reload();
+        observableSites.setSites(siteService.getAllSites());
     }
 
     private void loadVerantwoordelijkenVoorCreate() {
-        List<GebruikerDTO> verantwoordelijken = context.getGebruikerController()
+        List<GebruikerDTO> verantwoordelijken = context.getGebruikerService()
                 .getVerantwoordelijkenZonderSite()
                 .stream()
                 .sorted((g1, g2) -> {
@@ -174,7 +177,7 @@ public class SiteFormController implements FormController, ClosableFormGuard {
 
     private void loadVerantwoordelijkenVoorEdit(GebruikerDTO huidigeVerantwoordelijke) {
         List<GebruikerDTO> verantwoordelijken = new ArrayList<>(
-                context.getGebruikerController().getVerantwoordelijkenZonderSite()
+                context.getGebruikerService().getVerantwoordelijkenZonderSite()
         );
 
         if (huidigeVerantwoordelijke != null) {
@@ -281,14 +284,15 @@ public class SiteFormController implements FormController, ClosableFormGuard {
             ProductieStatus prod = productieCb.getValue();
 
             if (editingSiteId == null) {
-                observableSites.addSite(
+                siteService.addSite(
                         naam, verantwoordelijkeId, straat, nummer, postcode, gemeente, land, capaciteit, op, prod
                 );
             } else {
-                observableSites.updateSite(
+                siteService.updateSite(
                         editingSiteId, verantwoordelijkeId, naam, straat, nummer, postcode, gemeente, land, capaciteit, op, prod
                 );
             }
+            observableSites.setSites(siteService.getAllSites());
             close();
 
         } catch (ValidationException ex) {

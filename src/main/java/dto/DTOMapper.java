@@ -1,7 +1,10 @@
 package dto;
 
-import domein.*;
-import domein.entiteiten.*;
+import domein.entiteiten.Gebruiker;
+import domein.entiteiten.Locatie;
+import domein.entiteiten.Site;
+import domein.entiteiten.Taak;
+import domein.entiteiten.Team;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,12 +68,24 @@ public class DTOMapper {
                 gebruiker.getNaam(),
                 gebruiker.getVoornaam(),
                 gebruiker.getGeboortedatum(),
-                gebruiker.getAdres(),
+                toLocatieDTO(gebruiker.getLocatie()),
                 gebruiker.getEmail(),
                 gebruiker.getGsm(),
                 gebruiker.getRol(),
-                gebruiker.getStatus(),
-                gebruiker.getWachtwoord());
+                gebruiker.getStatus());
+    }
+
+    public static AuthenticatedUserDTO toAuthenticatedUserDTO(Gebruiker gebruiker) {
+        if (gebruiker == null) {
+            return null;
+        }
+
+        return new AuthenticatedUserDTO(
+                gebruiker.getGebruikerId(),
+                gebruiker.getNaam(),
+                gebruiker.getVoornaam(),
+                gebruiker.getRol()
+        );
     }
 
     public static List<GebruikerDTO> toGebruikerDTOList(List<Gebruiker> gebruikers) {
