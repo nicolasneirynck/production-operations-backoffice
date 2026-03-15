@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gui.taken.TaakFormController"
+            fx:id="root"
+            spacing="18">
+
+    <styleClass>
+        <String fx:value="card"/>
+        <String fx:value="form-card"/>
+    </styleClass>
+
+    <Label fx:id="titleLabel" text="Taak aanmaken" styleClass="card-title"/>
+
+    <HBox spacing="24">
+
+        <!-- LINKS: Taaktype, duurtijd -->
+        <VBox spacing="14" prefWidth="380" maxWidth="380">
+
+            <!-- Taaktype -->
+            <VBox spacing="2">
+                <Label text="Taak type" styleClass="form-label"/>
+                <ComboBox fx:id="typeBx"
+                          promptText="KIES TAAKTYPE"
+                          maxWidth="Infinity"
+                          editable="true"
+                          styleClass="form-combo"/>
+                <Label fx:id="typeErrorLbl" styleClass="error-label"/>
+            </VBox>
+
+            <!-- Duurtijd -->
+            <VBox spacing="2">
+                <Label text="Duurtijd (minuten)" styleClass="form-label"/>
+                <ComboBox fx:id="duurtijdBx"
+                          promptText="KIES DUURTIJD"
+                          maxWidth="Infinity"
+                          styleClass="form-combo"/>
+            </VBox>
+
+        </VBox>
+
+        <!-- RECHTS: Omschrijving -->
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label text="Omschrijving" styleClass="form-label"/>
+            <TextArea fx:id="omschrijvingTxt" promptText="Geef een duidelijke taakomschrijving" wrapText="true"
+                      prefRowCount="4"
+                      VBox.vgrow="ALWAYS"
+                      minHeight="110"
+                      maxHeight="140"
+                      styleClass="form-textarea"/>
+            <Label fx:id="omschrijvingErrorLbl" styleClass="error-label"/>
+        </VBox>
+
+    </HBox>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelBtn" text="Annuleren" onAction="#onCancel" styleClass="btn-ghost"/>
+        <Button fx:id="saveBtn" text="Opslaan" onAction="#onSave" styleClass="btn-primary"/>
+    </HBox>
+
+
+</VBox>

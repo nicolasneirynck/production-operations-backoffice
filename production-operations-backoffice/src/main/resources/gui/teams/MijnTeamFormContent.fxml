@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.6"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.teams.controllers.MijnTeamFormController"
+      spacing="14">
+
+    <styleClass>
+        <String fx:value="card"/>
+        <String fx:value="form-card"/>
+        <String fx:value="team-form-card"/>
+    </styleClass>
+
+    <Label fx:id="titleLabel" text="Team wijzigen" styleClass="card-title"/>
+
+
+    <Label fx:id="formInfoLbl"
+           wrapText="true"
+           visible="false"
+           managed="false"
+           styleClass="info-label"/>
+    <HBox spacing="18" alignment="TOP_LEFT">
+
+        <VBox spacing="12" prefWidth="360" maxWidth="360">
+            <VBox spacing="6">
+                <Label text="Site" styleClass="section-title"/>
+                <ComboBox fx:id="siteCb"
+                          prefWidth="225"
+                          maxWidth="225"
+                          styleClass="form-combo"/>
+                <Label fx:id="siteErr" styleClass="error-label"/>
+            </VBox>
+
+            <VBox spacing="6">
+                <Label text="Beschikbare medewerkers" styleClass="section-title"/>
+                <TextField fx:id="zoekTf"
+                           promptText="Zoek medewerker..."
+                           maxWidth="225"/>
+                <Label fx:id="medewerkersErr" styleClass="error-label"/>
+            </VBox>
+
+            <TableView fx:id="werknemersTable"
+                       prefWidth="360"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="table">
+                <columns>
+                    <TableColumn fx:id="naamCol" text="Naam" prefWidth="145"/>
+                    <TableColumn fx:id="voornaamCol" text="Voornaam" prefWidth="135"/>
+                    <TableColumn fx:id="addCol" text="" prefWidth="58"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox spacing="12" prefWidth="450" maxWidth="450">
+            <VBox spacing="6">
+                <Label text="Verantwoordelijke" styleClass="section-title"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label fx:id="verantwoordelijkeBadge"
+                           text="-"
+                           styleClass="employee-badge"/>
+                </HBox>
+                <Label fx:id="verantwoordelijkeErr" styleClass="error-label"/>
+            </VBox>
+
+            <VBox spacing="8">
+                <Label text="Medewerkers" styleClass="section-title"/>
+
+                <ScrollPane fitToWidth="true"
+                            prefHeight="300"
+                            prefWidth="450"
+                            hbarPolicy="NEVER"
+                            vbarPolicy="AS_NEEDED"
+                            styleClass="team-scroll">
+                    <content>
+                        <FlowPane fx:id="selectedPane"
+                                  hgap="8"
+                                  vgap="8"
+                                  prefWrapLength="430"/>
+                    </content>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelBtn"
+                text="Annuleren"
+                onAction="#onCancel"
+                styleClass="btn-ghost"/>
+
+        <Button fx:id="saveBtn"
+                text="Opslaan"
+                onAction="#onSave"
+                styleClass="btn-primary"/>
+    </HBox>
+
+</VBox>
