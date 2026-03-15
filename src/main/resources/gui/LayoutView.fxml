@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LayoutController">
+
+    <columnConstraints>
+        <ColumnConstraints maxWidth="200" minWidth="200" prefWidth="200" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="56" minHeight="56" prefHeight="56" />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+
+    <StackPane fx:id="logoHeader" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <ImageView fx:id="logoImage" preserveRatio="true">
+            <Image url="@/images/logo-header.png"/>
+        </ImageView>
+    </StackPane>
+
+    <HBox fx:id="topbar" alignment="CENTER_RIGHT" spacing="16" GridPane.columnIndex="1" GridPane.rowIndex="0">
+
+        <StackPane fx:id="notif">
+            <Label styleClass="icon" text="🔔" />
+            <Label styleClass="badge" text="6" />
+        </StackPane>
+
+        <HBox fx:id="userBox" alignment="CENTER_RIGHT" spacing="10">
+            <VBox spacing="2">
+                <Label fx:id="userNameLbl" styleClass="user-name" text="Voornaam Naam" />
+                <Label fx:id="userRoleLbl" styleClass="user-role" text="Manager" />
+            </VBox>
+        </HBox>
+
+    </HBox>
+
+    <!-- sidebar -->
+    <VBox fx:id="sidebar" spacing="14" GridPane.columnIndex="0" GridPane.rowIndex="1">
+
+        <VBox fx:id="nav" spacing="8">
+         <HBox fx:id="loginRow" layoutX="10.0" layoutY="10.0" styleClass="nav-wrapper, active">
+            <children>
+               <Region styleClass="active-indicator" />
+               <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                  <children>
+                     <Button fx:id="loginBtn" maxWidth="1.7976931348623157E308" styleClass="nav-item" text="Login" HBox.hgrow="ALWAYS" />
+                  </children>
+               </HBox>
+            </children>
+         </HBox>
+
+            <HBox fx:id="homeRow" styleClass="nav-wrapper, active">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="homeBtn" maxWidth="1.7976931348623157E308" onAction="#onHome" styleClass="nav-item" text="Home" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="usersRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="usersBtn" maxWidth="1.7976931348623157E308" onAction="#onGebruikers" styleClass="nav-item" text="Gebruikers Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="allTeamsRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="allTeamsBtn" maxWidth="1.7976931348623157E308" onAction="#onAllTeams" styleClass="nav-item" text="Teams Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="mijnTeamRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="mijnTeamBtn" maxWidth="1.7976931348623157E308" onAction="#onMijnTeam" styleClass="nav-item" text="Team Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="sitesRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator" />
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="sitesBtn" maxWidth="1.7976931348623157E308" onAction="#onSites" styleClass="nav-item" text="Sites Beheren" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </HBox>
+
+<!--            TIJDELIJK!!!! -> tot autorisatie in orde is-->
+
+            <HBox fx:id="takenRow" styleClass="nav-wrapper">
+                <Region styleClass="active-indicator"/>
+                <HBox styleClass="nav-inset" HBox.hgrow="ALWAYS">
+                    <Button fx:id="takenBtn"
+                            text="Taken Beheren"
+                            onAction="#onTaken"
+                            styleClass="nav-item"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="1.7976931348623157E308"/>
+                </HBox>
+            </HBox>
+
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <HBox styleClass="logout-wrapper">
+            <Button fx:id="logoutBtn" maxWidth="1.7976931348623157E308" onAction="#onLogout" styleClass="nav-item, nav-item--danger" text="Uitloggen" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+    </VBox>
+
+    <!-- content hier injecten -->
+    <StackPane fx:id="contentHost" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+</GridPane>
